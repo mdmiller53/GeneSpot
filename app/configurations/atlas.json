@@ -123,8 +123,7 @@
                 {
                     "id": "atlas_quick_tutorial",
                     "view": "atlas_quick_tutorial",
-                    "label": "Quick Guide",
-                    "source": "domains/copyNumber_Gistic2.13sep/qvalue_provenance"
+                    "label": "Quick Guide"
                 },
                 {
                     "id": "atlas_maptext",

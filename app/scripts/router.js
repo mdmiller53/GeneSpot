@@ -2,18 +2,20 @@ define   (['jquery', 'underscore', 'backbone', 'bootstrap',
     'views/topbar_view',
     'views/data_menu_modal',
     'views/data_menu_sections',
-    'views/sessions_view'
+    'views/sessions_view',
+    'views/gs/atlas'
 ],
 function ( $,        _,            Backbone, Bootstrap,
            TopNavBar,
            DataMenuModal,
            DataMenuSections,
-           SessionsView) {
+           SessionsView,
+           AtlasView) {
 
 return Backbone.Router.extend({
     targetEl: "#mainDiv",
     routes:{
-        "":"home_view",
+        "":"atlas",
         "v/*uri/:view_name":"viewsByUri",
         "s/*sessionId": "loadSessionById"
     },
@@ -77,7 +79,7 @@ return Backbone.Router.extend({
             }
         }
     },
-    
+
     home_view:function () {
         // TODO
     },
@@ -139,6 +141,22 @@ return Backbone.Router.extend({
         var ViewClass = this.Views[view_name];
         var view = new ViewClass(view_options);
         this.$el.html(view.render().el);
+        return view;
+    },
+
+    atlas: function() {
+        var model = new Backbone.Model();
+
+        var view = new AtlasView({ "router": this, "model": model });
+        this.$el.html(view.render().el);
+
+        model.fetch({
+            "url": "configurations/atlas.json",
+            "success": function() {
+                model.trigger("load");
+            }
+        });
+
         return view;
     }
 });

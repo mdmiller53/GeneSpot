@@ -13,12 +13,12 @@
                 {
                     "id": "mutsig_grid",
                     "label": "Selected Genes",
-                    "source": "domains/mutations/mutsig_rankings"
+                    "source": "datamodel/mutations/mutsig_rankings"
                 },
                 {
                     "id": "mutsig_top_genes",
                     "label": "Top 20",
-                    "source": "domains/mutations/mutsig_top20"
+                    "source": "datamodel/mutations/mutsig_top20"
                 }
             ]
         },
@@ -48,7 +48,7 @@
                 {
                     "id": "seqpeek",
                     "label": "SeqPeek",
-                    "source": "domains/mutations/PanCan_Protein_Mutations_Per_Cancer_Type"
+                    "source": "datamodel/mutations/PanCan_Protein_Mutations_Per_Cancer_Type"
                 }
             ]
         },
@@ -64,7 +64,7 @@
                 {
                     "id": "scatterplot",
                     "label": "Feature Selector",
-                    "source": "domains/newMerge.05nov/annotated_features"
+                    "source": "datamodel/newMerge.05nov/annotated_features"
                 }
             ]
         },
@@ -80,12 +80,12 @@
                 {
                     "id": "stacksvis2",
                     "label": "StacksVis",
-                    "source": "domains/copyNumber_Gistic2.13sep/focal_data"
+                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data"
                 },
                 {
                     "id": "items_grid",
                     "label": "Provenance",
-                    "source": "domains/copyNumber_Gistic2.13sep/focal_data_provenance"
+                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data_provenance"
                 }
             ]
         },
@@ -101,12 +101,12 @@
                 {
                     "id": "items_grid",
                     "label": "Q-Values",
-                    "source": "domains/copyNumber_Gistic2.13sep/qvalue_data"
+                    "source": "datamodel/copyNumber_Gistic2.13sep/qvalue_data"
                 },
                 {
                     "id": "items_grid",
                     "label": "Provenance",
-                    "source": "domains/copyNumber_Gistic2.13sep/qvalue_provenance"
+                    "source": "datamodel/copyNumber_Gistic2.13sep/qvalue_provenance"
                 }
             ]
         },

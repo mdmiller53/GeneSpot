@@ -5,11 +5,14 @@ define([
     "hbs!templates/line_item",
     "hbs!templates/open_link",
     "views/gs/atlas_quick_tutorial",
-    "views/gs/atlas_maptext_view"
+    "views/gs/atlas_maptext_view",
+    "views/gs/seqpeek_view",
+    "models/gs/mutations_interpro"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView) {
+              QuickTutorialView, MapTextView, SeqPeekView,
+              MutationsModel) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -94,12 +97,19 @@ define([
                 this.options.model.on("load", this.initMaps);
 
                 this.registerViews();
+                this.registerModels();
             },
 
             registerViews: function () {
                 var viewRegistry = this.options.router.Views;
                 viewRegistry["atlas_quick_tutorial"] = QuickTutorialView;
                 viewRegistry["atlas_maptext"] = MapTextView;
+                viewRegistry["seqpeek"] = SeqPeekView;
+            },
+
+            registerModels: function() {
+                var modelRegistry = this.options.router.Models;
+                modelRegistry["Mutations"] = MutationsModel;
             },
 
             initMaps: function () {

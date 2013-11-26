@@ -4,11 +4,12 @@ define([
     "hbs!templates/gs/atlasmap",
     "hbs!templates/line_item",
     "hbs!templates/open_link",
-    "views/gs/atlas_quick_tutorial"
+    "views/gs/atlas_quick_tutorial",
+    "views/gs/atlas_maptext_view"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView) {
+              QuickTutorialView, MapTextView) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -98,6 +99,7 @@ define([
             registerViews: function () {
                 var viewRegistry = this.options.router.Views;
                 viewRegistry["atlas_quick_tutorial"] = QuickTutorialView;
+                viewRegistry["atlas_maptext"] = MapTextView;
             },
 
             initMaps: function () {

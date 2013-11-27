@@ -7,12 +7,14 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
-    "models/gs/mutations_interpro"
+    "views/gs/minigraph",
+    "models/gs/mutations_interpro",
+    "models/gs/minigraph"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView,
-              MutationsModel) {
+              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView,
+              MutationsModel, MiniGraphModel) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -105,11 +107,13 @@ define([
                 viewRegistry["atlas_quick_tutorial"] = QuickTutorialView;
                 viewRegistry["atlas_maptext"] = MapTextView;
                 viewRegistry["seqpeek"] = SeqPeekView;
+                viewRegistry["minigraph"] = MiniGraphView;
             },
 
             registerModels: function() {
                 var modelRegistry = this.options.router.Models;
                 modelRegistry["Mutations"] = MutationsModel;
+                modelRegistry["MiniGraph"] = MiniGraphModel;
             },
 
             initMaps: function () {

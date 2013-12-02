@@ -28,6 +28,7 @@
             "links": {
                 "home": "http://pubcrawl.systemsbiology.net"
             },
+            "disabled": true,
             "views": [
                 {
                     "id": "pubcrawl_network",
@@ -39,7 +40,7 @@
         {
             "id": "seqpeek_protein_mutations",
             "label": "Protein Mutations Per Cancer Type",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 300,
                 "left": 20
@@ -48,7 +49,7 @@
                 {
                     "id": "seqpeek",
                     "label": "SeqPeek",
-                    "source": "datamodel/mutations/PanCan_Protein_Mutations_Per_Cancer_Type"
+                    "source": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
                 }
             ]
         },
@@ -58,13 +59,14 @@
             "isOpen": true,
             "position": {
                 "top": 150,
-                "left": 200
+                "left": 400
             },
             "views": [
                 {
                     "id": "scatterplot",
                     "label": "Feature Selector",
-                    "source": "datamodel/newMerge.05nov/annotated_features"
+                    "source": "datamodel/feature_matrices/BLCA-SEQ-20131113",
+                    "comment": "need to handle multiple tumor types"
                 }
             ]
         },
@@ -72,6 +74,7 @@
             "id": "focal_data",
             "label": "Copy Number Gistic Focal Data",
             "isOpen": false,
+            "disabled": true,
             "position": {
                 "top": 360,
                 "left": 380
@@ -93,6 +96,7 @@
             "id": "qvalue_data",
             "label": "Copy Number Gistic Significance",
             "isOpen": false,
+            "disabled": true,
             "position": {
                 "top": 5,
                 "left": 760
@@ -101,12 +105,12 @@
                 {
                     "id": "items_grid",
                     "label": "Q-Values",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/qvalue_data"
+                    "source": "datamodel/copy_number/qvalue_data"
                 },
                 {
                     "id": "items_grid",
                     "label": "Provenance",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/qvalue_provenance"
+                    "source": "datamodel/copy_number/qvalue_provenance"
                 }
             ]
         },

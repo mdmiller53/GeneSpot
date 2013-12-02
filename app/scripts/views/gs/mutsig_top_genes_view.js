@@ -47,7 +47,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
                         var rank_data = data[rowlabel];
                         var row_data = _.groupBy(rank_data, "cancer");
                         var values = _.map(headers, function (header) {
-                            return row_data[header.id][0];
+                            if (row_data[header.id]) return row_data[header.id][0];
+                            return [];
                         });
                         return {
                             "label": rowlabel,

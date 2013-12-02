@@ -8,12 +8,14 @@ define([
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
     "views/gs/minigraph",
+    "views/gs/mutsig_grid_view",
+    "views/gs/mutsig_top_genes_view",
     "models/gs/mutations_interpro",
     "models/gs/minigraph"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView,
+              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView,
               MutationsModel, MiniGraphModel) {
 
         return Backbone.View.extend({
@@ -108,6 +110,8 @@ define([
                 viewRegistry["atlas_maptext"] = MapTextView;
                 viewRegistry["seqpeek"] = SeqPeekView;
                 viewRegistry["minigraph"] = MiniGraphView;
+                viewRegistry["mutsig_grid"] = MutsigGridView;
+                viewRegistry["mutsig_top_genes"] = MutsigTopGenesView;
             },
 
             registerModels: function() {

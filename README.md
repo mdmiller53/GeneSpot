@@ -19,14 +19,15 @@ Developer Instructions
 =====
 Follow [Web App Base](https://github.com/IlyaLab/WebAppBase) and [Addama](https://github.com/IlyaLab/Addama) instructions
 
-Atlas Runtime Configuration
+GeneSpot Runtime Configuration
 -----
-This project adds an additional file in the [configurations directory](https://github.com/cancerregulome/GeneSpot/tree/master/app/configurations/) for the initial layout of the [Atlas view](https://github.com/cancerregulome/GeneSpot/blob/master/app/scripts/views/gs/atlas.js).
+This project adds the following files into the [configurations directory](https://github.com/cancerregulome/GeneSpot/tree/master/app/configurations/).
+
+### [tumor_types.json](https://github.com/cancerregulome/GeneSpot/blob/master/app/configurations/tumor_types.json) ###
+ * Provides listing of Tumor Types for selectors and queries
 
 ### [atlas.json](https://github.com/IlyaLab/WebAppBase/blob/master/app/configurations/atlas.json) ###
- * Specifies identifying UI elements (e.g. titles, links in the About menu)
- * Specifies links
- * Configures Hangout URL
+ * Provides initial layout of maps in the [Atlas view](https://github.com/cancerregulome/GeneSpot/blob/master/app/scripts/views/gs/atlas.js)
 
 ### Example configuration ###
 ```json

@@ -73,23 +73,12 @@ define([
                     }
 
                     $target.css("z-index", this.nextZindex());
-                },
-                "click .cancers-btn": function () {
-                    var cancerUL = this.$el.find(".cancer-selector");
-                    var tumorBtn = this.$el.find(".cancers-btn");
-
-                    _.defer(function () {
-                        cancerUL.toggle("fade", { "duration": 500 });
-                    });
-
-                    if (this.cancerControlOpen) cancerUL.effect("transfer", { "to": tumorBtn }, 750);
-                    this.cancerControlOpen = !this.cancerControlOpen;
                 }
             },
 
             initialize: function (options) {
                 _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "viewsByUri", "closeMap", "zoom");
-                _.bindAll(this, "loadTumorTypes", "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -99,9 +88,12 @@ define([
                 this.options.router.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
+                WebApp.Events.on("tumor-types-selector-change", function() {
+                    _.each(this.$el.find(".atlas-map"), this.loadMapData);
+                }, this);
+
                 this.registerViews();
                 this.registerModels();
-                this.loadTumorTypes();
             },
 
             registerViews: function () {
@@ -144,14 +136,8 @@ define([
                             });
                         }
 
-                        if (session_atlas.cancers) {
-                            _.each(this.$el.find(".cancer-selector li"), function (li) {
-                                var cancer = $(li).find("a").data("id");
-                                if (session_atlas.cancers.indexOf(cancer) < 0) {
-                                    $(li).removeClass("active");
-                                }
-                            })
-                        }
+                        // TODO : Restore selected tumor types from session
+
                         if (session_atlas.maps) {
                             maps = _.compact(_.map(session_atlas.maps, function (mapFromSession) {
                                 var matchedMap = _.find(maps, function (m) {
@@ -228,11 +214,11 @@ define([
                         return $(link).data("id")
                     };
 
-                    var cancerList = _.map(this.$el.find(".cancer-selector .active a"), afn);
+                    var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function(i) { return i["id"]; });
                     var geneList = _.map(this.$el.find(".gene-selector .item-remover"), afn);
 
-                    var v_options = _.extend({ "genes": geneList, "cancers": cancerList, "hideSelector": true }, view_options || {});
-                    var q_options = _.extend({ "gene": geneList, "cancer": cancerList }, query_options || {});
+                    var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
+                    var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
 
                     return this.viewsByUri($target, $target.data("source"), view_name, v_options, q_options);
                 }
@@ -339,23 +325,6 @@ define([
                 });
             },
 
-            loadTumorTypes: function (json) {
-                var UL = this.$el.find(".cancer-selector");
-                var tumor_types = WebApp.Lookups.TumorTypes.get("tumor_types")
-                _.each(tumor_types, function (obj, key) {
-                    UL.append(LineItemTpl({"li_class": "active", "a_class": "toggle-active", "id": key, "label": key, "title": obj.label }));
-                });
-
-                UL.find(".toggle-active").click(function (e) {
-                    $(e.target).parent().toggleClass("active");
-                    var notactive = UL.find("li:not(.active)");
-                    notactive.detach();
-                    UL.append(notactive);
-                });
-
-                UL.sortable();
-            },
-
             initGeneTypeahead: function (txt) {
                 var genelist = txt.trim().split("\n");
 
@@ -413,9 +382,10 @@ define([
                     return $(link).data("id")
                 };
 
+                var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function(i) { return i["id"]; });
                 return {
                     "genes": _.map(this.$el.find(".gene-selector .item-remover"), afn),
-                    "cancers": _.map(this.$el.find(".cancer-selector .active a"), afn),
+                    "tumor_types": tumor_type_list,
                     "maps": openMaps
                 }
             }

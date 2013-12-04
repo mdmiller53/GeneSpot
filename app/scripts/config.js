@@ -16,7 +16,8 @@ require.config({
         'json2' : '../bower_components/require-handlebars-plugin/hbs/json2',
         'i18nprecompile' : '../bower_components/require-handlebars-plugin/hbs/i18nprecompile',
         vq : '../bower_components/visquick/vq',
-        "jsPlumb" : '../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min'
+        "jsPlumb" : '../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min',
+        "bootstrap-dropdown-checkbox" : "../bower_components/bootstrap-dropdown-checkbox/js/bootstrap-dropdown-checkbox"
     },
     shim: {
         underscore : {

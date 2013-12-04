@@ -2,6 +2,7 @@ define   ([
     'jquery',
     'underscore',
     'bootstrap',
+    "bootstrap-dropdown-checkbox",
 
     'hbs!templates/topbar',
     'hbs!templates/sign_in_modal',
@@ -12,7 +13,7 @@ define   ([
     'views/cloud_storage_view'
 ],
 
-function ( $, _, Bootstrap,
+function ( $, _, Bootstrap, DropDownCheckbox,
            Template,
            SignInModal,
            HangoutLink,
@@ -31,7 +32,7 @@ return Backbone.View.extend({
 
     initialize:function (options) {
         _.extend(this, options);
-        _.bindAll(this, "initHangoutLink", "initAboutLinks");
+        _.bindAll(this, "initHangoutLink", "initAboutLinks", "initTumorTypes");
 
         this.$el.html(Template());
 
@@ -41,6 +42,7 @@ return Backbone.View.extend({
         });
         _.defer(this.initHangoutLink);
         _.defer(this.initAboutLinks);
+        _.defer(this.initTumorTypes);
 
         this.$el.find(".titled").html(this.Display.get("title") || "AppTemplate");
     },
@@ -109,6 +111,19 @@ return Backbone.View.extend({
         });
 
         $.ajax({ url:"svc/auth/whoami", method:"GET", context:this, success:addAuthProviders });
+    },
+
+    initTumorTypes: function() {
+        var data = _.map(WebApp.Lookups.TumorTypes.get("tumor_types"), function(obj, key) {
+            return { "label": key + " :: " + obj.label, "isChecked": obj.isSelected, "id": key };
+        });
+        var hasChecks = _.find(data, function(item) { return item.isChecked; });
+        if (_.isUndefined(hasChecks)) _.first(data).isChecked = true;
+
+        $(".tumor-types-selector").dropdownCheckbox({ "data": data, "title": "Tumor Types" });
+        $(".tumor-types-selector").find(":checkbox").change(function(e) {
+            WebApp.Events.trigger("tumor-types-selector-change", e);
+        });
     }
 });
 

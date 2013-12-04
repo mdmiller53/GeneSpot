@@ -89,12 +89,12 @@ define([
 
             initialize: function (options) {
                 _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "viewsByUri", "closeMap", "zoom");
-                _.bindAll(this, "loadCancerList", "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "loadTumorTypes", "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
 
-                $.ajax({ url: "svc/data/lookups/cancers", type: "GET", dataType: "text", success: this.loadCancerList });
+                $.ajax({ url: "configurations/tumor_types.json", type: "GET", dataType: "json", success: this.loadTumorTypes });
                 $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", success: this.initGeneTypeahead });
 
                 this.options.router.Sessions.Producers["atlas_maps"] = this;
@@ -339,11 +339,10 @@ define([
                 });
             },
 
-            loadCancerList: function (txt) {
-                var cancerList = txt.trim().split("\n");
+            loadTumorTypes: function (json) {
                 var UL = this.$el.find(".cancer-selector");
-                _.each(cancerList, function (cancer) {
-                    UL.append(LineItemTpl({"li_class": "active", "a_class": "toggle-active", "id": cancer, "label": cancer}));
+                _.each(json["tumor_types"], function (obj, key) {
+                    UL.append(LineItemTpl({"li_class": "active", "a_class": "toggle-active", "id": key, "label": key, "title": obj.label }));
                 });
 
                 UL.find(".toggle-active").click(function (e) {

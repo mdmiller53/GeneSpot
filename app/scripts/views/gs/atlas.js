@@ -94,7 +94,6 @@ define([
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
 
-                $.ajax({ url: "configurations/tumor_types.json", type: "GET", dataType: "json", success: this.loadTumorTypes });
                 $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", success: this.initGeneTypeahead });
 
                 this.options.router.Sessions.Producers["atlas_maps"] = this;
@@ -102,6 +101,7 @@ define([
 
                 this.registerViews();
                 this.registerModels();
+                this.loadTumorTypes();
             },
 
             registerViews: function () {
@@ -341,7 +341,8 @@ define([
 
             loadTumorTypes: function (json) {
                 var UL = this.$el.find(".cancer-selector");
-                _.each(json["tumor_types"], function (obj, key) {
+                var tumor_types = WebApp.Lookups.TumorTypes.get("tumor_types")
+                _.each(tumor_types, function (obj, key) {
                     UL.append(LineItemTpl({"li_class": "active", "a_class": "toggle-active", "id": key, "label": key, "title": obj.label }));
                 });
 

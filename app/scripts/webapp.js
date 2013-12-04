@@ -16,7 +16,7 @@ function ( $,        _,            Backbone,   AppRouter,
            ItemGridView
     ) {
 
-    var obj = {
+    WebApp = {
         Events: _.extend(Backbone.Events),
 
         Annotations: {},
@@ -44,7 +44,8 @@ function ( $,        _,            Backbone,   AppRouter,
         },
         Lookups:{
             Chromosomes: new AnnotationsModel({ url:"svc/data/lookups/chromosomes" }),
-            Labels:{}
+            Labels:{},
+            TumorTypes: new Backbone.Model()
         },
         Display:new Backbone.Model(),
         Datamodel:new Backbone.Model(),
@@ -55,7 +56,7 @@ function ( $,        _,            Backbone,   AppRouter,
         }
     };
 
-    obj.startRouter = function() {
+    WebApp.startRouter = function() {
         this.Router = new AppRouter({
             Annotations: this.Annotations,
             Datamodel: this.Datamodel,
@@ -72,7 +73,7 @@ function ( $,        _,            Backbone,   AppRouter,
         this.Events.trigger("ready");
     };
 
-    obj.startupUI = function() {
+    WebApp.startupUI = function() {
         var that = this;
 
         $.ajax({
@@ -89,7 +90,7 @@ function ( $,        _,            Backbone,   AppRouter,
         });
     };
 
-    obj.initialize = function() {
+    WebApp.initialize = function() {
         var that = this;
 
         this.Display.fetch({
@@ -108,11 +109,11 @@ function ( $,        _,            Backbone,   AppRouter,
         this.Lookups.Chromosomes.fetch({
             dataType: "text"
         });
+
+        this.Lookups.TumorTypes.fetch({ "url": "configurations/tumor_types.json" });
     };
 
-    _.bindAll(obj, 'startRouter', 'startupUI', 'initialize');
+    _.bindAll(WebApp, 'startRouter', 'startupUI', 'initialize');
 
-    return obj;
-
-// end define
+    return WebApp;
 });

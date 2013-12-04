@@ -14,11 +14,6 @@
                     "id": "mutsig_grid",
                     "label": "Selected Genes",
                     "source": "datamodel/mutations/mutsig_rankings"
-                },
-                {
-                    "id": "mutsig_top_genes",
-                    "label": "Top 20",
-                    "source": "datamodel/mutations/mutsig_top20"
                 }
             ]
         },
@@ -40,7 +35,7 @@
         {
             "id": "seqpeek_protein_mutations",
             "label": "Protein Mutations Per Cancer Type",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
                 "top": 300,
                 "left": 20
@@ -50,13 +45,18 @@
                     "id": "seqpeek",
                     "label": "SeqPeek",
                     "source": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
+                },
+                {
+                    "id": "mutsig_top_genes",
+                    "label": "Top 20",
+                    "source": "datamodel/mutations/mutsig_top20"
                 }
             ]
         },
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 150,
                 "left": 400
@@ -118,7 +118,7 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 50,
                 "left": 100

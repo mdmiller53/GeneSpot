@@ -3,17 +3,20 @@
         "BLCA": {
             "label": "Bladder Urothelial Carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FFFFF",
+            "isSelected": true
         },
         "BRCA": {
             "label": "Breast invasive carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FFFFF",
+            "isSelected": true
         },
         "CESC": {
             "label": "Cervical squamous cell carcinoma and endocervical adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FFFFF",
+            "isSelected": true
         },
         "COAD": {
             "label": "Colon adenocarcinoma",

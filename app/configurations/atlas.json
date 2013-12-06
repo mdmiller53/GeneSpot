@@ -71,16 +71,22 @@
             ]
         },
         {
-            "label": "Copy Number",
+            "label": "Gistic Copy Number Focal Data",
             "isOpen": true,
             "position": {
-                "top": 100,
-                "left": 100
+                "top": 50,
+                "left": 50
             },
             "views": [
                 {
                     "view": "stacksvis",
-                    "label": "Gistic Focal Data",
+                    "label": "Heatmap",
+                    "source": "datamodel/copy_number/copy_number_gistic2",
+                    "annotations": "datamodel/copy_number/copy_number_qvalue"
+                },
+                {
+                    "view": "merged_sources_per_tumor_type",
+                    "label": "Data",
                     "source": "datamodel/copy_number/copy_number_gistic2",
                     "annotations": "datamodel/copy_number/copy_number_qvalue"
                 }

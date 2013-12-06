@@ -11,13 +11,14 @@ define([
     "views/gs/mutsig_grid_view",
     "views/gs/mutsig_top_genes_view",
     "views/gs/stacksvis",
+    "views/gs/merged_sources_per_tumor_type",
     "models/gs/mutations_interpro",
     "models/gs/minigraph",
     "models/gs/by_tumor_type"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView,
+              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView, MergedSourcesPerTumorTypeView,
               MutationsModel, MiniGraphModel, ByTumorTypeModel) {
 
         return Backbone.View.extend({
@@ -106,6 +107,7 @@ define([
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
+                WebApp.Views["merged_sources_per_tumor_type"] = MergedSourcesPerTumorTypeView;
             },
 
             registerModels: function() {

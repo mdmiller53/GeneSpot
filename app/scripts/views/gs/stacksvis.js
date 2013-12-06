@@ -57,8 +57,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     return { "tumor_type": key, "items": _.compact(annotated_items), "numberOfItems": annotated_items.length };
                 }, this);
 
-                this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
-                _.each(_.pluck(items_by_tumor_type, "tumor_type"), function(tumor_type) {
+                var tumor_types = _.pluck(items_by_tumor_type, "tumor_type");
+                this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "tumor_types": tumor_types }));
+                _.each(tumor_types, function(tumor_type) {
                     this.renderGraph(tumor_type, this.$el.find(".heatmap-" + tumor_type));
                 }, this);
             },

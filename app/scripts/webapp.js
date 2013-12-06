@@ -25,11 +25,7 @@ function ( $,        _,            Backbone,   AppRouter,
             "Annotations": AnnotationsModel,
             "Mappings": MappingsModel,
             "FeatureMatrix": FeatureMatrixModel,
-            "Default":Backbone.Model.extend({
-                url: function() {
-                    return this.get("data_uri");
-                }
-            })
+            "Default":new Backbone.Model()
         },
         ViewMappings:{
             "Annotations":[

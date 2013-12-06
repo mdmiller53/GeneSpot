@@ -117,7 +117,7 @@ return Backbone.Router.extend({
         var Model = this.Models[modelName || "Default"];
 
         var model_optns = _.extend(options || {}, {
-            "data_uri": "svc/" + serviceUri,
+            "data_uri": "svc/" + serviceUri, // deprecate data_uri
             "analysis_id": analysis_id,
             "dataset_id": dataset_id,
             "model_unit": model_unit,

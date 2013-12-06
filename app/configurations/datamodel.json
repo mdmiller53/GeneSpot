@@ -47,6 +47,20 @@
                     "model": "FeatureMatrix"
                 }
             }
+        },
+        "copy_number": {
+            "label": "Copy Number Data",
+            "catalog": {
+                "copy_number_gistic2": {
+                    "label": "Copy Number Gistic (13sep)",
+                    "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
+                    "model": "ByTumorType"
+                },
+                "copy_number_qvalue": {
+                    "label": "Copy Number Q-Values",
+                    "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"
+                }
+            }
         }
     }
 }

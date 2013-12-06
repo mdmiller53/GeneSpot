@@ -10,13 +10,15 @@ define([
     "views/gs/minigraph",
     "views/gs/mutsig_grid_view",
     "views/gs/mutsig_top_genes_view",
+    "views/gs/stacksvis",
     "models/gs/mutations_interpro",
-    "models/gs/minigraph"
+    "models/gs/minigraph",
+    "models/gs/by_tumor_type"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView,
-              MutationsModel, MiniGraphModel) {
+              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView,
+              MutationsModel, MiniGraphModel, ByTumorTypeModel) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -97,19 +99,19 @@ define([
             },
 
             registerViews: function () {
-                var viewRegistry = this.options.router.Views;
-                viewRegistry["atlas_quick_tutorial"] = QuickTutorialView;
-                viewRegistry["atlas_maptext"] = MapTextView;
-                viewRegistry["seqpeek"] = SeqPeekView;
-                viewRegistry["minigraph"] = MiniGraphView;
-                viewRegistry["mutsig_grid"] = MutsigGridView;
-                viewRegistry["mutsig_top_genes"] = MutsigTopGenesView;
+                WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
+                WebApp.Views["atlas_maptext"] = MapTextView;
+                WebApp.Views["seqpeek"] = SeqPeekView;
+                WebApp.Views["minigraph"] = MiniGraphView;
+                WebApp.Views["mutsig_grid"] = MutsigGridView;
+                WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
+                WebApp.Views["stacksvis"] = StacksVisView;
             },
 
             registerModels: function() {
-                var modelRegistry = this.options.router.Models;
-                modelRegistry["Mutations"] = MutationsModel;
-                modelRegistry["MiniGraph"] = MiniGraphModel;
+                WebApp.Models["Mutations"] = MutationsModel;
+                WebApp.Models["MiniGraph"] = MiniGraphModel;
+                WebApp.Models["ByTumorType"] = ByTumorTypeModel;
             },
 
             initMaps: function () {
@@ -264,6 +266,7 @@ define([
                     if (serviceUri) {
                         _.defer(function () {
                             model.fetch({
+                                "url": "svc/" + serviceUri,
                                 "data": query,
                                 "traditional": true,
                                 success: function () {

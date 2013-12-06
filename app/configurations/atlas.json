@@ -4,19 +4,19 @@
             "id": "mutsig_ranks",
             "label": "MutSig Ranks",
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 10,
                 "left": 50
             },
             "views": [
                 {
-                    "id": "mutsig_grid",
+                    "view": "mutsig_grid",
                     "label": "Selected Genes",
                     "source": "datamodel/mutations/mutsig_rankings"
                 },
                 {
-                    "id": "mutsig_top_genes",
+                    "view": "mutsig_top_genes",
                     "label": "Top 20",
                     "source": "datamodel/mutations/mutsig_top20"
                 }
@@ -31,7 +31,7 @@
             "disabled": true,
             "views": [
                 {
-                    "id": "pubcrawl_network",
+                    "view": "pubcrawl_network",
                     "label": "Network",
                     "source": "pubcrawl/search/graph"
                 }
@@ -47,7 +47,7 @@
             },
             "views": [
                 {
-                    "id": "seqpeek",
+                    "view": "seqpeek",
                     "label": "SeqPeek",
                     "source": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
                 }
@@ -56,14 +56,14 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 150,
                 "left": 400
             },
             "views": [
                 {
-                    "id": "scatterplot",
+                    "view": "scatterplot",
                     "label": "Feature Selector",
                     "source": "datamodel/feature_matrices/BLCA-SEQ-20131113",
                     "comment": "need to handle multiple tumor types"
@@ -71,46 +71,18 @@
             ]
         },
         {
-            "id": "focal_data",
-            "label": "Copy Number Gistic Focal Data",
-            "isOpen": false,
-            "disabled": true,
+            "label": "Copy Number",
+            "isOpen": true,
             "position": {
-                "top": 360,
-                "left": 380
+                "top": 100,
+                "left": 100
             },
             "views": [
                 {
-                    "id": "stacksvis2",
-                    "label": "StacksVis",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data"
-                },
-                {
-                    "id": "items_grid",
-                    "label": "Provenance",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data_provenance"
-                }
-            ]
-        },
-        {
-            "id": "qvalue_data",
-            "label": "Copy Number Gistic Significance",
-            "isOpen": false,
-            "disabled": true,
-            "position": {
-                "top": 5,
-                "left": 760
-            },
-            "views": [
-                {
-                    "id": "items_grid",
-                    "label": "Q-Values",
-                    "source": "datamodel/copy_number/qvalue_data"
-                },
-                {
-                    "id": "items_grid",
-                    "label": "Provenance",
-                    "source": "datamodel/copy_number/qvalue_provenance"
+                    "view": "stacksvis",
+                    "label": "Gistic Focal Data",
+                    "source": "datamodel/copy_number/copy_number_gistic2",
+                    "annotations": "datamodel/copy_number/copy_number_qvalue"
                 }
             ]
         },
@@ -118,19 +90,17 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 50,
                 "left": 100
             },
             "views": [
                 {
-                    "id": "atlas_quick_tutorial",
                     "view": "atlas_quick_tutorial",
                     "label": "Quick Guide"
                 },
                 {
-                    "id": "atlas_maptext",
                     "view": "atlas_maptext",
                     "label": "Overview",
                     "text": "This tool provides a way to view TCGA data from a gene-centric point-of-view. It includes a number of interactive visualizations, and allows the user to save their current exploration. This application also enables the user to select specific cancers and genes of interest, and load data that is generated from a variety of TCGA analysis.",
@@ -150,7 +120,6 @@
                     ]
                 },
                 {
-                    "id": "atlas_maptext",
                     "view": "atlas_maptext",
                     "label": "Software Releases",
                     "text": "The GeneSpot team follows Agile software practices. Our primary goal is to prioritize new features and bug fixes and rapidly deploy them to users. We welcome you to visit our development sandbox to preview and test new and experimental features.",

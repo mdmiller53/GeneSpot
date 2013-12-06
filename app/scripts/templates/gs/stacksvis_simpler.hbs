@@ -1,37 +1,43 @@
-<div class="stacksvis-container"></div>
-
-<div class="accordion-heading">
-    <a class="accordion-toggle" data-toggle="collapse" href="#accordion-collapse-bottom-{{id}}">Controls <i class="icon-chevron-down"></i></a>
-</div>
-<div id="accordion-collapse-bottom-{{id}}" class="accordion-body collapse">
-    <div class="accordion-inner">
-        <div class="row">
-            <div class="span2">Bar Height</div>
-            <div class="span4 slider_barheight"></div>
+<div>
+    {{#each items_by_tumor_type}}
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" href="#accordion-collapse-{{tumor_type}}-{{id}}">{{tumor_type}} <i class="icon-chevron-down"></i></a>
         </div>
-        <div class="row">
-            <div class="span2">Row Spacing</div>
-            <div class="span4 slider_rowspacing"></div>
+        <div id="accordion-collapse-{{tumor_type}}-{{id}}" class="accordion-body collapse {{#unless @index}}in{{/unless}}">
+            <div class="accordion-inner">
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <td>Gene</td>
+                        <td>Cytoband</td>
+                        <td>Q-Value</td>
+                        <td>Type</td>
+                        <td>Samples (#/%NA)</td>
+                        <td>Deletions (#/%)</td>
+                        <td>Gains (#/%)</td>
+                        <td>Mutations (#/%)</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each items}}
+                    <tr>
+                        <td>{{gene}}</td>
+                        <td>{{cytoband}}</td>
+                        <td>{{q_value}}
+                        <td>{{type}}</td>
+                        <td>{{samples.numberOf}} / {{samples.percentOf}}</td>
+                        <td>{{deletions.numberOf}} / {{deletions.percentOf}}</td>
+                        <td>{{gains.numberOf}} / {{gains.percentOf}}</td>
+                        <td>{{mutations.numberOf}} / {{mutations.percentOf}}</td>
+                    </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+                <div class="heatmap-{{tumor_type}}">
+                    <div class="stacksvis-heatmap"></div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-            <div class="span2">Bar Width</div>
-            <div class="span4 slider_barwidth"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Bar Spacing</div>
-            <div class="span4 slider_barspacing"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Cluster Spacing</div>
-            <div class="span4 slider_clusterspacing"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Label Font Size</div>
-            <div class="span4 slider_fontsize"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Label Width</div>
-            <div class="span4 slider_label_width"></div>
-        </div>
-    </div>
+    {{/each}}
+    </ul>
 </div>

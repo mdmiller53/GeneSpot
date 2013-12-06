@@ -1,8 +1,33 @@
-{{#each tumor_types}}
-<a data-toggle="collapse" href="#collapser-{{.}}-{{../id}}">{{.}} <i class="icon-chevron-down"></i></a>
-<div id="collapser-{{.}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">
-    <div class="heatmap-{{.}}">
+{{#each items_by_tumor_type}}
+<a data-toggle="collapse" href="#collapser-{{tumor_type}}-{{../id}}">{{tumor_type}} <i class="icon-chevron-down"></i></a>
+<div id="collapser-{{tumor_type}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">
+    <div class="heatmap-{{tumor_type}}">
         <div class="stacksvis-heatmap"></div>
     </div>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+        <tr>
+            <td>Gene</td>
+            <td>% NA</td>
+            <td>mutations (#/%)</td>
+            <td>del (#/%)</td>
+            <td>gains (#/%)</td>
+            <td>distribution</td>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each items}}
+        <tr>
+            <td>{{gene}}</td>
+            <td>{{samples.numberOf}} / {{samples.percentOf}}</td>
+            <td>{{deletions.numberOf}} / {{deletions.percentOf}}</td>
+            <td>{{gains.numberOf}} / {{gains.percentOf}}</td>
+            <td>{{mutations.numberOf}} / {{mutations.percentOf}}</td>
+            <td class="stacksvis-row-{{../tumor_type}}-{{gene}}">...</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
 </div>
 {{/each}}

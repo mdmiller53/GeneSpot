@@ -57,9 +57,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     return { "tumor_type": key, "items": _.compact(annotated_items), "numberOfItems": annotated_items.length };
                 }, this);
 
-                var tumor_types = _.pluck(items_by_tumor_type, "tumor_type");
-                this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "tumor_types": tumor_types }));
-                _.each(tumor_types, function(tumor_type) {
+                this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
+                _.each(_.pluck(items_by_tumor_type, "tumor_type"), function(tumor_type) {
                     this.renderGraph(tumor_type, this.$el.find(".heatmap-" + tumor_type));
                 }, this);
             },
@@ -70,13 +69,16 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 if (_.isEmpty(ttModel.COLUMNS)) return;
                 if (_.isEmpty(ttModel.DATA)) return;
 
-                this.rowLabels = this.genes;
+                this.rowLabels = this.options.genes;
 
                 var columns_by_cluster = this.getColumnModel(ttModel);
                 var data = {};
                 var cbscale = colorbrewer.RdYlBu[5];
 
+                var gene_row_items = {};
                 _.each(this.rowLabels, function (rowLabel) {
+                    gene_row_items[rowLabel] = ".stacksvis-row-" + tumor_type + "-" + rowLabel;
+
                     var row_idx = ttModel.ROWS.indexOf(rowLabel.toLowerCase());
                     _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
                         if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
@@ -104,7 +106,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     "selectors": {
                         "row": "span3 nav s-row",
                         "heatmap": "span7 s-heatmap"
-                    }
+                    },
+                    "gene_row_items": gene_row_items
                 };
 
                 var vis = Stacksvis(visEl, optns);

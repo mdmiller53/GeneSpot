@@ -126,7 +126,15 @@ return Backbone.Router.extend({
 
         this.fetchAnnotations(dataset_id);
 
-        var model = new Model(model_optns);
+        var model;
+
+        if (_.has(catalog_unit, "new_options") && catalog_unit["new_options"] == true) {
+            model = new Model({}, model_optns);
+        }
+        else {
+            model = new Model(model_optns);
+        }
+
         _.defer(function() {
             model.fetch({
                 success:function () {
@@ -135,6 +143,7 @@ return Backbone.Router.extend({
                 }
             });
         });
+
 
         var view_options = _.extend({"model":model}, (model_unit.view_options || {}), (options || {}));
 

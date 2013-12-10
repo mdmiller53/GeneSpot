@@ -77,7 +77,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
 
                 var gene_row_items = {};
                 _.each(this.rowLabels, function (rowLabel) {
-                    gene_row_items[rowLabel] = ".stacksvis-row-" + tumor_type + "-" + rowLabel;
+                    gene_row_items[rowLabel] = "#stacksvis-row-" + tumor_type + "-" + rowLabel;
 
                     var row_idx = ttModel.ROWS.indexOf(rowLabel.toLowerCase());
                     _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
@@ -107,7 +107,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                         "row": "span3 nav s-row",
                         "heatmap": "span7 s-heatmap"
                     },
-                    "gene_row_items": gene_row_items
+                    "row_selectors": gene_row_items
                 };
 
                 var vis = Stacksvis(visEl, optns);

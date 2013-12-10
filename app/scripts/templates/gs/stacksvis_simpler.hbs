@@ -4,7 +4,7 @@
     <div class="heatmap-{{tumor_type}}">
         <div class="stacksvis-heatmap"></div>
     </div>
-    <table class="table table-striped table-bordered table-hover table-condensed">
+    <table class="table table-bordered table-condensed">
         <thead>
         <tr>
             <td>Gene</td>
@@ -23,7 +23,7 @@
             <td>{{deletions.numberOf}} / {{deletions.percentOf}}</td>
             <td>{{gains.numberOf}} / {{gains.percentOf}}</td>
             <td>{{mutations.numberOf}} / {{mutations.percentOf}}</td>
-            <td class="stacksvis-row-{{../tumor_type}}-{{gene}}">...</td>
+            <td id="stacksvis-row-{{../tumor_type}}-{{gene}}"></td>
         </tr>
         {{/each}}
         </tbody>

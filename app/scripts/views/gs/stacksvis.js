@@ -89,24 +89,10 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }, this);
 
                 var optns = {
-                    "label_width": 50,
                     "vertical_padding": 1,
                     "highlight_fill": colorbrewer.RdYlGn[3][2],
-                    "color_fn": function (d) {
-                        return d ? d.colorscale : "white";
-                    },
                     "columns_by_cluster": columns_by_cluster,
-                    "cluster_labels": _.keys(columns_by_cluster),
                     "row_labels": this.rowLabels,
-                    spacing: {
-                        column: 1,
-                        row: 1,
-                        cluster: 0
-                    },
-                    "selectors": {
-                        "row": "span3 nav s-row",
-                        "heatmap": "span7 s-heatmap"
-                    },
                     "row_selectors": gene_row_items
                 };
 
@@ -116,7 +102,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                         "row": ttModel.ROWS,
                         "column": ttModel.COLUMNS
                     },
-                    "data": ttModel.DATA
+                    "data": data
                 });
             },
 

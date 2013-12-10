@@ -260,7 +260,17 @@ define([
                         "catalog_unit": catalog_unit
                     });
 
-                    var model = new Model(model_optns);
+                    //var model = new Model(model_optns);
+
+                    var model;
+
+                    if (_.has(catalog_unit, "new_options") && catalog_unit["new_options"] == true) {
+                        model = new Model({}, model_optns);
+                    }
+                    else {
+                        model = new Model(model_optns);
+                    }
+
                     if (serviceUri) {
                         _.defer(function () {
                             model.fetch({

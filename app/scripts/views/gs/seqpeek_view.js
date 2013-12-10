@@ -77,8 +77,6 @@ function
         },
 
         initCancerSelector: function(txt) {
-            //var cancers = txt.trim().split("\n");
-            //var cancers = this.StaticData.cancers;
             var cancers = this.cancers,
                 selected_cancers = this.cancers;
 
@@ -197,9 +195,12 @@ function
             var sample_info = this.findSampleNumbersByLocation(all_mutations);
 
             _.each(data.cancer_subtypes, function(track) {
+                var mutsig_rank = data.mutsig[track.label.toLowerCase()].rank,
+                    label = mutsig_rank + " " + track.label;
+
                 tracks_array.push({
                     type: 'samples',
-                    label: track.label,
+                    label: label,
                     mutations: _.filter(track.mutations, function(d) {
                         return d.uniprot_id != 'UNIPROT_FAIL';
                     }),
@@ -338,7 +339,7 @@ function
                     horizontal_padding: 0,
                     vertical_padding: 20
                 },
-                band_label_width: 100,
+                band_label_width: 140,
                 tooltips: {
                     interpro: {
                         items: {

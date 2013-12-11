@@ -81,8 +81,7 @@
                 {
                     "view": "stacksvis",
                     "label": "Heatmap",
-                    "source": "datamodel/copy_number/copy_number_gistic2",
-                    "annotations": "datamodel/copy_number/copy_number_qvalue"
+                    "source": "datamodel/copy_number/copy_number_gistic2"
                 },
                 {
                     "view": "merged_sources_per_tumor_type",

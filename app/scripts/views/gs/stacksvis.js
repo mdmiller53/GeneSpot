@@ -1,5 +1,5 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "hbs!templates/line_item", "stacksvis", "colorbrewer"],
-    function ($, _, Backbone, StacksVisTpl, LineItemTpl) {
+define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "stacksvis", "colorbrewer"],
+    function ($, _, Backbone, StacksVisTpl) {
         return Backbone.View.extend({
             "annotations": new Backbone.Model(),
 
@@ -9,6 +9,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 _.bindAll(this, "renderView", "renderGraph", "getColumnModel");
 
                 if (this.options.annotations) {
+                    // TODO : Move out to atlas.js
                     var parts = this.options.annotations.split("/");
                     var annotations_url = "svc/" + WebApp.Datamodel.get(parts[0])[parts[1]]["catalog"][parts[2]]["service"];
                     this.annotations.fetch({
@@ -84,7 +85,12 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                         if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
                         var columnLabel = ttModel.COLUMNS[cellIdx].trim();
                         if (!data[columnLabel]) data[columnLabel] = {};
-                        data[columnLabel][rowLabel] = { "value": cell.value, "row": rowLabel, "colorscale": cbscale[cell.value], "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig };
+                        data[columnLabel][rowLabel] = {
+                            "value": cell.value,
+                            "row": rowLabel,
+                            "colorscale": cbscale[cell.value],
+                            "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig
+                        };
                     }, this);
                 }, this);
 

@@ -4,8 +4,6 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             "annotations": new Backbone.Model(),
 
             "initialize": function (options) {
-                console.log("stacksvis.initialize");
-
                 _.bindAll(this, "renderView", "renderGraph", "getColumnModel");
 
                 if (this.options.annotations) {
@@ -70,7 +68,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 if (_.isEmpty(ttModel.COLUMNS)) return;
                 if (_.isEmpty(ttModel.DATA)) return;
 
-                this.rowLabels = this.options.genes;
+                this.rowLabels = _.map(this.options.genes, function(g) {
+                    return g.toLowerCase(); // TODO: not good
+                });
 
                 var columns_by_cluster = this.getColumnModel(ttModel);
                 var data = {};

@@ -41,9 +41,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }, this);
 
                 this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
-                _.each(_.pluck(items_by_tumor_type, "tumor_type"), function (tumor_type) {
-                    this.renderGraph(tumor_type);
-                }, this);
+                _.each(_.pluck(items_by_tumor_type, "tumor_type"), this.renderGraph, this);
             },
 
             "renderGraph": function (tumor_type) {

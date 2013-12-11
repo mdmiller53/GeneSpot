@@ -6,10 +6,12 @@
             "catalog": {
                 "Protein_Mutations_Per_Cancer_Type": {
                     "label": "Protein Mutations Per Cancer Type",
-                    "service": "datastores/mutations/interpro/mutations",
-                    "protein_db": "datastores/mutations/interpro/interpro",
+                    "service": "datastores/mutations/qed_lookups/mutations_pancan",
+                    "protein_db": "datastores/interpro/interpro/interpro",
+                    "mutsig_rankings_service": "datastores/mutations/qed_lookups/mutsig_rankings",
                     "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
                     "model": "Mutations",
+                    "new_options": true,
                     "lookups": ["genes", "cancers"],
                     "view_options": {
                         "default_cancer_types": ["UCEC", "BRCA", "GBM"]

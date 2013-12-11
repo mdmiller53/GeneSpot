@@ -1,38 +1,6 @@
 {
     "maps": [
         {
-            "id": "mutsig_ranks",
-            "label": "MutSig Ranks",
-            "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
-            "isOpen": true,
-            "position": {
-                "top": 10,
-                "left": 50
-            },
-            "views": [
-                {
-                    "id": "mutsig_grid",
-                    "label": "Selected Genes",
-                    "source": "datamodel/mutations/mutsig_rankings"
-                }
-            ]
-        },
-        {
-            "id": "pubcrawl_lit_search",
-            "label": "Pubcrawl Literature Search",
-            "links": {
-                "home": "http://pubcrawl.systemsbiology.net"
-            },
-            "disabled": true,
-            "views": [
-                {
-                    "id": "pubcrawl_network",
-                    "label": "Network",
-                    "source": "pubcrawl/search/graph"
-                }
-            ]
-        },
-        {
             "id": "seqpeek_protein_mutations",
             "label": "Protein Mutations Per Cancer Type",
             "isOpen": true,
@@ -53,67 +21,7 @@
                 }
             ]
         },
-        {
-            "id": "sample_distributions",
-            "label": "Sample Distributions",
-            "isOpen": false,
-            "position": {
-                "top": 150,
-                "left": 400
-            },
-            "views": [
-                {
-                    "id": "scatterplot",
-                    "label": "Feature Selector",
-                    "source": "datamodel/feature_matrices/BLCA-SEQ-20131113",
-                    "comment": "need to handle multiple tumor types"
-                }
-            ]
-        },
-        {
-            "id": "focal_data",
-            "label": "Copy Number Gistic Focal Data",
-            "isOpen": false,
-            "disabled": true,
-            "position": {
-                "top": 360,
-                "left": 380
-            },
-            "views": [
-                {
-                    "id": "stacksvis2",
-                    "label": "StacksVis",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data"
-                },
-                {
-                    "id": "items_grid",
-                    "label": "Provenance",
-                    "source": "datamodel/copyNumber_Gistic2.13sep/focal_data_provenance"
-                }
-            ]
-        },
-        {
-            "id": "qvalue_data",
-            "label": "Copy Number Gistic Significance",
-            "isOpen": false,
-            "disabled": true,
-            "position": {
-                "top": 5,
-                "left": 760
-            },
-            "views": [
-                {
-                    "id": "items_grid",
-                    "label": "Q-Values",
-                    "source": "datamodel/copy_number/qvalue_data"
-                },
-                {
-                    "id": "items_grid",
-                    "label": "Provenance",
-                    "source": "datamodel/copy_number/qvalue_provenance"
-                }
-            ]
-        },
+
         {
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",

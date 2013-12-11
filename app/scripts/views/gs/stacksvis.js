@@ -1,74 +1,58 @@
 define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "stacksvis", "colorbrewer"],
     function ($, _, Backbone, StacksVisTpl) {
         return Backbone.View.extend({
-            "annotations": new Backbone.Model(),
 
             "initialize": function (options) {
                 _.bindAll(this, "renderView", "renderGraph", "getColumnModel");
-
-                if (this.options.annotations) {
-                    // TODO : Move out to atlas.js
-                    var parts = this.options.annotations.split("/");
-                    var annotations_url = "svc/" + WebApp.Datamodel.get(parts[0])[parts[1]]["catalog"][parts[2]]["service"];
-                    this.annotations.fetch({
-                        "url": annotations_url,
-                        "async": false,
-                        "dataType": "json",
-                        "traditional": true,
-                        "data": {
-                            "gene": this.options.genes,
-                            "cancer": this.options.cancers
-                        }
-                    });
-                }
 
                 this.model.on("load", this.renderView);
             },
 
             "renderView": function () {
                 var items_by_cancer = _.groupBy(this.model.get("items"), "cancer");
-                var annotations_by_tumor_types = _.groupBy(this.annotations.get("items"), "cancer");
-                var items_by_tumor_type = _.map(items_by_cancer, function (items, key) {
-                    var annotations_by_genes = _.groupBy(annotations_by_tumor_types[key], "gene");
+                var items_by_tumor_type = _.map(items_by_cancer, function (items, cancer) {
                     var annotated_items = _.map(items, function (item) {
-                        if (item.values) {
-                            item.samples = {
-                                numberOf: item.values.length,
-                                percentOf: item.values.length
+                        return _.extend(item, {
+                            "samples": {
+                                "numberOf": item.values.length,
+                                "percentOf": item.values.length
+                            },
+                            "deletions": {
+                                "numberOf": item.values.length,
+                                "percentOf": item.values.length
+                            },
+                            "gains": {
+                                "numberOf": item.values.length,
+                                "percentOf": item.values.length
+                            },
+                            "mutations": {
+                                "numberOf": item.values.length,
+                                "percentOf": item.values.length
                             }
-                            item.deletions = {
-                                numberOf: item.values.length,
-                                percentOf: item.values.length
-                            }
-                            item.gains = {
-                                numberOf: item.values.length,
-                                percentOf: item.values.length
-                            }
-                            item.mutations = {
-                                numberOf: item.values.length,
-                                percentOf: item.values.length
-                            }
-                        }
+                        })
+                    });
 
-                        var annotations_by_gene = annotations_by_genes[item.gene];
-                        if (annotations_by_gene) return _.extend(annotations_by_gene[0], item);
-                    }, this);
-                    return { "tumor_type": key, "items": _.compact(annotated_items), "numberOfItems": annotated_items.length };
+                    return {
+                        "tumor_type": cancer,
+                        "items": _.sortBy(annotated_items, function(item) {
+                            return this.options.genes.indexOf(item["gene"]);
+                        }, this)
+                    }
                 }, this);
 
                 this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
-                _.each(_.pluck(items_by_tumor_type, "tumor_type"), function(tumor_type) {
-                    this.renderGraph(tumor_type, this.$el.find(".heatmap-" + tumor_type));
+                _.each(_.pluck(items_by_tumor_type, "tumor_type"), function (tumor_type) {
+                    this.renderGraph(tumor_type);
                 }, this);
             },
 
-            "renderGraph": function (tumor_type, visEl) {
+            "renderGraph": function (tumor_type) {
                 var ttModel = this.model.get("BY_TUMOR_TYPE")[tumor_type];
                 if (_.isEmpty(ttModel.ROWS)) return;
                 if (_.isEmpty(ttModel.COLUMNS)) return;
                 if (_.isEmpty(ttModel.DATA)) return;
 
-                this.rowLabels = _.map(this.options.genes, function(g) {
+                this.rowLabels = _.map(this.options.genes, function (g) {
                     return g.toLowerCase(); // TODO: not good
                 });
 
@@ -102,7 +86,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     "row_selectors": gene_row_items
                 };
 
-                var vis = Stacksvis(visEl, optns);
+                var vis = Stacksvis(this.$el.find(".heatmap-" + tumor_type), optns);
                 vis.draw({
                     "dimensions": {
                         "row": ttModel.ROWS,

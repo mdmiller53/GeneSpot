@@ -107,7 +107,7 @@ return Backbone.Model.extend({
             context: this,
             dataType: 'json',
             data: query
-        })
+        });
     },
 
 

@@ -7,16 +7,18 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
+    "views/gs/seqpeek_view_v2",
     "views/gs/minigraph",
     "views/gs/mutsig_grid_view",
     "views/gs/mutsig_top_genes_view",
     "models/gs/mutations_interpro",
+    "models/gs/mutations_map",
     "models/gs/minigraph"
 ],
     function ($, _, Backbone,
               AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView,
-              MutationsModel, MiniGraphModel) {
+              QuickTutorialView, MapTextView, SeqPeekView, SeqPeekViewV2, MiniGraphView, MutsigGridView, MutsigTopGenesView,
+              MutationsModel, MutationsMapModel, MiniGraphModel) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -101,6 +103,7 @@ define([
                 viewRegistry["atlas_quick_tutorial"] = QuickTutorialView;
                 viewRegistry["atlas_maptext"] = MapTextView;
                 viewRegistry["seqpeek"] = SeqPeekView;
+                viewRegistry["seqpeekv2"] = SeqPeekViewV2;
                 viewRegistry["minigraph"] = MiniGraphView;
                 viewRegistry["mutsig_grid"] = MutsigGridView;
                 viewRegistry["mutsig_top_genes"] = MutsigTopGenesView;
@@ -109,6 +112,7 @@ define([
             registerModels: function() {
                 var modelRegistry = this.options.router.Models;
                 modelRegistry["Mutations"] = MutationsModel;
+                modelRegistry["MutationsMap"] = MutationsMapModel;
                 modelRegistry["MiniGraph"] = MiniGraphModel;
             },
 

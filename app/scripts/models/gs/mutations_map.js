@@ -8,9 +8,8 @@ define(
     return Backbone.Model.extend({
         initialize: function (attributes, options) {
             this.options = options;
-            this.data = {
-                mutations: [],
-                subtype_map: {}
+            this.loaded_data = {
+                mutations: {}
             };
 
             _.bindAll(this, "parseSingleCancerMutations", "parseInterpro", "parseMutsig", "parseFeatures");
@@ -19,7 +18,7 @@ define(
         parseSingleCancerMutations: function(cancer, result) {
             var items = result[0].items;
             if (items.length > 0) {
-                this.data.subtype_map[cancer] = items;
+                this.loaded_data.mutations[cancer.toLowerCase()] = items;
             }
         },
 
@@ -30,7 +29,7 @@ define(
         parseMutsig: function(cancer_list, result) {
             var items = result[0].items;
 
-            this.data.mutsig = _.reduce(items, function(memo, rank_data) {
+            this.loaded_data.mutsig = _.reduce(items, function(memo, rank_data) {
                 memo[rank_data.cancer] = rank_data;
                 return memo;
             }, {});
@@ -38,7 +37,7 @@ define(
 
         parseFeatures: function(cancer_list, result) {
             var items = result[0].items;
-            this.data.features = _.reduce(items, function(memo, feature) {
+            this.loaded_data.features = _.reduce(items, function(memo, feature) {
                 if (!_.has(memo, feature.cancer)) {
                     memo[feature.cancer] = [];
                 }
@@ -142,8 +141,8 @@ define(
                     parsers[i](arguments[i]);
                 }
 
-                that.set(that.data);
-                that.trigger("load");
+                that.set(that.loaded_data);
+                //that.trigger("update");
             });
         }
     });

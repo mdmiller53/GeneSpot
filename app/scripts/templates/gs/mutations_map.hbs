@@ -2,3 +2,23 @@
     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><h4>{{selected_gene}} <b class="caret"></b></h4></a>
     <ul class="dropdown-menu seqpeek-gene-selector"></ul>
 </div>
+<table class="table table-bordered table-condensed">
+    <thead>
+    <tr>
+        <td>Tumor</td>
+        <td>MutSig rank</td>
+        <td>samples (#/%)</td>
+        <td>track</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each items}}
+        <tr>
+            <td>{{tumor_type}}</td>
+            <td>{{mutsig_rank}}</td>
+            <td>{{statistics.samples.numberOf}} / {{statistics.samples.totals.percentOf}}</td>
+            <td id="seqpeek-row-{{../tumor_type}}"></td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>

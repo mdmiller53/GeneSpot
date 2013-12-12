@@ -41,6 +41,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }, this);
 
                 this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
+                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "bottom" });
                 _.each(_.pluck(items_by_tumor_type, "tumor_type"), this.renderGraph, this);
             },
 
@@ -60,9 +61,11 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
 
                 var gene_row_items = {};
                 _.each(this.rowLabels, function (rowLabel) {
-                    gene_row_items[rowLabel] = "#stacksvis-row-" + tumor_type + "-" + rowLabel;
+                    var $statsEl = this.$el.find(".stats-" + tumor_type + "-" + rowLabel);
 
-                    var row_idx = ttModel.ROWS.indexOf(rowLabel.toLowerCase());
+                    gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
+
+                    var row_idx = ttModel.ROWS.indexOf(rowLabel);
                     _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
                         if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
                         var columnLabel = ttModel.COLUMNS[cellIdx].trim();
@@ -74,24 +77,30 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                             "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig
                         };
                     }, this);
+
+                    var counts = _.countBy(ttModel.DATA[row_idx], "value");
+                    var totals = ttModel.DATA[row_idx].length;
+                    var lookupPercentage = function (idx) {
+                        var count = counts[idx];
+                        if (count) return (100 * count / totals).toFixed(1) + "%";
+                        return "";
+                    };
+                    $statsEl.find(".stats-samples").html(totals);
+                    $statsEl.find(".stats-0").html(lookupPercentage("0"));
+                    $statsEl.find(".stats-1").html(lookupPercentage("1"));
+                    $statsEl.find(".stats-2").html(lookupPercentage("2"));
+                    $statsEl.find(".stats-3").html(lookupPercentage("3"));
+                    $statsEl.find(".stats-4").html(lookupPercentage("4"));
                 }, this);
 
-                var optns = {
+                var vis = Stacksvis(this.$el, {
                     "vertical_padding": 1,
                     "highlight_fill": colorbrewer.RdYlGn[3][2],
                     "columns_by_cluster": columns_by_cluster,
                     "row_labels": this.rowLabels,
                     "row_selectors": gene_row_items
-                };
-
-                var vis = Stacksvis(this.$el.find(".heatmap-" + tumor_type), optns);
-                vis.draw({
-                    "dimensions": {
-                        "row": ttModel.ROWS,
-                        "column": ttModel.COLUMNS
-                    },
-                    "data": data
                 });
+                vis.draw({ "data": data });
             },
 
             "getColumnModel": function (ttModel) {
@@ -116,7 +125,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 _.each(ttModel.COLUMNS, function (column_name, col_idx) {
                     var column = { "name": column_name.trim(), "cluster": "_", "values": [] };
                     _.each(this.rowLabels, function (row_label) {
-                        var row_idx = ttModel.ROWS.indexOf(row_label.toLowerCase());
+                        var row_idx = ttModel.ROWS.indexOf(row_label);
                         var cell = ttModel.DATA[row_idx][col_idx];
                         if (_.isString(cell.orig)) {
                             cell.orig = cell.orig.trim().toLowerCase();

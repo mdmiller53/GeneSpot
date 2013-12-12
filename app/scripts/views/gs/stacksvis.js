@@ -8,6 +8,15 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 this.model.on("load", this.renderView);
             },
 
+            "events": {
+                "click .global-hider": function(e) {
+                    this.$el.find(".hider-target").toggle();
+                },
+                "click .hider": function(e) {
+                    $(e.target).parents("table").find(".hider-target").toggle();
+                }
+            },
+
             "renderView": function () {
                 var items_by_cancer = _.groupBy(this.model.get("items"), "cancer");
                 var items_by_tumor_type = _.map(items_by_cancer, function (items, cancer) {

@@ -1,3 +1,7 @@
+<div class="pull-right">
+    <a href="#" class="global-hider hider-target hide" onclick="return false;">Hide Details</a>
+    <a href="#" class="global-hider hider-target" onclick="return false;">Show Details</a>
+</div>
 {{#each items_by_tumor_type}}
 <a data-toggle="collapse" href="#collapser-{{tumor_type}}-{{../id}}">{{tumor_type}} <i class="icon-chevron-down"></i></a>
 <!--<div id="collapser-{{tumor_type}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">-->
@@ -7,13 +11,15 @@
         <tr>
             <td>Gene</td>
             <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="q-value">Q</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Samples">#</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Mutated Samples">Mutd</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Amplifications">Amps</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Gains">Gns</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Diploid Samples">Dpld</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Heterozygous Loss">Htz</a></td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Homozygous Loss">Hmz</a></td>
+            <td class="hider-target"><a href="#" class="hider tooltips" data-toggle="tooltip" onclick="return false;" title="More details">+</a></td>
+            <td class="hider-target hide"><a href="#" class="hider tooltips" data-toggle="tooltip" onclick="return false;" title="Less details">-</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Samples">#</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Mutated Samples">Mutd</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Amplifications">Amps</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Gains">Gns</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Diploid Samples">Dpld</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Heterozygous Loss">Htz</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Homozygous Loss">Hmz</a></td>
             <td></td>
         </tr>
         </thead>
@@ -22,13 +28,15 @@
         <tr class="stats-{{../tumor_type}}-{{gene}}">
             <td>{{gene}}</td>
             <td class="q-values">0.000000</td>
-            <td class="stats-samples"></td>
-            <td class="stats-mutations"></td>
-            <td class="stats-1"></td>
-            <td class="stats-2"></td>
-            <td class="stats-0"></td>
-            <td class="stats-3"></td>
-            <td class="stats-4"></td>
+            <td class="hider-target">&nbsp;</td>
+            <td class="hider-target hide">&nbsp;</td>
+            <td class="hider-target hide stats-samples"></td>
+            <td class="hider-target hide stats-mutations"></td>
+            <td class="hider-target hide stats-1"></td>
+            <td class="hider-target hide stats-2"></td>
+            <td class="hider-target hide stats-0"></td>
+            <td class="hider-target hide stats-3"></td>
+            <td class="hider-target hide stats-4"></td>
             <td class="stats-hm"></td>
         </tr>
         {{/each}}

@@ -12,6 +12,17 @@
             "xforward": true
         },
         {
+            "context" : "/svc/data",
+            "host" : "csacr.systemsbiology.net",
+            "port" : 80,
+            "https" : false,
+            "changeOrigin" : false,
+            "rewrite" : {
+                "^/svc": "/development"
+            },
+            "xforward": true
+        },
+        {
             "context" : "/svc",
             "host" : "localhost",
             "port" : 8000,

@@ -20,30 +20,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             "renderView": function () {
                 var items_by_cancer = _.groupBy(this.model.get("items"), "cancer");
                 var items_by_tumor_type = _.map(items_by_cancer, function (items, cancer) {
-                    var annotated_items = _.map(items, function (item) {
-                        return _.extend(item, {
-                            "samples": {
-                                "numberOf": item.values.length,
-                                "percentOf": item.values.length
-                            },
-                            "deletions": {
-                                "numberOf": item.values.length,
-                                "percentOf": item.values.length
-                            },
-                            "gains": {
-                                "numberOf": item.values.length,
-                                "percentOf": item.values.length
-                            },
-                            "mutations": {
-                                "numberOf": item.values.length,
-                                "percentOf": item.values.length
-                            }
-                        })
-                    });
-
                     return {
                         "tumor_type": cancer,
-                        "items": _.sortBy(annotated_items, function(item) {
+                        "items": _.sortBy(items, function(item) {
                             return this.options.genes.indexOf(item["gene"]);
                         }, this)
                     }

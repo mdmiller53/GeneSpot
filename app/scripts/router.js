@@ -114,7 +114,7 @@ return Backbone.Router.extend({
         var catalog_unit = catalog[dataset_id];
         var modelName = catalog_unit.model;
         var serviceUri = catalog_unit.service || model_unit.service || "data/" + uri;
-        var Model = this.Models[modelName || "Default"];
+        var Model = this.Models[modelName || Backbone.Model];
 
         var model_optns = _.extend(options || {}, {
             "data_uri": "svc/" + serviceUri, // deprecate data_uri

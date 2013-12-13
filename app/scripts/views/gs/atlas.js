@@ -88,7 +88,7 @@ define([
 
                 $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", success: this.initGeneTypeahead });
 
-                this.options.router.Sessions.Producers["atlas_maps"] = this;
+                WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
                 WebApp.Events.on("tumor-types-selector-change", function() {
@@ -126,8 +126,8 @@ define([
                     this.$el.find(".maps-selector").append(LineItemTpl(lit));
                 }, this);
 
-                if (this.options.router.Sessions.Active) {
-                    var session_atlas = this.options.router.Sessions.Active.get("atlas_maps");
+                if (WebApp.Sessions.Active) {
+                    var session_atlas = WebApp.Sessions.Active.get("atlas_maps");
                     if (session_atlas) {
                         if (session_atlas.genes) {
                             var UL = this.$el.find(".gene-selector");
@@ -230,45 +230,45 @@ define([
             },
 
             viewsByUri: function (targetEl, uri, view_name, options, query) {
-                var ViewClass = this.options.router.Views[view_name];
+                var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
-                    var Model = this.options.router.Models["Default"];
-                    var serviceUri;
-                    var analysis_id;
-                    var dataset_id;
+                    var Model = Backbone.Model;
                     var model_unit;
-                    var catalog_unit;
+
+                    var atlas_view_options = this.viewsByUid[$(targetEl).data("uid")] || {};
+                    var model_optns = _.extend(options, atlas_view_options);
+
                     if (uri) {
                         var parts = uri.split("/");
                         var data_root = parts[0];
-                        analysis_id = parts[1];
-                        dataset_id = parts[2];
+                        var analysis_id = parts[1];
+                        var dataset_id = parts[2];
+
                         if (analysis_id && dataset_id) {
-                            model_unit = this.options.router.Datamodel.get(data_root)[analysis_id];
+                            model_optns["analysis_id"] = analysis_id;
+                            model_optns["dataset_id"] = dataset_id;
+
+                            model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
                             if (model_unit && model_unit.catalog) {
-                                catalog_unit = model_unit.catalog[dataset_id];
+                                model_optns["model_unit"] = model_unit;
+
+                                var catalog_unit = model_unit.catalog[dataset_id];
                                 if (catalog_unit) {
-                                    serviceUri = catalog_unit.service || model_unit.service || "data/" + uri;
-                                    Model = this.options.router.Models[model_unit.model || catalog_unit.model || "Default"];
+                                    model_optns["catalog_unit"] = catalog_unit;
+                                    model_optns["data_uri"] = "svc/" + catalog_unit.service || model_unit.service || "data/" + uri;
+
+                                    Model = WebApp.Models[model_unit.model || catalog_unit.model];
                                 }
                             }
                         }
                     }
 
-                    var atlas_view_options = this.viewsByUid[$(targetEl).data("uid")] || {};
-                    var model_optns = _.extend(options, atlas_view_options, {
-                        "data_uri": "svc/" + serviceUri,
-                        "analysis_id": analysis_id,
-                        "dataset_id": dataset_id,
-                        "model_unit": model_unit,
-                        "catalog_unit": catalog_unit
-                    });
-
+                    if (_.isUndefined(Model)) Model = Backbone.Model;
                     var model = new Model(model_optns);
-                    if (serviceUri) {
+                    if (model_optns["data_uri"]) {
                         _.defer(function () {
                             model.fetch({
-                                "url": "svc/" + serviceUri,
+                                "url": model_optns["data_uri"],
                                 "data": query,
                                 "traditional": true,
                                 success: function () {
@@ -289,7 +289,7 @@ define([
                     var view = new ViewClass(view_options);
                     $(targetEl).html(view.render().el);
 
-                    if (serviceUri) return "svc/" + serviceUri + "?" + this.outputTsvQuery(query);
+                    if (model_optns["data_uri"]) return model_optns["data_uri"] + "?" + this.outputTsvQuery(query);
                 }
                 return null;
             },

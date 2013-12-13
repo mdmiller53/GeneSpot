@@ -24,8 +24,7 @@ function ( $,        _,            Backbone,   AppRouter,
             "Catalogs": CatalogModel,
             "Annotations": AnnotationsModel,
             "Mappings": MappingsModel,
-            "FeatureMatrix": FeatureMatrixModel,
-            "Default":new Backbone.Model()
+            "FeatureMatrix": FeatureMatrixModel
         },
         ViewMappings:{
             "Annotations":[

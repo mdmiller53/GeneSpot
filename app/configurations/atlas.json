@@ -95,10 +95,10 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
-                "top": 50,
-                "left": 100
+                "top": 20,
+                "left": 200
             },
             "views": [
                 {

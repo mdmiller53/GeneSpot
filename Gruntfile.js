@@ -8,8 +8,6 @@ var mountFolder = function (connect, dir) {
     return connect.static(require("path").resolve(dir));
 };
 
-var proxySnippet = require("grunt-connect-proxy/lib/utils").proxyRequest;
-
 // # Globbing
 // for performance reasons we"re only matching one level down:  "test/spec/{,*/}*.js"
 // use this if you want to recursively match all subfolders:  "test/spec/**/*.js"
@@ -49,7 +47,7 @@ module.exports = function (grunt) {
                 options: {
                     middleware: function (connect) {
                         return [
-                            proxySnippet,
+                            require("grunt-connect-proxy/lib/utils")["proxyRequest"],
                             require("connect-livereload")({
                                 port: LIVERELOAD_PORT
                             }),

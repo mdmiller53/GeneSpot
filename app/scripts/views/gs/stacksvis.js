@@ -1,11 +1,12 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "stacksvis", "colorbrewer"],
-    function ($, _, Backbone, StacksVisTpl) {
+define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "hbs!templates/gs/q_values_ampdel", "stacksvis", "colorbrewer"],
+    function ($, _, Backbone, StacksVisTpl, QValueTpl) {
         return Backbone.View.extend({
 
             "initialize": function (options) {
-                _.bindAll(this, "renderView", "renderGraph", "getColumnModel");
+                _.bindAll(this, "renderView", "renderQValue", "renderGraph", "getColumnModel");
 
-                this.model.on("load", this.renderView);
+                this.options.models["copy_number"].on("load", this.renderView);
+                this.options.models["q_value"].on("load", this.renderQValue);
             },
 
             "events": {
@@ -18,7 +19,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             },
 
             "renderView": function () {
-                var items_by_cancer = _.groupBy(this.model.get("items"), "cancer");
+                var items_by_cancer = _.groupBy(this.options.models["copy_number"].get("items"), "cancer");
                 var items_by_tumor_type = _.map(items_by_cancer, function (items, cancer) {
                     return {
                         "tumor_type": cancer,
@@ -31,10 +32,30 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
                 this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "bottom" });
                 _.each(_.pluck(items_by_tumor_type, "tumor_type"), this.renderGraph, this);
+
+                this.renderQValue();
+            },
+
+            "renderQValue": function() {
+                if (!this.options.models["q_value"].get("items")) {
+                    console.log("not yet");
+                    return;
+                }
+
+                _.each(_.groupBy(this.options.models["q_value"].get("items"), "cancer"), function(items, tumor_type) {
+                    _.each(_.groupBy(items, "gene"), function(gene_items, gene) {
+                        _.each(gene_items, function(gene_item) {
+                            gene_item[gene_item["type"]] = true;
+                        }, this);
+                        var $qvalues = this.$el.find(".stats-" + tumor_type + "-" + gene);
+                        $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
+                        $qvalues.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "top" });
+                    }, this);
+                }, this);
             },
 
             "renderGraph": function (tumor_type) {
-                var ttModel = this.model.get("BY_TUMOR_TYPE")[tumor_type];
+                var ttModel = this.options.models["copy_number"].get("BY_TUMOR_TYPE")[tumor_type];
                 if (_.isEmpty(ttModel.ROWS)) return;
                 if (_.isEmpty(ttModel.COLUMNS)) return;
                 if (_.isEmpty(ttModel.DATA)) return;

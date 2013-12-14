@@ -21,6 +21,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/per_tumor_type_gri
                     });
                 }
 
+                this.model = this.options.models["default"];
                 this.model.on("load", this.renderView);
             },
 

@@ -1,16 +1,16 @@
 define   ([
-    'jquery',
-    'underscore',
-    'bootstrap',
+    "jquery",
+    "underscore",
+    "bootstrap",
     "bootstrap-dropdown-checkbox",
 
-    'hbs!templates/topbar',
-    'hbs!templates/sign_in_modal',
-    'hbs!templates/hangout_link',
-    'hbs!templates/about_link',
+    "hbs!templates/topbar",
+    "hbs!templates/sign_in_modal",
+    "hbs!templates/hangout_link",
+    "hbs!templates/about_link",
 
-    'views/sign_in',
-    'views/cloud_storage_view'
+    "views/sign_in",
+    "views/cloud_storage_view"
 ],
 
 function ( $, _, Bootstrap, DropDownCheckbox,
@@ -30,8 +30,7 @@ return Backbone.View.extend({
         }
     },
 
-    initialize:function (options) {
-        _.extend(this, options);
+    initialize:function () {
         _.bindAll(this, "initHangoutLink", "initAboutLinks", "initTumorTypes");
 
         this.$el.html(Template());
@@ -44,26 +43,26 @@ return Backbone.View.extend({
         _.defer(this.initAboutLinks);
         _.defer(this.initTumorTypes);
 
-        this.$el.find(".titled").html(this.Display.get("title") || "AppTemplate");
+        this.$el.find(".titled").html(WebApp.Display.get("title") || "AppTemplate");
     },
 
     initHangoutLink: function() {
-        var hangoutUrl = this.Display.get("hangoutUrl");
+        var hangoutUrl = WebApp.Display.get("hangoutUrl");
         if (hangoutUrl) {
             this.$el.find(".hangout-container").html(HangoutLink({ "url": hangoutUrl }));
         }
     },
 
     initAboutLinks: function() {
-        var aboutLinks = this.Display.get("aboutLinks") || [];
+        var aboutLinks = WebApp.Display.get("aboutLinks") || [];
         if (!_.isEmpty(aboutLinks)) {
             var UL = this.$el.find(".about-links");
             UL.empty();
             _.each(aboutLinks, function(aboutLink) {
                 if (aboutLink.divider) {
-                    UL.append("<li class='divider'></li>");
+                    UL.append("<li class=\"divider\"></li>");
                     if (aboutLink.header) {
-                        UL.append("<li class='nav-header'>" + aboutLink.header + "</li>");
+                        UL.append("<li class=\"nav-header\">" + aboutLink.header + "</li>");
                     }
                 } else {
                     UL.append(AboutLink(aboutLink));

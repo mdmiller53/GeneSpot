@@ -18,7 +18,6 @@ define(["jquery", "underscore", "backbone"],
                     subtype_map: {}
                 };
 
-                var service_uri = this.get("data_uri");
                 var protein_db = "svc/" + this.get("catalog_unit")["protein_db"];
                 var successFn = this.parseMutationData;
 
@@ -46,7 +45,7 @@ define(["jquery", "underscore", "backbone"],
                 _.each(cancers, function (cancer_label) {
                     $.ajax({
                         "type": "GET",
-                        "url": service_uri,
+                        "url": this.get("url"),
                         "traditional": true,
                         "data": {
                             "cancer": cancer_label,

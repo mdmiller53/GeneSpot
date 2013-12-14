@@ -25,8 +25,8 @@ define(["jquery", "underscore", "backbone", "bootstrap",
 
             },
 
-            initTopNavBar: function (params) {
-                var topnavbar = new TopNavBar(params);
+            initTopNavBar: function () {
+                var topnavbar = new TopNavBar();
                 $("#navigation-container").append(topnavbar.render().el);
 
                 var dataMenuSectionsView = new DataMenuSections({
@@ -50,11 +50,11 @@ define(["jquery", "underscore", "backbone", "bootstrap",
 
             loadSessionById: function (sessionId) {
                 if (!_.isEmpty(sessionId)) {
-                    var selectedSession = _.find(this.Sessions.All.models, function (m) {
+                    var selectedSession = _.find(WebApp.Sessions.All.models, function (m) {
                         return _.isEqual(m.get("id"), sessionId);
                     });
                     if (selectedSession) {
-                        this.Sessions.Active = selectedSession;
+                        WebApp.Sessions.Active = selectedSession;
                         var route = selectedSession.get("route");
                         if (!_.isEmpty(route)) {
                             this.navigate(route, {trigger: true});
@@ -68,11 +68,11 @@ define(["jquery", "underscore", "backbone", "bootstrap",
             },
 
             fetchAnnotations: function (dataset_id) {
-                if (_.isEmpty(this.Annotations[dataset_id])) {
-                    var annotations = new this.Models.Annotations({
-                            "url": "svc/data/annotations/" + dataset_id + ".json",
-                            "dataType": "json"}
-                    );
+                if (_.isEmpty(WebApp.Annotations[dataset_id])) {
+                    var annotations = new WebApp.Models.Annotations({
+                        "url": "svc/data/annotations/" + dataset_id + ".json",
+                        "dataType": "json"
+                    });
 
                     annotations.fetch({
                         "async": false,
@@ -82,7 +82,7 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                         }
                     });
                 }
-                return this.Annotations[dataset_id];
+                return WebApp.Annotations[dataset_id];
             },
 
             viewsByUri: function (uri, view_name, options) {
@@ -90,16 +90,14 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                 var data_root = parts[0];
                 var analysis_id = parts[1];
                 var dataset_id = parts[2];
-                var model_unit = this.Datamodel.get(data_root)[analysis_id];
+                var model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
                 var catalog = model_unit.catalog;
                 var catalog_unit = catalog[dataset_id];
-                var modelName = catalog_unit.model;
                 var serviceUri = catalog_unit.service || model_unit.service || "data/" + uri;
-                var Model = this.Models[modelName] || Backbone.Model;
+                var Model = catalog_unit.Model || Backbone.Model;
 
                 var model_optns = _.extend(options || {}, {
                     "url": "svc/" + serviceUri,
-                    "data_uri": "svc/" + serviceUri, // deprecate data_uri
                     "analysis_id": analysis_id,
                     "dataset_id": dataset_id,
                     "model_unit": model_unit,
@@ -120,7 +118,7 @@ define(["jquery", "underscore", "backbone", "bootstrap",
 
                 var view_options = _.extend({"model": model}, (model_unit.view_options || {}), (options || {}));
 
-                var ViewClass = this.Views[view_name];
+                var ViewClass = WebApp.Views[view_name];
                 var view = new ViewClass(view_options);
                 this.$el.html(view.render().el);
                 return view;
@@ -129,7 +127,7 @@ define(["jquery", "underscore", "backbone", "bootstrap",
             atlas: function () {
                 var model = new Backbone.Model();
 
-                var view = new AtlasView({ "router": this, "model": model });
+                var view = new AtlasView({ "model": model });
                 this.$el.html(view.render().el);
 
                 model.fetch({

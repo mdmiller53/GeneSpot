@@ -18,7 +18,7 @@ define(["jquery", "underscore", "backbone"],
                     subtype_map: {}
                 };
 
-                var protein_db = "svc/" + this.get("catalog_unit")["protein_db"];
+                var protein_db = "svc/" + this.get("catalog_item")["protein_db"];
                 var successFn = this.parseMutationData;
 
                 var mutationsLoadedFn = _.after(cancers.length, function () {

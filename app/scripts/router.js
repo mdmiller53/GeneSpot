@@ -67,10 +67,10 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                 // TODO
             },
 
-            fetchAnnotations: function (dataset_id) {
-                if (_.isEmpty(WebApp.Annotations[dataset_id])) {
+            fetchAnnotations: function (catalog_key) {
+                if (_.isEmpty(WebApp.Annotations[catalog_key])) {
                     var annotations = new WebApp.Models.Annotations({
-                        "url": "svc/data/annotations/" + dataset_id + ".json",
+                        "url": "svc/data/annotations/" + catalog_key + ".json",
                         "dataType": "json"
                     });
 
@@ -78,45 +78,34 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                         "async": false,
                         "dataType": "json",
                         "success": function () {
-                            WebApp.Annotations[dataset_id] = annotations.get("itemsById");
+                            WebApp.Annotations[catalog_key] = annotations.get("itemsById");
                         }
                     });
                 }
-                return WebApp.Annotations[dataset_id];
+                return WebApp.Annotations[catalog_key];
             },
 
             viewsByUri: function (uri, view_name, options) {
                 var parts = uri.split("/");
-                var data_root = parts[0];
-                var analysis_id = parts[1];
-                var dataset_id = parts[2];
-                var model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
-                var catalog = model_unit.catalog;
-                var catalog_unit = catalog[dataset_id];
-                var serviceUri = catalog_unit.service || model_unit.service || "data/" + uri;
-                var Model = catalog_unit.Model || Backbone.Model;
+                var datamodel_root = parts[0];
+                var domain_key = parts[1];
+                var catalog_key = parts[2];
+                var domain_item = WebApp.Datamodel.get(datamodel_root)[domain_key];
+                var catalog_item = domain_item.catalog[catalog_key];
 
-                var model_optns = _.extend(options || {}, {
-                    "url": "svc/" + serviceUri,
-                    "analysis_id": analysis_id,
-                    "dataset_id": dataset_id,
-                    "model_unit": model_unit,
-                    "catalog_unit": catalog_unit
-                });
+                this.fetchAnnotations(catalog_key);
 
-                this.fetchAnnotations(dataset_id);
-
-                var model = new Model(model_optns);
+                var model = new catalog_item.Model(_.extend(options || {}, { "catalog_item": catalog_item }));
                 _.defer(function () {
                     model.fetch({
-                        "url": model_optns["url"],
+                        "url": catalog_item["url"],
                         success: function () {
                             model.trigger("load");
                         }
                     });
                 });
 
-                var view_options = _.extend({"model": model}, (model_unit.view_options || {}), (options || {}));
+                var view_options = _.extend({"model": model}, (domain_item.view_options || {}), (options || {}));
 
                 var ViewClass = WebApp.Views[view_name];
                 var view = new ViewClass(view_options);

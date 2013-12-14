@@ -95,11 +95,6 @@ define([
                     _.each(this.$el.find(".atlas-map"), this.loadMapData);
                 }, this);
 
-                this.registerViews();
-                this.registerModels();
-            },
-
-            registerViews: function () {
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
@@ -108,12 +103,12 @@ define([
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
                 WebApp.Views["merged_sources_per_tumor_type"] = MergedSourcesPerTumorTypeView;
-            },
 
-            registerModels: function() {
                 WebApp.Models["Mutations"] = MutationsModel;
                 WebApp.Models["MiniGraph"] = MiniGraphModel;
                 WebApp.Models["ByTumorType"] = ByTumorTypeModel;
+
+                console.log("atlas:registered models and views")
             },
 
             initMaps: function () {
@@ -232,72 +227,60 @@ define([
             loadView: function (targetEl, view_name, options, query) {
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
-                    var Model = Backbone.Model;
-
                     var viewDef = this.viewsByUid[$(targetEl).data("uid")];
-                    var data_sources = viewDef.sources || { "default": viewDef.source };
+                    var data_sources = viewDef["sources"] || { "default": viewDef["source"] };
+                    console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources));
+
                     var model_optns = _.extend(options, viewDef || {});
-
                     var models = {};
-                    if (data_sources) {
-                        _.each(data_sources, function(source, key) {
-                            if (_.isUndefined(source)) return;
 
-                            var parts = source.split("/");
-                            var data_root = parts[0];
-                            var analysis_id = parts[1];
-                            var dataset_id = parts[2];
+                    _.each(data_sources, function(datamodelUri, key) {
+                        if (_.isUndefined(datamodelUri)) return;
 
-                            var individual_source = {};
-                            individual_source["analysis_id"] = analysis_id;
-                            individual_source["dataset_id"] = dataset_id;
-                            model_optns[key] = individual_source;
+                        var catalog_item = this.retrieveCatalogItem(datamodelUri);
+                        if (_.isUndefined(catalog_item)) return;
 
-                            var Model;
-                            // TODO : Deal with the case of feature matrices...
-                            if (data_root && analysis_id && dataset_id) {
-                                var model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
-                                individual_source["model_unit"] = model_unit;
-
-                                if (model_unit && model_unit.catalog) {
-                                    var catalog_unit = model_unit.catalog[dataset_id];
-                                    if (catalog_unit) {
-                                        individual_source["catalog_unit"] = catalog_unit;
-                                        individual_source["url"] = "svc/" + catalog_unit.service || model_unit.service || "data/" + uri;
-                                        Model = WebApp.Models[model_unit.model || catalog_unit.model];
+                        var model = models[key] = new catalog_item.Model(model_optns);
+                        if (_.has(catalog_item, "url")) {
+                            _.defer(function () {
+                                model.fetch({
+                                    "url": catalog_item["url"],
+                                    "data": query,
+                                    "traditional": true,
+                                    "success": function () {
+                                        model.trigger("load");
                                     }
-                                }
-                            }
-
-                            Model = Model || Backbone.Model;
-
-                            var model = models[key] = new Model(model_optns);
-                            if (individual_source["url"]) {
-                                _.defer(function () {
-                                    model.fetch({
-                                        "url": individual_source["url"],
-                                        "data": query,
-                                        "traditional": true,
-                                        "success": function () {
-                                            model.trigger("load");
-                                        }
-                                    });
                                 });
-                            } else {
-                                _.defer(function () {
-                                    model.trigger("load");
-                                });
-                            }
+                            });
+                        } else {
+                            _.defer(function () {
+                                model.trigger("load");
+                            });
+                        }
 
-                        }, this);
-                    }
+                    }, this);
 
-                    console.log("loadView(" + view_name + "):" + _.values(data_sources));
                     var view = new ViewClass(_.extend(options, model_optns, {"models": models }));
                     $(targetEl).html(view.render().el);
 
                     // TODO : Specify download links
 //                    if (model_optns["url"]) return model_optns["url"] + "?" + this.outputTsvQuery(query);
+                }
+                return null;
+            },
+
+            retrieveCatalogItem: function(datamodelUri, tumor_type) {
+                var parts = datamodelUri.split("/");
+                var datamodel_root = parts[0];
+                var domain_key = parts[1];
+                var catalog_key = parts[2];
+
+                // TODO : Deal with the case of feature matrices per tumor_type...
+                if (datamodel_root && domain_key && catalog_key) {
+                    var domain_item = WebApp.Datamodel.get(datamodel_root)[domain_key];
+                    if (domain_item && domain_item.catalog) {
+                        return domain_item.catalog[catalog_key];
+                    }
                 }
                 return null;
             },

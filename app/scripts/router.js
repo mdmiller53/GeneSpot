@@ -1,9 +1,9 @@
-define   (['jquery', 'underscore', 'backbone', 'bootstrap',
-    'views/topbar_view',
-    'views/data_menu_modal',
-    'views/data_menu_sections',
-    'views/sessions_view',
-    'views/gs/atlas'
+define   (["jquery", "underscore", "backbone", "bootstrap",
+    "views/topbar_view",
+    "views/data_menu_modal",
+    "views/data_menu_sections",
+    "views/sessions_view",
+    "views/gs/atlas"
 ],
 function ( $,        _,            Backbone, Bootstrap,
            TopNavBar,
@@ -31,17 +31,13 @@ return Backbone.Router.extend({
     },
 
     initTopNavBar:function(params) {
-        var that = this;
-
         var topnavbar = new TopNavBar(params);
         $("#navigation-container").append(topnavbar.render().el);
 
-        var section_ids = _.without(_.keys(this.Datamodel.attributes), "url");
-
         var dataMenuSectionsView = new DataMenuSections({
-            sections: _.map(section_ids, function(section_id) {
+            sections: _.map(_.keys(WebApp.Datamodel.attributes), function(section_id) {
                 return {
-                    data: that.Datamodel.get(section_id),
+                    data: WebApp.Datamodel.get(section_id),
                     id: section_id
                 };
             }),
@@ -50,7 +46,7 @@ return Backbone.Router.extend({
 
         dataMenuSectionsView.on("select-data-item", function(selected) {
             var modalConfig = _.extend({
-                Router: that,
+                Router: this,
                 el: $("#modal-container")
             }, selected);
 
@@ -85,8 +81,6 @@ return Backbone.Router.extend({
     },
 
     fetchAnnotations: function (dataset_id) {
-        var that = this;
-
         if (_.isEmpty(this.Annotations[dataset_id])) {
             var annotations = new this.Models.Annotations({
                     "url":"svc/data/annotations/" + dataset_id + ".json",
@@ -97,7 +91,7 @@ return Backbone.Router.extend({
                 "async":false,
                 "dataType":"json",
                 "success":function () {
-                    that.Annotations[dataset_id] = annotations.get("itemsById");
+                    WebApp.Annotations[dataset_id] = annotations.get("itemsById");
                 }
             });
         }

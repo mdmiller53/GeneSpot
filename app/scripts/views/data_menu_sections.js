@@ -1,7 +1,7 @@
-define   (['jquery', 'underscore', 'backbone',
-    'views/data_menu_section_dropdowns',
-    'views/data_menu_modal',
-    'hbs!templates/data_menu_section_header'
+define   (["jquery", "underscore", "backbone",
+    "views/data_menu_section_dropdowns",
+    "views/data_menu_modal",
+    "hbs!templates/data_menu_section_header"
 ],
 function ( $,        _,            Backbone,
            DataMenuDropdownsView,
@@ -9,7 +9,7 @@ function ( $,        _,            Backbone,
            SectionHeaderTemplate) {
 
 return Backbone.View.extend({
-    tagName: 'ul',
+    tagName: "ul",
     className: "data-menu dropdown-menu",
 
     initialize: function(options) {
@@ -17,16 +17,10 @@ return Backbone.View.extend({
     },
 
     render: function() {
-        var that = this;
-
         _.each(this.sections, function(section) {
-            var $section_header_el = $(SectionHeaderTemplate(section.data));
-
-            that.$el.append($section_header_el);
-
             var dropdownSubMenuView = new DataMenuDropdownsView({
                 section: section.data,
-                el: that.$el
+                el: this.$el
             });
 
             // Render the dropdowns for each section. The dropdown menu elements
@@ -34,11 +28,11 @@ return Backbone.View.extend({
             dropdownSubMenuView.render();
 
             dropdownSubMenuView.on("select-data-item", function(selected) {
-                that.trigger("select-data-item", _.extend({
+                this.trigger("select-data-item", _.extend({
                     sectionId: section.id
                 }, selected));
-            });
-        });
+            }, this);
+        }, this);
 
         return this;
     }

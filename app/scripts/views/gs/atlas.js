@@ -80,7 +80,7 @@ define([
             },
 
             initialize: function (options) {
-                _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "viewsByUri", "closeMap", "zoom");
+                _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
                 _.bindAll(this, "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
@@ -224,72 +224,80 @@ define([
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
 
-                    return this.viewsByUri($target, $target.data("source"), view_name, v_options, q_options);
+                    return this.loadView($target, view_name, v_options, q_options);
                 }
                 return null;
             },
 
-            viewsByUri: function (targetEl, uri, view_name, options, query) {
+            loadView: function (targetEl, view_name, options, query) {
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
                     var Model = Backbone.Model;
-                    var model_unit;
 
-                    var atlas_view_options = this.viewsByUid[$(targetEl).data("uid")] || {};
-                    var model_optns = _.extend(options, atlas_view_options);
+                    var viewDef = this.viewsByUid[$(targetEl).data("uid")];
+                    var data_sources = viewDef.sources || { "default": viewDef.source };
+                    var model_optns = _.extend(options, viewDef || {});
 
-                    if (uri) {
-                        var parts = uri.split("/");
-                        var data_root = parts[0];
-                        var analysis_id = parts[1];
-                        var dataset_id = parts[2];
+                    var models = {};
+                    if (data_sources) {
+                        _.each(data_sources, function(source, key) {
+                            if (_.isUndefined(source)) return;
 
-                        if (analysis_id && dataset_id) {
-                            model_optns["analysis_id"] = analysis_id;
-                            model_optns["dataset_id"] = dataset_id;
+                            var parts = source.split("/");
+                            var data_root = parts[0];
+                            var analysis_id = parts[1];
+                            var dataset_id = parts[2];
 
-                            model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
-                            if (model_unit && model_unit.catalog) {
-                                model_optns["model_unit"] = model_unit;
+                            var individual_source = {};
+                            individual_source["analysis_id"] = analysis_id;
+                            individual_source["dataset_id"] = dataset_id;
+                            model_optns[key] = individual_source;
 
-                                var catalog_unit = model_unit.catalog[dataset_id];
-                                if (catalog_unit) {
-                                    model_optns["catalog_unit"] = catalog_unit;
-                                    model_optns["data_uri"] = "svc/" + catalog_unit.service || model_unit.service || "data/" + uri;
+                            var Model;
+                            // TODO : Deal with the case of feature matrices...
+                            if (data_root && analysis_id && dataset_id) {
+                                var model_unit = WebApp.Datamodel.get(data_root)[analysis_id];
+                                individual_source["model_unit"] = model_unit;
 
-                                    Model = WebApp.Models[model_unit.model || catalog_unit.model];
+                                if (model_unit && model_unit.catalog) {
+                                    var catalog_unit = model_unit.catalog[dataset_id];
+                                    if (catalog_unit) {
+                                        individual_source["catalog_unit"] = catalog_unit;
+                                        individual_source["url"] = "svc/" + catalog_unit.service || model_unit.service || "data/" + uri;
+                                        Model = WebApp.Models[model_unit.model || catalog_unit.model];
+                                    }
                                 }
                             }
-                        }
-                    }
 
-                    if (_.isUndefined(Model)) Model = Backbone.Model;
-                    var model = new Model(model_optns);
-                    if (model_optns["data_uri"]) {
-                        _.defer(function () {
-                            model.fetch({
-                                "url": model_optns["data_uri"],
-                                "data": query,
-                                "traditional": true,
-                                success: function () {
+                            Model = Model || Backbone.Model;
+
+                            var model = models[key] = new Model(model_optns);
+                            if (individual_source["url"]) {
+                                _.defer(function () {
+                                    model.fetch({
+                                        "url": individual_source["url"],
+                                        "data": query,
+                                        "traditional": true,
+                                        "success": function () {
+                                            model.trigger("load");
+                                        }
+                                    });
+                                });
+                            } else {
+                                _.defer(function () {
                                     model.trigger("load");
-                                }
-                            });
-                        });
-                    } else {
-                        _.defer(function () {
-                            model.trigger("load");
-                        });
+                                });
+                            }
+
+                        }, this);
                     }
 
-                    var model_unit_view_options = (model_unit && model_unit.view_options) ? model_unit.view_options : {};
-                    var view_options = _.extend({"model": model}, model_unit_view_options, atlas_view_options, (options || {}));
-
-                    console.log("viewsByUri(" + uri + "," + view_name + "):loading view");
-                    var view = new ViewClass(view_options);
+                    console.log("loadView(" + view_name + "):" + _.values(data_sources));
+                    var view = new ViewClass(_.extend(options, model_optns, {"models": models }));
                     $(targetEl).html(view.render().el);
 
-                    if (model_optns["data_uri"]) return model_optns["data_uri"] + "?" + this.outputTsvQuery(query);
+                    // TODO : Specify download links
+//                    if (model_optns["url"]) return model_optns["url"] + "?" + this.outputTsvQuery(query);
                 }
                 return null;
             },

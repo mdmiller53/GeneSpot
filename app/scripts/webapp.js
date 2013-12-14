@@ -1,11 +1,11 @@
-define   (['jquery', 'underscore', 'backbone', 'router',
-    'models/sessions',
-    'models/catalog',
-    'models/annotations',
-    'models/mappings',
-    'models/feature_matrix',
+define   (["jquery", "underscore", "backbone", "router",
+    "models/sessions",
+    "models/catalog",
+    "models/annotations",
+    "models/mappings",
+    "models/feature_matrix",
 
-    'views/items_grid_view'],
+    "views/items_grid_view"],
 function ( $,        _,            Backbone,   AppRouter,
            SessionsCollection,
            CatalogModel,
@@ -35,6 +35,7 @@ function ( $,        _,            Backbone,   AppRouter,
             ]
         },
         Views:{
+            "grid": ItemGridView,
             "items_grid": ItemGridView
         },
         Lookups:{
@@ -86,29 +87,27 @@ function ( $,        _,            Backbone,   AppRouter,
     };
 
     WebApp.initialize = function() {
-        var that = this;
-
         this.Display.fetch({
             url:"configurations/display.json",
             success:function () {
-                document.title = (that.Display.get("title") || "Web App Base");
+                document.title = (WebApp.Display.get("title") || "Web App Base");
             }
         });
 
         this.Datamodel.fetch({
-            url:"configurations/datamodel.json",
-            success: that.startupUI,
-            error: that.startupUI
+            "url": "configurations/datamodel.json",
+            "method": "GET",
+            "async": true
         });
 
-        this.Lookups.Chromosomes.fetch({
-            dataType: "text"
-        });
+        _.defer(this.startupUI, this);
+
+        this.Lookups.Chromosomes.fetch({ dataType: "text" });
 
         this.Lookups.TumorTypes.fetch({ "url": "configurations/tumor_types.json" });
     };
 
-    _.bindAll(WebApp, 'startRouter', 'startupUI', 'initialize');
+    _.bindAll(WebApp, "startRouter", "startupUI", "initialize");
 
     return WebApp;
 });

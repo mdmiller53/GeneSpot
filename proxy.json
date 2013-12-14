@@ -5,7 +5,7 @@
             "host" : "csacr.systemsbiology.net",
             "port" : 80,
             "https" : false,
-            "changeOrigin" : false,
+            "changeOrigin" : true,
             "rewrite" : {
                 "^/svc": "/development"
             },
@@ -16,7 +16,7 @@
             "host" : "csacr.systemsbiology.net",
             "port" : 80,
             "https" : false,
-            "changeOrigin" : false,
+            "changeOrigin" : true,
             "rewrite" : {
                 "^/svc": "/development"
             },

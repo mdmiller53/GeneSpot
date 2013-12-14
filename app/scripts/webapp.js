@@ -77,12 +77,16 @@ define(["jquery", "underscore", "backbone", "router",
                         catalog_item.Model = WebApp.Models[catalog_item.model] || Backbone.Model;
                         catalog_item.url = "svc/" + catalog_item.service || "svc/" + catalog_item.uri;
                         console.log("-> " + key + "/" + domain_key + "/" + catalog_key);
+                        if (domain_item.group) {
+                            console.log("     group : [" + domain_item.group + "=" + catalog_item[domain_item.group] + "]");
+                        }
                         if (catalog_item.model && WebApp.Models[catalog_item.model]) {
                             console.log("     model : " + catalog_item.model);
                         } else {
                             console.log("     model : Backbone.Model");
                         }
                         console.log("       url : " + catalog_item.url);
+                        if (_.has(catalog_item, "active")) console.log("    active : " + catalog_item.active);
                     });
                     if (_.has(domain_item, "group")) {
                         domain_item[domain_item["group"]] = _.groupBy(domain_item.catalog, domain_item["group"]);

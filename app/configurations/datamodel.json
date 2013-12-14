@@ -1,6 +1,5 @@
 {
     "datamodel": {
-        "label": "Data Sets",
         "mutations": {
             "label": "Mutations",
             "catalog": {

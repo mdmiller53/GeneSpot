@@ -37,15 +37,12 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             },
 
             "renderQValue": function() {
-                if (!this.options.models["q_value"].get("items")) {
-                    console.log("not yet");
-                    return;
-                }
+                if (!this.options.models["q_value"].get("items")) return;
 
                 _.each(_.groupBy(this.options.models["q_value"].get("items"), "cancer"), function(items, tumor_type) {
                     _.each(_.groupBy(items, "gene"), function(gene_items, gene) {
                         _.each(gene_items, function(gene_item) {
-                            gene_item[gene_item["type"]] = true;
+                            gene_item[gene_item["type"]] = true; // binarize for template use
                         }, this);
                         var $qvalues = this.$el.find(".stats-" + tumor_type + "-" + gene);
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));

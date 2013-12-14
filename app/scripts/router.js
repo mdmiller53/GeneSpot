@@ -93,8 +93,6 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                 var domain_item = WebApp.Datamodel.get(datamodel_root)[domain_key];
                 var catalog_item = domain_item.catalog[catalog_key];
 
-                this.fetchAnnotations(catalog_key);
-
                 var model = new catalog_item.Model(_.extend(options || {}, { "catalog_item": catalog_item }));
                 _.defer(function () {
                     model.fetch({

@@ -37,12 +37,35 @@
         },
         "feature_matrices": {
             "label": "Feature Matrices (testing)",
+            "group": "tumor_type",
             "catalog": {
                 "BLCA-SEQ-20131113": {
                     "tumor_type": "BLCA",
                     "service": "datastores/ds/BLCA-SEQ-20131113/feature_matrix",
                     "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
                     "label": "BLCA dataset for 20131113",
+                    "model": "FeatureMatrix"
+                },
+                "BRCA-SEQ-20131113": {
+                    "tumor_type": "BRCA",
+                    "service": "datastores/ds/BRCA-SEQ-20131113/feature_matrix",
+                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
+                    "label": "BRCA dataset for 20131113",
+                    "model": "FeatureMatrix"
+                },
+                "CESC-SEQ-20131113": {
+                    "tumor_type": "CESC",
+                    "active": true,
+                    "service": "datastores/ds/CESC-SEQ-20131113/feature_matrix",
+                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
+                    "label": "CESC dataset for 20131113",
+                    "model": "FeatureMatrix"
+                },
+                "CESC-SEQ-20131114": {
+                    "tumor_type": "CESC",
+                    "service": "datastores/ds/CESC-SEQ-20131113/feature_matrix",
+                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
+                    "label": "CESC dataset for 20131113",
                     "model": "FeatureMatrix"
                 }
             }

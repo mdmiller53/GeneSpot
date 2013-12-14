@@ -84,6 +84,9 @@ define(["jquery", "underscore", "backbone", "router",
                         }
                         console.log("       url : " + catalog_item.url);
                     });
+                    if (_.has(domain_item, "group")) {
+                        domain_item[domain_item["group"]] = _.groupBy(domain_item.catalog, domain_item["group"]);
+                    }
                 });
             })
         };

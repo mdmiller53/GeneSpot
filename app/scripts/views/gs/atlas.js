@@ -12,14 +12,13 @@ define([
     "views/gs/mutsig_top_genes_view",
     "views/gs/stacksvis",
     "views/gs/merged_sources_per_tumor_type",
+    "views/gs/feature_matrix_distributions",
     "models/gs/mutations_interpro",
     "models/gs/minigraph",
-    "models/gs/by_tumor_type"
+    "models/gs/by_tumor_type",
+    "models/feature_matrix"
 ],
-    function ($, _, Backbone,
-              AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView, MergedSourcesPerTumorTypeView,
-              MutationsModel, MiniGraphModel, ByTumorTypeModel) {
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView, MergedSourcesPerTumorTypeView, FeatureMatrixDistributionsView, MutationsModel, MiniGraphModel, ByTumorTypeModel, FeatureMatrixModel) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -102,11 +101,13 @@ define([
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
+                WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
                 WebApp.Views["merged_sources_per_tumor_type"] = MergedSourcesPerTumorTypeView;
 
                 WebApp.Models["Mutations"] = MutationsModel;
                 WebApp.Models["MiniGraph"] = MiniGraphModel;
                 WebApp.Models["ByTumorType"] = ByTumorTypeModel;
+                WebApp.Models["FeatureMatrix"] = FeatureMatrixModel;
 
                 console.log("atlas:registered models and views")
             },
@@ -219,12 +220,12 @@ define([
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
 
-                    return this.loadView($target, view_name, v_options, q_options);
+                    return this.loadView($target, view_name, v_options, q_options, tumor_type_list);
                 }
                 return null;
             },
 
-            loadView: function (targetEl, view_name, options, query) {
+            loadView: function (targetEl, view_name, options, query, tumor_type_list) {
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
                     var viewDef = this.viewsByUid[$(targetEl).data("uid")];
@@ -237,25 +238,21 @@ define([
                     _.each(data_sources, function(datamodelUri, key) {
                         if (_.isUndefined(datamodelUri)) return;
 
-                        var catalog_item = this.retrieveCatalogItem(datamodelUri);
+                        var catalog_item = this.retrieveCatalogItem(datamodelUri, tumor_type_list);
                         if (_.isUndefined(catalog_item)) return;
 
-                        var model = models[key] = new catalog_item.Model(model_optns);
-                        if (_.has(catalog_item, "url")) {
-                            _.defer(function () {
-                                model.fetch({
-                                    "url": catalog_item["url"],
-                                    "data": query,
-                                    "traditional": true,
-                                    "success": function () {
-                                        model.trigger("load");
-                                    }
-                                });
-                            });
+                        if (_.has(catalog_item, "Model") && _.has(catalog_item, "url")) {
+                            var model = models[key] = new catalog_item.Model(model_optns);
+                            this.loadModel(model, catalog_item["url"], query);
                         } else {
-                            _.defer(function () {
-                                model.trigger("load");
-                            });
+                            models[key] = {};
+                            _.each(tumor_type_list, function(tumor_type) {
+                                var tt_item = catalog_item[tumor_type];
+                                if (tt_item && _.has(tt_item, "Model") && _.has(tt_item, "url")) {
+                                    var model = models[key][tumor_type] = new tt_item.Model(model_optns);
+                                    this.loadModel(model, tt_item["url"], query);
+                                }
+                            }, this);
                         }
 
                     }, this);
@@ -269,20 +266,54 @@ define([
                 return null;
             },
 
-            retrieveCatalogItem: function(datamodelUri, tumor_type) {
+            retrieveCatalogItem: function (datamodelUri, tumor_types) {
                 var parts = datamodelUri.split("/");
                 var datamodel_root = parts[0];
                 var domain_key = parts[1];
                 var catalog_key = parts[2];
 
-                // TODO : Deal with the case of feature matrices per tumor_type...
-                if (datamodel_root && domain_key && catalog_key) {
+                if (datamodel_root && domain_key) {
                     var domain_item = WebApp.Datamodel.get(datamodel_root)[domain_key];
-                    if (domain_item && domain_item.catalog) {
-                        return domain_item.catalog[catalog_key];
+                    if (domain_item) {
+                        if (_.has(domain_item, "catalog")) {
+                            if (catalog_key) return domain_item.catalog[catalog_key];
+                        }
+
+                        if (_.has(domain_item, "tumor_type")) {
+                            var grouped_catalog_items = {};
+                            _.each(tumor_types, function(tumor_type) {
+                                var per_tumor_type = domain_item["tumor_type"][tumor_type];
+                                if (per_tumor_type.length > 1) {
+                                    per_tumor_type = _.filter(per_tumor_type, function(ptt_item) {
+                                        return _.has(ptt_item, "active") && ptt_item.active;
+                                    });
+                                }
+                                grouped_catalog_items[tumor_type] = _.first(per_tumor_type);
+                            });
+                            return grouped_catalog_items;
+                        }
                     }
                 }
                 return null;
+            },
+
+            loadModel: function(model, url, query) {
+                if (url) {
+                    _.defer(function () {
+                        model.fetch({
+                            "url": url,
+                            "data": query || {},
+                            "traditional": true,
+                            "success": function () {
+                                model.trigger("load");
+                            }
+                        });
+                    });
+                } else {
+                    _.defer(function () {
+                        model.trigger("load");
+                    });
+                }
             },
 
             outputTsvQuery: function (query) {

@@ -3,10 +3,14 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/scatterplot"],
         return Backbone.View.extend({
             initialize: function (options) {
                 var _id = Math.round(Math.random() * 100000);
-                this.$el.html(Tpl({"id":_id }));
+                this.$el.html(Tpl({
+                    "genes": this.options.genes,
+                    "first_gene": _.first(this.options.genes),
+                    "tumor_types": WebApp.Lookups.TumorTypes.get("selected")
+                }));
 
                 _.each(this.options.models.source, function(model, tumor_type) {
-                    console.log("waiting for model for " + tumor_type)
+                    console.log("waiting for model for " + tumor_type);
                 }, this);
             }
         });

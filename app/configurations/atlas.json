@@ -56,21 +56,22 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
-                "top": 150,
-                "left": 400
+                "top": 20,
+                "left": 200
             },
             "views": [
                 {
-                    "view": "scatterplot",
+                    "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "source": "datamodel/feature_matrices/BLCA-SEQ-20131113",
+                    "source": "datamodel/feature_matrices",
                     "comment": "need to handle multiple tumor types"
                 }
             ]
         },
         {
+            "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
             "isOpen": true,
             "position": {

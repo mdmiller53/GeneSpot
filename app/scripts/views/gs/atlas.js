@@ -115,6 +115,7 @@ define([
             initMaps: function () {
                 var maps = this.options.model.get("maps");
                 _.each(_.sortBy(maps, "label"), function (map) {
+                    if (!map.id) map.id = Math.round(Math.random() * 10000);
                     var lit = { "a_class": "open-map", "id": map.id, "label": map.label };
                     if (map.disabled) {
                         lit = { "li_class": "disabled", "id": map.id, "label": map.label };
@@ -229,7 +230,7 @@ define([
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
                     var viewDef = this.viewsByUid[$(targetEl).data("uid")];
-                    var data_sources = viewDef["sources"] || { "default": viewDef["source"] };
+                    var data_sources = viewDef["sources"] || { "source": viewDef["source"] };
                     console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources));
 
                     var model_optns = _.extend(options, viewDef || {});

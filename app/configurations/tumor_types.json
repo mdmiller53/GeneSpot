@@ -3,105 +3,105 @@
         "BLCA": {
             "label": "Bladder Urothelial Carcinoma",
             "description": "TODO",
-            "color": "#FFFFF",
+            "color": "#00008F",
             "isSelected": true
         },
         "BRCA": {
             "label": "Breast invasive carcinoma",
             "description": "TODO",
-            "color": "#FFFFF",
+            "color": "#0000B9",
             "isSelected": true
         },
         "CESC": {
             "label": "Cervical squamous cell carcinoma and endocervical adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF",
+            "color": "#B1FF4E",
             "isSelected": true
         },
         "COAD": {
             "label": "Colon adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#0000E3"
         },
         "GBM": {
             "label": "Glioblastoma Multiforme",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#000EFF"
         },
         "HNSC": {
             "label": "Head and Neck squamous cell carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#0038FF"
         },
         "KIRC": {
             "label": "Kidney renal clear cell carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#0062FF"
         },
         "KIPR": {
             "label": "Kidney renal papillary cell carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FF7C00"
         },
         "LAML": {
             "label": "Acute Myeloid Leukemia",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#008BFF"
         },
         "LGG": {
             "label": "Brain Lower Grade Glioma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#00B5FF"
         },
         "LIHC": {
             "label": "Liver hepatocellular carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#D30000"
         },
         "LUAD": {
             "label": "Lung adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#00DFFF"
         },
         "LUSC": {
             "label": "Lung squamous cell carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#0AFFF5"
         },
         "OV": {
             "label": "Ovarian serous cystadenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#34FFCB"
         },
         "PRAD": {
             "label": "Prostate adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#5EFFA1"
         },
         "READ": {
             "label": "Rectum adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#87FF78"
         },
         "SKCM": {
             "label": "Skin Cutaneous Melanoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FFA500"
         },
         "STAD": {
             "label": "Stomach adenocarcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FF5200"
         },
         "THCA": {
             "label": "Thyroid carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#FD0000"
         },
         "UCEC": {
             "label": "Uterine Corpus Endometrial Carcinoma",
             "description": "TODO",
-            "color": "#FFFFF"
+            "color": "#800000"
         }
     }
 }

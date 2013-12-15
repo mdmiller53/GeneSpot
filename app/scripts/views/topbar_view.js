@@ -120,11 +120,10 @@ return Backbone.View.extend({
         if (_.isUndefined(hasChecks)) _.first(data).isChecked = true;
 
         $(".tumor-types-selector").dropdownCheckbox({ "data": data, "title": "Tumor Types" });
-        $(".tumor-types-selector").find(":checkbox").change(function(e) {
-            WebApp.Events.trigger("tumor-types-selector-change", e);
+        $(".tumor-types-selector").find(":checkbox").change(function() {
+            WebApp.Events.trigger("tumor-types-selector-change");
         });
+        WebApp.Events.trigger("tumor-types-selector-init");
     }
 });
-
-// end define
 });

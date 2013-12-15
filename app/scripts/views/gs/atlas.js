@@ -80,7 +80,7 @@ define([
 
             initialize: function (options) {
                 _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
-                _.bindAll(this, "initGeneTypeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "initGeneTypeahead", "nextZindex", "nextPosition", "currentState", "selectTumorTypes");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -90,7 +90,11 @@ define([
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
+                WebApp.Events.on("tumor-types-selector-init", function() {
+                    _.defer(this.selectTumorTypes, this);
+                }, this);
                 WebApp.Events.on("tumor-types-selector-change", function() {
+                    _.defer(this.selectTumorTypes, this);
                     _.each(this.$el.find(".atlas-map"), this.loadMapData);
                 }, this);
 
@@ -110,6 +114,13 @@ define([
                 WebApp.Models["FeatureMatrix"] = FeatureMatrixModel;
 
                 console.log("atlas:registered models and views")
+            },
+
+            selectTumorTypes: function () {
+                var selected_tumor_types = _.pluck($(".tumor-types-selector").dropdownCheckbox("checked"), "id");
+                WebApp.Lookups.TumorTypes.set("selected", _.compact(_.map(selected_tumor_types, function (tumor_type) {
+                    return WebApp.Lookups.TumorTypes.get("tumor_types")[tumor_type];
+                })));
             },
 
             initMaps: function () {
@@ -215,7 +226,9 @@ define([
                         return $(link).data("id")
                     };
 
-                    var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function(i) { return i["id"]; });
+                    var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function (i) {
+                        return i["id"];
+                    });
                     var geneList = _.map(this.$el.find(".gene-selector .item-remover"), afn);
 
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
@@ -236,7 +249,7 @@ define([
                     var model_optns = _.extend(options, viewDef || {});
                     var models = {};
 
-                    _.each(data_sources, function(datamodelUri, key) {
+                    _.each(data_sources, function (datamodelUri, key) {
                         if (_.isUndefined(datamodelUri)) return;
 
                         var catalog_item = this.retrieveCatalogItem(datamodelUri, tumor_type_list);
@@ -247,7 +260,7 @@ define([
                             this.loadModel(model, catalog_item["url"], query);
                         } else {
                             models[key] = {};
-                            _.each(tumor_type_list, function(tumor_type) {
+                            _.each(tumor_type_list, function (tumor_type) {
                                 var tt_item = catalog_item[tumor_type];
                                 if (tt_item && _.has(tt_item, "Model") && _.has(tt_item, "url")) {
                                     var model = models[key][tumor_type] = new tt_item.Model(model_optns);
@@ -282,10 +295,12 @@ define([
 
                         if (_.has(domain_item, "tumor_type")) {
                             var grouped_catalog_items = {};
-                            _.each(tumor_types, function(tumor_type) {
+                            _.each(tumor_types, function (tumor_type) {
                                 var per_tumor_type = domain_item["tumor_type"][tumor_type];
+                                if (!_.isArray(per_tumor_type)) return;
+
                                 if (per_tumor_type.length > 1) {
-                                    per_tumor_type = _.filter(per_tumor_type, function(ptt_item) {
+                                    per_tumor_type = _.filter(per_tumor_type, function (ptt_item) {
                                         return _.has(ptt_item, "active") && ptt_item.active;
                                     });
                                 }
@@ -298,7 +313,7 @@ define([
                 return null;
             },
 
-            loadModel: function(model, url, query) {
+            loadModel: function (model, url, query) {
                 if (url) {
                     _.defer(function () {
                         model.fetch({
@@ -410,7 +425,9 @@ define([
                     return $(link).data("id")
                 };
 
-                var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function(i) { return i["id"]; });
+                var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function (i) {
+                    return i["id"];
+                });
                 return {
                     "genes": _.map(this.$el.find(".gene-selector .item-remover"), afn),
                     "tumor_types": tumor_type_list,

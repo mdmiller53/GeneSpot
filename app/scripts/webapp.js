@@ -113,7 +113,14 @@ define(["jquery", "underscore", "backbone", "router",
 
             this.Lookups.Chromosomes.fetch({ dataType: "text" });
 
-            this.Lookups.TumorTypes.fetch({ "url": "configurations/tumor_types.json" });
+            this.Lookups.TumorTypes.fetch({
+                "url": "configurations/tumor_types.json",
+                "success": function() {
+                    _.each(WebApp.Lookups.TumorTypes.get("tumor_types"), function(tumor_type, key) {
+                        tumor_type.id = key;
+                    });
+                }
+            });
         };
 
         _.bindAll(WebApp, "startRouter", "startupUI", "initialize", "datamodelFacade");

@@ -72,6 +72,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
 
                     var row_idx = ttModel.ROWS.indexOf(rowLabel);
+                    if (row_idx < 0) return;
+
                     _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
                         if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
                         var columnLabel = ttModel.COLUMNS[cellIdx].trim();
@@ -132,6 +134,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     var column = { "name": column_name.trim(), "cluster": "_", "values": [] };
                     _.each(this.rowLabels, function (row_label) {
                         var row_idx = ttModel.ROWS.indexOf(row_label);
+                        if (row_idx < 0) return;
+
                         var cell = ttModel.DATA[row_idx][col_idx];
                         if (_.isString(cell.orig)) {
                             cell.orig = cell.orig.trim().toLowerCase();

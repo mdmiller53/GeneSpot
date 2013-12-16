@@ -20,51 +20,67 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/scatterplot"],
                 "click .tumor-type-selector-scatterplot button": function (e) {
                     this.carve.highlight($(e.target).data("id")).render();
 //                    this.carve.highlight("").render();
+                },
+                "click .dropdown-menu.genes-selector-x a": function(e) {
+                    console.log("fmx-dist.genes-x:" + $(e.target).data("id"));
+                    this.selected_genes.x = $(e.target).data("id");
+                    this.initFeatureLabelSelectors();
+                },
+                "click .dropdown-menu.genes-selector-y a": function(e) {
+                    console.log("fmx-dist.genes-y:" + $(e.target).data("id"));
+                    this.selected_genes.y = $(e.target).data("id");
+                    this.initFeatureLabelSelectors();
                 }
             },
 
             initialize: function (options) {
-                _.bindAll(this, "loadData", "initFeatureLabelSelector", "drawGraph");
+                _.bindAll(this, "loadData", "initSelectedGenes", "initFeatureLabelSelectors", "drawGraph");
+                this.initSelectedGenes();
 
                 this.$el.html(Tpl({
                     "genes": this.options.genes,
-                    "first_gene": _.first(this.options.genes),
-                    "tumor_types": WebApp.Lookups.TumorTypes.get("selected")
+                    "tumor_types": WebApp.Lookups.TumorTypes.get("selected"),
+                    "selected_genes": this.selected_genes
                 }));
 
                 this.initGraph();
 
                 var models = _.values(this.options.models.source);
-                this.loadData = _.after(this.loadData, models.length);
-
                 _.each(models, function (model) {
                     model.on("load", this.loadData);
                 }, this);
             },
 
-            loadData: function (tumor_type) {
-                console.log("loadData:" + tumor_type);
+            initSelectedGenes: function() {
+                this.selected_genes = {
+                    "x": _.first(this.options.genes),
+                    "y": _.first(this.options.genes)
+                };
+                if (this.options.genes.length > 1) this.selected_genes["y"] = this.options.genes[1];
+            },
+
+            loadData: function () {
+                console.log("fmx-dist.loadData");
 
 //                this.$el.find(".download-container").empty();
 
-                var _this = this;
-                return function () {
-                    _this.feature_map = _.groupBy(_this.options.models.source[tumor_type].get("items"), "id");
-                    _.defer(_this.initFeatureLabelSelector);
-                    _.defer(_this.drawGraph);
-                };
+//                this.feature_map = _.groupBy(this.options.models.source[tumor_type].get("items"), "id");
+                _.defer(this.initFeatureLabelSelectors);
+                _.defer(this.drawGraph);
             },
 
-            initFeatureLabelSelector: function () {
-                console.log("initFeatureLabelSelector");
+            initFeatureLabelSelectors: function () {
+                console.log("fmx-dist.initFeatureLabelSelectors:" + JSON.stringify(this.selected_genes));
+                this.$el.find(".selected-gene-x").html(this.selected_genes["x"]);
+                this.$el.find(".selected-gene-y").html(this.selected_genes["y"]);
             },
 
             initGraph: function () {
-                console.log("initGraph");
+                console.log("fmx-dist.initGraph");
             },
 
             drawGraph: function () {
-                console.log("drawGraph");
+                console.log("fmx-dist.drawGraph");
             }
         });
     });

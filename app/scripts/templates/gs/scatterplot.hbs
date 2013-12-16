@@ -59,22 +59,22 @@
     <div class="row">
         <div class="span3 well">
             <div class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">x-axis: <span
-                        class="selected-gene-x">{{first_gene}}</span><b class="caret"></b></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">x-axis:
+                    <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-x" role="menu">
                     {{#each genes}}
-                    <li><a href="#" onclick="return false;" class="gene-selector-x">{{.}}</a></li>
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
                     {{/each}}
                 </ul>
             </div>
             <ul class="nav nav-list feature-selector-x pre-scrollable">Loading features...</ul>
             <hr/>
             <div class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">y-axis: <span
-                        class="selected-gene-y">{{first_gene}}</span><b class="caret"></b></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">y-axis:
+                    <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-y" role="menu">
                     {{#each genes}}
-                    <li><a href="#" onclick="return false;" class="gene-selector-y">{{.}}</a></li>
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
                     {{/each}}
                 </ul>
             </div>

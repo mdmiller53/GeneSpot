@@ -263,8 +263,9 @@ define([
                             _.each(tumor_type_list, function (tumor_type) {
                                 var tt_item = catalog_item[tumor_type];
                                 if (tt_item && _.has(tt_item, "Model") && _.has(tt_item, "url")) {
-                                    var model = models[key][tumor_type] = new tt_item.Model(model_optns);
-                                    this.loadModel(model, tt_item["url"], query);
+                                    var tt_optns = _.extend(model_optns, {"tumor_type": tumor_type});
+                                    var model = models[key][tumor_type] = new tt_item.Model(tt_optns);
+                                    this.loadModel(model, tt_item["url"], _.omit(query, "cancer"));
                                 }
                             }, this);
                         }

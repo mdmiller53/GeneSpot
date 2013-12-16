@@ -26,6 +26,8 @@ define(["jquery", "underscore", "backbone",
                 _.bindAll(this, "init_selectedGenes", "load_featureDefinitions", "render_featureLabelSelectors");
                 _.bindAll(this, "draw_graph", "init_graph");
 
+                this.feature_definitions = {};
+
                 this.init_selectedGenes();
 
                 this.$el.html(Tpl({

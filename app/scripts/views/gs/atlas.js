@@ -246,7 +246,7 @@ define([
                     var data_sources = viewDef["sources"] || { "source": viewDef["source"] };
                     console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources));
 
-                    var model_optns = _.extend(options, viewDef || {});
+                    var map_optns = _.extend(options, viewDef || {});
                     var models = {};
 
                     _.each(data_sources, function (datamodelUri, key) {
@@ -256,27 +256,31 @@ define([
                         if (_.isUndefined(catalog_item)) return;
 
                         if (_.has(catalog_item, "Model") && _.has(catalog_item, "url")) {
-                            var model = models[key] = new catalog_item.Model(model_optns);
+                            var model = models[key] = new catalog_item.Model(map_optns);
                             this.loadModel(model, catalog_item["url"], query);
                         } else {
                             models[key] = {};
                             _.each(tumor_type_list, function (tumor_type) {
                                 var tt_item = catalog_item[tumor_type];
                                 if (tt_item && _.has(tt_item, "Model") && _.has(tt_item, "url")) {
-                                    var tt_optns = _.extend(model_optns, {"tumor_type": tumor_type});
+                                    var tt_optns = _.extend(map_optns, {"tumor_type": tumor_type});
                                     var model = models[key][tumor_type] = new tt_item.Model(tt_optns);
-                                    this.loadModel(model, tt_item["url"], _.omit(query, "cancer"));
+
+                                    var modelUrl = tt_item["url"];
+                                    if (_.has(map_optns, "source_suffix")) modelUrl += map_optns["source_suffix"];
+
+                                    this.loadModel(model, modelUrl, _.omit(query, "cancer"));
                                 }
                             }, this);
                         }
 
                     }, this);
 
-                    var view = new ViewClass(_.extend(options, model_optns, {"models": models }));
+                    var view = new ViewClass(_.extend(options, map_optns, {"models": models }));
                     $(targetEl).html(view.render().el);
 
                     // TODO : Specify download links
-//                    if (model_optns["url"]) return model_optns["url"] + "?" + this.outputTsvQuery(query);
+//                    if (map_optns["url"]) return map_optns["url"] + "?" + this.outputTsvQuery(query);
                 }
                 return null;
             },

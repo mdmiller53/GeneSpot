@@ -66,7 +66,7 @@
                     "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
                     "source": "datamodel/feature_matrices",
-                    "comment": "need to handle multiple tumor types"
+                    "source_suffix": "/feature_matrix"
                 }
             ]
         },
@@ -93,7 +93,7 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 20,
                 "left": 200

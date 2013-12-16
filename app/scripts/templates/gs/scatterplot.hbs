@@ -44,22 +44,34 @@
         width: 540px;
         height: 405px;
     }
+
+    .gene-feature-selectors {
+        border-right-color: lightgray;
+        border-right-width: 2px;
+        border-right-style: solid;
+    }
+
+    .tumor-type-selector-scatterplot {
+        margin-top: 0px;
+        margin-bottom: 10px;
+    }
 </style>
 
 <div class="container">
     <div class="tumor-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
         <button class="btn btn-small active" data-toggle="button" data-id="all_tumor_types"
-                style="border-bottom-width: 4px;">All</button>
+                style="border-bottom-width: 4px;">All
+        </button>
         {{#each tumor_types}}
         <button class="btn btn-small" data-toggle="button" data-id="{{id}}"
-                style="border-bottom-color: {{color}}; border-bottom-width: 4px;">{{id}}</button>
+                style="border-bottom-color: {{color}}; border-bottom-width: 4px;">{{id}}
+        </button>
         {{/each}}
     </div>
-    <hr/>
     <div class="row">
-        <div class="span3 well">
+        <div class="span3 gene-feature-selectors">
             <div class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">x-axis:
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-x" role="menu">
                     {{#each genes}}
@@ -67,10 +79,9 @@
                     {{/each}}
                 </ul>
             </div>
-            <ul class="nav nav-list feature-selector-x pre-scrollable">Loading features...</ul>
-            <hr/>
+            <div class="feature-selector-x">Loading features...</div>
             <div class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">y-axis:
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-y" role="menu">
                     {{#each genes}}
@@ -78,11 +89,11 @@
                     {{/each}}
                 </ul>
             </div>
-            <ul class="nav nav-list feature-selector-y pre-scrollable">Loading features...</ul>
+            <div class="feature-selector-y">Loading features...</div>
         </div>
         <div class="span8">
-            <div class="scatterplot-container"></div>
-            <div class="download-container"></div>
+            <div class="scatterplot-container well"></div>
+            <div class="download-container well"></div>
         </div>
     </div>
 </div>

@@ -17,11 +17,6 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/scatterplot"],
             },
 
             events: {
-                "click .hide-controls": function () {
-                    this.$el.find(".hide-controls").toggle("hide");
-                    this.$el.find(".scatterplot-controls").toggle("puff", { "duration": 500 });
-                },
-
                 "click .tumor-type-selector-scatterplot button": function (e) {
                     this.carve.highlight($(e.target).data("id")).render();
 //                    this.carve.highlight("").render();

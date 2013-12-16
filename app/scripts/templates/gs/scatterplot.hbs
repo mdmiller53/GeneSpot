@@ -47,7 +47,9 @@
 </style>
 
 <div class="container">
-    <div class="tumor-type-selector-scatterplot">
+    <div class="tumor-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
+        <button class="btn btn-small active" data-toggle="button" data-id="all_tumor_types"
+                style="border-bottom-width: 4px;">All</button>
         {{#each tumor_types}}
         <button class="btn btn-small" data-toggle="button" data-id="{{id}}"
                 style="border-bottom-color: {{color}}; border-bottom-width: 4px;">{{id}}</button>

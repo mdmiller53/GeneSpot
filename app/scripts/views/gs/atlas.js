@@ -93,10 +93,10 @@ define([
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
-                WebApp.Events.on("tumor-types-selector-init", function() {
+                WebApp.Events.on("webapp:tumor-types:selector:init", function() {
                     _.defer(this.select_tumor_types, this);
                 }, this);
-                WebApp.Events.on("tumor-types-selector-change", function() {
+                WebApp.Events.on("webapp:tumor-types:selector:change", function() {
                     _.defer(this.select_tumor_types, this);
                     _.each(this.$el.find(".atlas-map"), this.loadMapData);
                 }, this);

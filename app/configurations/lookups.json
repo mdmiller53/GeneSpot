@@ -1,0 +1,23 @@
+{
+    "prerequisites": {
+        "tumor_types": "configurations/tumor_types.json"
+    },
+    "lookups": {
+        "sample_types": {
+            "source": "datamodel/feature_matrices",
+            "source_suffix": "/feature_matrix",
+            "query": {
+                "id": "C:SAMP:sampleType:::::"
+            }
+        },
+        "chromosomes": {
+            "url": "svc/data/lookups/chromosomes",
+            "dataType": "text",
+            "model": "Annotations"
+        },
+        "genes": {
+            "url": "svc/data/lookups/genes",
+            "dataType": "text"
+        }
+    }
+}

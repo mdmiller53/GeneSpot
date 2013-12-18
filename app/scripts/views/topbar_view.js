@@ -31,7 +31,7 @@ return Backbone.View.extend({
     },
 
     initialize:function () {
-        _.bindAll(this, "initHangoutLink", "initAboutLinks", "initTumorTypes");
+        _.bindAll(this, "initHangoutLink", "initAboutLinks", "init_tumor_types");
 
         this.$el.html(Template());
 
@@ -41,7 +41,7 @@ return Backbone.View.extend({
         });
         _.defer(this.initHangoutLink);
         _.defer(this.initAboutLinks);
-        _.defer(this.initTumorTypes);
+        _.defer(this.init_tumor_types);
 
         this.$el.find(".titled").html(WebApp.Display.get("title") || "AppTemplate");
     },
@@ -112,9 +112,9 @@ return Backbone.View.extend({
         $.ajax({ url:"svc/auth/whoami", method:"GET", context:this, success:addAuthProviders });
     },
 
-    initTumorTypes: function() {
-        var data = _.map(WebApp.Lookups.TumorTypes.get("tumor_types"), function(obj, key) {
-            return { "label": key + " :: " + obj.label, "isChecked": obj.isSelected, "id": key };
+    init_tumor_types: function() {
+        var data = _.map(WebApp.Lookups.get("tumor_types"), function(obj) {
+            return { "label": obj.id + " :: " + obj.label, "isChecked": obj.isSelected, "id": obj.id };
         });
         var hasChecks = _.find(data, function(item) { return item.isChecked; });
         if (_.isUndefined(hasChecks)) _.first(data).isChecked = true;

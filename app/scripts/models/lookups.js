@@ -25,8 +25,7 @@ define(["jquery", "underscore", "backbone"],
 
                 var lookups = this.get("lookups");
                 var lookupsReadyFn = _.after(_.keys(lookups).length, function () {
-                    console.log("lookups:ready");
-                    WebApp.Events.trigger("lookups-ready");
+                    WebApp.Events.trigger("webapp:ready:lookups");
                 });
 
                 _.each(lookups, function (lookup, key) {
@@ -57,10 +56,7 @@ define(["jquery", "underscore", "backbone"],
                             lookupModel = new M({});
                         }
                         this.set(key, lookupModel);
-                        lookupModel.fetch(_.extend(lookup, {
-                            "success": lookupsReadyFn,
-                            "error": lookupsReadyFn
-                        }));
+                        lookupModel.fetch(_.extend(lookup, { "success": lookupsReadyFn, "error": lookupsReadyFn }));
                     }
                 }, this);
             }

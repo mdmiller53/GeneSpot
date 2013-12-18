@@ -29,7 +29,7 @@ define(["jquery", "underscore", "backbone"],
                         }
                     });
                 });
-                WebApp.Events.trigger("datamodel-ready");
+                WebApp.Events.trigger("webapp:ready:datamodel");
             },
 
             load_datasources: function (data_sources, tumor_type_list, options) {

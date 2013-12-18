@@ -1,52 +1,33 @@
 define(["jquery", "underscore", "backbone", "bootstrap",
-    "views/topbar_view",
-    "views/data_menu_modal",
-    "views/data_menu_sections",
-    "views/sessions_view",
-    "views/gs/atlas"
+    "views/topbar_view", "views/gs/atlas"
 ],
-    function ($, _, Backbone, Bootstrap, TopNavBar, DataMenuModal, DataMenuSections, SessionsView, AtlasView) {
+    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView) {
 
         return Backbone.Router.extend({
             targetEl: "#mainDiv",
+            navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",
                 "v/*uri/:view_name": "viewsByUri",
                 "s/*sessionId": "loadSessionById"
             },
+            views: {},
 
             initialize: function (options) {
                 if (options) _.extend(this, options);
-
+                _.bindAll(this, "start", "loadSessionById");
                 this.$el = $(this.targetEl);
+                this.$nav = $(this.navigationEl);
             },
 
-            views: {
+            start: function () {
+                this.$nav.append(new TopNavBar().render().el);
 
+                Backbone.history.start();
+
+                WebApp.Events.trigger("webapp:ready:router");
             },
 
-            initTopNavBar: function () {
-                var topnavbar = new TopNavBar();
-                $("#navigation-container").append(topnavbar.render().el);
-
-                var dataMenuSectionsView = new DataMenuSections({
-                    sections: _.map(_.keys(WebApp.Datamodel.attributes), function (section_id) {
-                        return {
-                            data: WebApp.Datamodel.get(section_id),
-                            id: section_id
-                        };
-                    })
-                });
-
-                dataMenuSectionsView.on("select-data-item", function (selected) {
-                    new DataMenuModal(_.extend({ el: $("#modal-container") }, selected));
-                });
-
-                $(".data-dropdown").append(dataMenuSectionsView.render().el);
-
-                var sessionsView = new SessionsView();
-                this.$el.find(".sessions-container").html(sessionsView.render().el);
-            },
 
             loadSessionById: function (sessionId) {
                 if (!_.isEmpty(sessionId)) {

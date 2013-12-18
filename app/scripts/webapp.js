@@ -1,12 +1,8 @@
-define(["jquery", "underscore", "backbone", "router",
-    "models/sessions",
-    "models/catalog",
-    "models/annotations",
-    "models/mappings",
-    "models/feature_matrix",
-
+define(["jquery", "underscore", "backbone",
+    "router",
+    "models/sessions", "models/catalog", "models/annotations", "models/mappings", "models/feature_matrix", "models/datamodel", "models/lookups",
     "views/items_grid_view"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, CatalogModel, AnnotationsModel, MappingsModel, FeatureMatrixModel, ItemGridView) {
+    function ($, _, Backbone, AppRouter, SessionsCollection, CatalogModel, AnnotationsModel, MappingsModel, FeatureMatrixModel, Datamodel, LookupsModel, ItemGridView) {
 
         WebApp = {
             Events: _.extend(Backbone.Events),
@@ -30,13 +26,9 @@ define(["jquery", "underscore", "backbone", "router",
                 "grid": ItemGridView,
                 "items_grid": ItemGridView
             },
-            Lookups: {
-                Chromosomes: new AnnotationsModel({ url: "svc/data/lookups/chromosomes" }),
-                Labels: {},
-                TumorTypes: new Backbone.Model()
-            },
+            Lookups: new LookupsModel(),
             Display: new Backbone.Model(),
-            Datamodel: new Backbone.Model(),
+            Datamodel: new Datamodel(),
             Sessions: {
                 All: new SessionsCollection([]),
                 Active: null,
@@ -45,8 +37,6 @@ define(["jquery", "underscore", "backbone", "router",
         };
 
         WebApp.startRouter = function () {
-            _.defer(this.datamodelFacade, this);
-
             this.Router = new AppRouter();
             this.Router.initTopNavBar();
 
@@ -54,10 +44,20 @@ define(["jquery", "underscore", "backbone", "router",
             this.Events.trigger("ready");
         };
 
-        WebApp.startupUI = function () {
-            var that = this;
+        WebApp.initialize = function () {
+            this.Display.fetch({
+                url: "configurations/display.json",
+                success: function () {
+                    document.title = (WebApp.Display.get("title") || "Web App Base");
+                }
+            });
 
-            _.defer(this.startRouter, this);
+            this.Datamodel.fetch({ "url": "configurations/datamodel.json" });
+
+            WebApp.Events.on("datamodel-ready", function() {
+                WebApp.Lookups.fetch({ "url": "configurations/lookups.json" });
+            });
+            WebApp.Events.on("lookups-ready", this.startRouter, this);
 
             $.ajax({
                 "url": "svc/storage/sessions",
@@ -69,61 +69,7 @@ define(["jquery", "underscore", "backbone", "router",
             });
         };
 
-        WebApp.datamodelFacade = function() {
-            console.log("Dynamic Data Model Directory [datamodel.json]");
-            _.each(WebApp.Datamodel.attributes, function (item, key) {
-                _.each(item, function (domain_item, domain_key) {
-                    _.each(domain_item.catalog, function(catalog_item, catalog_key) {
-                        catalog_item.Model = WebApp.Models[catalog_item.model] || Backbone.Model;
-                        catalog_item.url = "svc/" + catalog_item.service || "svc/" + catalog_item.uri;
-                        console.log("-> " + key + "/" + domain_key + "/" + catalog_key);
-                        if (domain_item.group) {
-                            console.log("     group : [" + domain_item.group + "=" + catalog_item[domain_item.group] + "]");
-                        }
-                        if (catalog_item.model && WebApp.Models[catalog_item.model]) {
-                            console.log("     model : " + catalog_item.model);
-                        } else {
-                            console.log("     model : Backbone.Model");
-                        }
-                        console.log("       url : " + catalog_item.url);
-                        if (_.has(catalog_item, "active")) console.log("    active : " + catalog_item.active);
-                    });
-                    if (_.has(domain_item, "group")) {
-                        domain_item[domain_item["group"]] = _.groupBy(domain_item.catalog, domain_item["group"]);
-                    }
-                });
-            })
-        };
-
-        WebApp.initialize = function () {
-            this.Display.fetch({
-                url: "configurations/display.json",
-                success: function () {
-                    document.title = (WebApp.Display.get("title") || "Web App Base");
-                }
-            });
-
-            this.Datamodel.fetch({
-                "url": "configurations/datamodel.json",
-                "method": "GET",
-                "async": true
-            });
-
-            _.defer(this.startupUI, this);
-
-            this.Lookups.Chromosomes.fetch({ dataType: "text" });
-
-            this.Lookups.TumorTypes.fetch({
-                "url": "configurations/tumor_types.json",
-                "success": function() {
-                    _.each(WebApp.Lookups.TumorTypes.get("tumor_types"), function(tumor_type, key) {
-                        tumor_type.id = key;
-                    });
-                }
-            });
-        };
-
-        _.bindAll(WebApp, "startRouter", "startupUI", "initialize", "datamodelFacade");
+        _.bindAll(WebApp, "startRouter", "initialize");
 
         return WebApp;
     });

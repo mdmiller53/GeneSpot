@@ -18,26 +18,34 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             },
 
             "events": {
-                "click .global-hider": function(e) {
+                "click .global-hider": function (e) {
                     this.$el.find(".hider-target").toggle();
                 },
-                "click .hider": function(e) {
+                "click .hider": function (e) {
                     $(e.target).parents("table").find(".hider-target").toggle();
                 }
             },
 
-            "render_data_q_value": function() {
+            "render_data_q_value": function () {
                 if (!this.options.models["q_value"].get("items")) return;
 
-                _.each(_.groupBy(this.options.models["q_value"].get("items"), "cancer"), function(items, tumor_type) {
-                    _.each(_.groupBy(items, "gene"), function(gene_items, gene) {
-                        _.each(gene_items, function(gene_item) {
+                var items_per_tumor_type = _.groupBy(this.options.models["q_value"].get("items"), "cancer");
+                _.each(WebApp.UserPreferences.get("selected_tumor_types"), function (tumor_type_obj) {
+
+                    var items_per_gene = _.groupBy(items_per_tumor_type[tumor_type_obj.id.toLowerCase()], "gene");
+                    _.each(this.options.genes, function (gene) {
+                        var gene_items = items_per_gene[gene] || items_per_gene[gene.toLowerCase()];
+                        if (!gene_items || !_.isArray(gene_items)) return;
+
+                        _.each(gene_items, function (gene_item) {
                             gene_item[gene_item["type"]] = true; // binarize for template use
-                        }, this);
-                        var $qvalues = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + gene);
+                        })
+
+                        var $qvalues = this.$el.find(".stats-" + tumor_type_obj.id + "-" + gene);
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
                         $qvalues.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "top" });
                     }, this);
+
                 }, this);
             },
 
@@ -46,7 +54,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     return g.toLowerCase(); // TODO: not good
                 });
 
-                _.each(this.options.models["copy_number"].get("BY_TUMOR_TYPE"), function(ttModel, tumor_type) {
+                _.each(this.options.models["copy_number"].get("BY_TUMOR_TYPE"), function (ttModel, tumor_type) {
                     if (_.isEmpty(ttModel.ROWS)) return;
                     if (_.isEmpty(ttModel.COLUMNS)) return;
                     if (_.isEmpty(ttModel.DATA)) return;

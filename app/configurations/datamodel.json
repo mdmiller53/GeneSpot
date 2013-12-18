@@ -7,29 +7,20 @@
                     "label": "Protein Mutations Per Cancer Type",
                     "service": "datastores/mutations/interpro/mutations",
                     "protein_db": "datastores/mutations/interpro/interpro",
+                    "TODO": "switch protein_db usage to datamodel/reference_data/interpro (see below)",
                     "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
-                    "model": "Mutations",
-                    "lookups": ["genes", "cancers"],
-                    "view_options": {
-                        "default_cancer_types": ["UCEC", "BRCA", "GBM"]
-                    }
+                    "model": "Mutations"
                 },
                 "mutsig_rankings": {
                     "label": "MutSig Rankings",
                     "service": "datastores/mutations/qed_lookups/mutsig_rankings_pancan",
-                    "description": "This dataset was prepared from TCGA MutSig 2.0 data produced by Firehose",
-                    "lookups": ["genes", "cancers"],
-                    "view_options": {
-                        "default_cancer_types": ["UCEC", "BRCA", "GBM"]
-                    }
+                    "description": "This dataset was prepared from TCGA MutSig 2.0 data produced by Firehose"
                 },
                 "mutsig_top20": {
-                    "id": "mutsig_top20",
                     "label": "MutSig Top20",
                     "service": "datastores/mutations/qed_lookups/mutsig_rankings"
                 },
                 "mutsig_provenance": {
-                    "id": "mutsig_provenance",
                     "label": "MutSig Provenance",
                     "service": "data/provenance/mutsig_provenance.json"
                 }
@@ -77,6 +68,16 @@
                 "copy_number_qvalue": {
                     "label": "Copy Number Q-Values",
                     "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"
+                }
+            }
+        },
+        "reference_data": {
+            "label": "Reference Data",
+            "catalog": {
+                "interpro": {
+                    "label": "Interpro Database",
+                    "service": "datastores/mutations/interpro/interpro",
+                    "description": "This database contains version X of Interpro (link)"
                 }
             }
         }

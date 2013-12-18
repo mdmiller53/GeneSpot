@@ -14,7 +14,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     "genes": this.options.genes
                 }));
 
-                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "bottom" });
+                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "right" });
             },
 
             "events": {

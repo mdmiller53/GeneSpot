@@ -1,11 +1,11 @@
 <style>
     .stats-hm {
-        min-width: 200px;
+        min-width: 400px;
     }
 </style>
 <div class="pull-right">
-    <a href="#" class="global-hider hider-target hide" onclick="return false;">Hide Details</a>
-    <a href="#" class="global-hider hider-target" onclick="return false;">Show Details</a>
+    <a href="#" class="global-hider hider-target hide" onclick="return false;">Hide Sample Statitics</a>
+    <a href="#" class="global-hider hider-target" onclick="return false;">Show Sample Statitics</a>
 </div>
 {{#each tumor_types}}
 <a data-toggle="collapse" data-toggle="tooltips" class="tooltips" href="#collapser-{{id}}-{{../id}}" onclick="return false;" title="{{label}}">{{id}} <i class="icon-chevron-down"></i></a>
@@ -15,16 +15,14 @@
         <thead>
         <tr>
             <td>Gene</td>
-            <td><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="q-value">Q</a></td>
-            <td class="hider-target"><a href="#" class="hider tooltips" data-toggle="tooltip" onclick="return false;" title="More details">+</a></td>
-            <td class="hider-target hide"><a href="#" class="hider tooltips" data-toggle="tooltip" onclick="return false;" title="Less details">-</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Samples">#</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Mutated Samples">Mutd</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Amplifications">Amps</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Gains">Gns</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Diploid Samples">Dpld</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Heterozygous Loss">Htz</a></td>
-            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Samples with Homozygous Loss">Hmz</a></td>
+            <td>Q-value</td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Samples">Samples</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Mutated Samples">Mutated</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Amplifications">Amplifications</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Gains">Gains</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Diploid Samples">Diploids</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Heterozygous Loss">Heterozygous<br/>Loss</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Homozygous Loss">Homozygous<br/>Loss</a></td>
             <td></td>
         </tr>
         </thead>
@@ -33,8 +31,6 @@
         <tr class="stats-{{../id}}-{{.}}">
             <td>{{.}}</td>
             <td class="q-values">&nbsp;</td>
-            <td class="hider-target">&nbsp;</td>
-            <td class="hider-target hide">&nbsp;</td>
             <td class="hider-target hide stats-samples"></td>
             <td class="hider-target hide stats-mutations"></td>
             <td class="hider-target hide stats-1"></td>

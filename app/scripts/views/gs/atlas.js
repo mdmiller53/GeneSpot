@@ -83,7 +83,7 @@ define([
 
             initialize: function (options) {
                 _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
-                _.bindAll(this, "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState", "select_tumor_types");
+                _.bindAll(this, "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -93,11 +93,7 @@ define([
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
-                WebApp.Events.on("webapp:tumor-types:selector:init", function() {
-                    _.defer(this.select_tumor_types, this);
-                }, this);
                 WebApp.Events.on("webapp:tumor-types:selector:change", function() {
-                    _.defer(this.select_tumor_types, this);
                     _.each(this.$el.find(".atlas-map"), this.loadMapData);
                 }, this);
 
@@ -117,17 +113,6 @@ define([
                 WebApp.Models["FeatureMatrix"] = FeatureMatrixModel;
 
                 console.log("atlas:registered models and views")
-            },
-
-            select_tumor_types: function () {
-                var selected_tumor_types = _.pluck($(".tumor-types-selector").dropdownCheckbox("checked"), "id");
-                var tumor_types = {};
-                _.each(WebApp.Lookups.get("tumor_types").get("items"), function(item) {
-                    tumor_types[item.id] = item;
-                });
-                WebApp.UserPreferences.set("selected_tumor_types", _.compact(_.map(selected_tumor_types, function (tumor_type) {
-                    return tumor_types[tumor_type];
-                })));
             },
 
             initMaps: function () {
@@ -233,9 +218,7 @@ define([
                         return $(link).data("id")
                     };
 
-                    var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function (i) {
-                        return i["id"];
-                    });
+                    var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                     var geneList = _.map(this.$el.find(".gene-selector .item-remover"), afn);
 
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
@@ -358,9 +341,7 @@ define([
                     return $(link).data("id")
                 };
 
-                var tumor_type_list = _.map($(".tumor-types-selector").dropdownCheckbox("checked"), function (i) {
-                    return i["id"];
-                });
+                var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 return {
                     "genes": _.map(this.$el.find(".gene-selector .item-remover"), afn),
                     "tumor_types": tumor_type_list,

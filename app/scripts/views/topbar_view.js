@@ -17,9 +17,7 @@ define([
     "views/cloud_storage_view"
 ],
 
-    function ($, _, Bootstrap, DropDownCheckbox,
-              DataMenuModal, DataMenuSections, SessionsView,
-              Template, SignInModal, HangoutLink, AboutLink, SignInView, CloudStorageView) {
+    function ($, _, Bootstrap, DropDownCheckbox, DataMenuModal, DataMenuSections, SessionsView, Template, SignInModal, HangoutLink, AboutLink, SignInView, CloudStorageView) {
 
         return Backbone.View.extend({
             events: {
@@ -30,7 +28,7 @@ define([
             },
 
             initialize: function () {
-                _.bindAll(this, "init_data_menu", "init_sessions_menu", "init_hangout_link", "init_about_menu", "init_tumor_types_menu");
+                _.bindAll(this, "init_data_menu", "init_sessions_menu", "init_hangout_link", "init_about_menu", "init_tumor_types_menu", "mark_selected_tumor_types");
 
                 this.$el.html(Template());
 
@@ -149,7 +147,20 @@ define([
                 $(".tumor-types-selector").find(":checkbox").change(function () {
                     WebApp.Events.trigger("webapp:tumor-types:selector:change");
                 });
-                WebApp.Events.trigger("webapp:tumor-types:selector:init");
+
+                _.defer(this.mark_selected_tumor_types);
+                WebApp.Events.on("webapp:tumor-types:selector:change", this.mark_selected_tumor_types);
+            },
+
+            mark_selected_tumor_types: function () {
+                var selected_tumor_types = _.pluck($(".tumor-types-selector").dropdownCheckbox("checked"), "id");
+                var tumor_types = {};
+                _.each(WebApp.Lookups.get("tumor_types").get("items"), function (item) {
+                    tumor_types[item.id] = item;
+                });
+                WebApp.UserPreferences.set("selected_tumor_types", _.compact(_.map(selected_tumor_types, function (tumor_type) {
+                    return tumor_types[tumor_type];
+                })));
             }
         });
     });

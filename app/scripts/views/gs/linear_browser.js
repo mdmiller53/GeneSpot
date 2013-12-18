@@ -7,7 +7,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/linear_browser", "
                 _.extend(this, options);
                 _.bindAll(this, "loadData", "initTypeahead", "initCancerSelector");
 
-                $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", success: this.initTypeahead });
+                _.defer(this.initTypeahead);
 
                 $.ajax({ url: "svc/data/lookups/cancers", type: "GET", dataType: "text", success: this.initCancerSelector });
 
@@ -44,8 +44,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/linear_browser", "
                 });
             },
 
-            initTypeahead: function (txt) {
-                var genelist = txt.trim().split("\n");
+            initTypeahead: function () {
+                var genelist = WebApp.Lookups.get("genes").get("keys");
 
                 var _this = this;
                 this.$el.find(".genes-typeahead").typeahead({

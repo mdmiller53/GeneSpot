@@ -83,12 +83,12 @@ define([
 
             initialize: function (options) {
                 _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
-                _.bindAll(this, "initGeneTypeahead", "nextZindex", "nextPosition", "currentState", "select_tumor_types");
+                _.bindAll(this, "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState", "select_tumor_types");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
 
-                $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", success: this.initGeneTypeahead });
+                _.defer(this.init_genelist_typeahead);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
@@ -297,8 +297,8 @@ define([
                 });
             },
 
-            initGeneTypeahead: function (txt) {
-                var genelist = txt.trim().split("\n");
+            init_genelist_typeahead: function () {
+                var genelist = WebApp.Lookups.get("genes").get("keys");
 
                 var UL = this.$el.find(".gene-selector");
                 this.$el.find(".genes-typeahead").typeahead({

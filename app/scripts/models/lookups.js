@@ -29,7 +29,7 @@ define(["jquery", "underscore", "backbone"],
                 });
 
                 _.each(lookups, function (lookup, key) {
-                    console.log("lookups:" + key + ":loading...");
+                    console.log("webapp:lookups:" + key + ":loading...");
                     this.set(key, {});
 
                     if (_.has(lookup, "source")) {
@@ -53,7 +53,7 @@ define(["jquery", "underscore", "backbone"],
                         var lookupModel = new Backbone.Model();
                         if (_.has(lookup, "model")) {
                             var M = WebApp.Models[lookup["model"]];
-                            lookupModel = new M({});
+                            if (M) lookupModel = new M({});
                         }
                         this.set(key, lookupModel);
                         lookupModel.fetch(_.extend(lookup, { "success": lookupsReadyFn, "error": lookupsReadyFn }));

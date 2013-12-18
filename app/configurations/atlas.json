@@ -65,9 +65,8 @@
                 {
                     "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "source": "datamodel/feature_matrices",
-                    "source_suffix": "/feature_matrix",
-                    "per_tumor_type": true
+                    "tumor_type_source": "datamodel/feature_matrices",
+                    "source_suffix": "/feature_matrix"
                 }
             ]
         },

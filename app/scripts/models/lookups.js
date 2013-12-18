@@ -3,7 +3,7 @@ define(["jquery", "underscore", "backbone"],
 
         return Backbone.Model.extend({
             initialize: function () {
-                _.bindAll(this, "fetch", "after_fetch");
+                _.bindAll(this, "fetch", "after_fetch", "fetch_lookups");
             },
 
             fetch: function (options) {
@@ -11,20 +11,17 @@ define(["jquery", "underscore", "backbone"],
             },
 
             after_fetch: function () {
-                _.each(this.get("prerequisites"), function(url, key) {
-                    var _this = this;
-                    var m = new Backbone.Model();
-                    m.fetch({
-                        "url": url,
-                        "async": true,
-                        "success": function(json) {
-                            _this.set(key, json);
-                        }
-                    });
-                }, this);
+                var m = new Backbone.Model();
+                WebApp.Lookups.set("tumor_types", m);
+                m.fetch({
+                    "url": "configurations/tumor_types.json",
+                    "success": this.fetch_lookups
+                });
+            },
 
+            fetch_lookups: function () {
                 var lookups = this.get("lookups");
-                var lookupsReadyFn = _.after(_.keys(lookups).length, function () {
+                var lookupsReadyFn = _.after(_.keys(lookups).length - 1, function () {
                     WebApp.Events.trigger("webapp:ready:lookups");
                 });
 
@@ -32,8 +29,8 @@ define(["jquery", "underscore", "backbone"],
                     console.log("webapp:lookups:" + key + ":loading...");
                     this.set(key, {});
 
-                    if (_.has(lookup, "source")) {
-                        var tumor_type_list = ["BRCA"]; // TODO
+                    if (_.has(lookup, "tumor_type_source")) {
+                        var tumor_type_list = _.pluck(WebApp.Lookups.get("tumor_types").get("items"), "id");
                         var completeFn = _.after(tumor_type_list.length, lookupsReadyFn);
                         var lookup_obj = this.get(key);
 
@@ -49,6 +46,16 @@ define(["jquery", "underscore", "backbone"],
                             }
                         });
 
+                    } else if (_.has(lookup, "source")) {
+                        var models = WebApp.Datamodel.load_datasources({"source": lookup["source"]}, [], {
+                            "source_suffix": lookup["source_suffix"],
+                            "query": lookup.query ,
+                            "callback": function () {
+                                var items = this.get("items");
+                                console.log("lookups:" + key + ":complete[" + items.length + "]");
+                                lookupsReadyFn();
+                            }
+                        });
                     } else if (_.has(lookup, "url")) {
                         var lookupModel = new Backbone.Model();
                         if (_.has(lookup, "model")) {

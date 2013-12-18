@@ -33,7 +33,8 @@ define(["jquery", "underscore", "backbone",
                 All: new SessionsCollection([]),
                 Active: null,
                 Producers: {}
-            }
+            },
+            UserPreferences: new Backbone.Model()
         };
 
         WebApp.initialize = function () {

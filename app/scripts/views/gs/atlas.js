@@ -121,7 +121,7 @@ define([
 
             select_tumor_types: function () {
                 var selected_tumor_types = _.pluck($(".tumor-types-selector").dropdownCheckbox("checked"), "id");
-                WebApp.Lookups.get("user_preferences").set("selected_tumor_types", _.compact(_.map(selected_tumor_types, function (tumor_type) {
+                WebApp.UserPreferences.set("selected_tumor_types", _.compact(_.map(selected_tumor_types, function (tumor_type) {
                     return WebApp.Lookups.get("tumor_types")[tumor_type];
                 })));
             },

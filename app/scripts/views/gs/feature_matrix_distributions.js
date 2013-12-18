@@ -32,7 +32,7 @@ define(["jquery", "underscore", "backbone",
 
                 this.$el.html(Tpl({
                     "genes": this.options.genes,
-                    "tumor_types": WebApp.Lookups.get("user_preferences").get("selected_tumor_types"),
+                    "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
                     "selected_genes": this.selected_genes
                 }));
 

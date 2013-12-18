@@ -139,9 +139,7 @@ define([
             },
 
             init_tumor_types_menu: function () {
-                var data = _.map(WebApp.Lookups.get("tumor_types"), function (obj) {
-                    return { "label": obj.id + " :: " + obj.label, "isChecked": obj.isSelected, "id": obj.id };
-                });
+                var data = WebApp.Lookups.get("tumor_types").get("items");
                 var hasChecks = _.find(data, function (item) {
                     return item.isChecked;
                 });

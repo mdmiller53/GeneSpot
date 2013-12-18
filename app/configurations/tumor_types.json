@@ -1,25 +1,25 @@
 {
-    "tumor_types": [
+    "items": [
         {
             "id": "BLCA",
             "label": "Bladder Urothelial Carcinoma",
             "description": "TODO",
             "color": "#00008F",
-            "isSelected": true
+            "isChecked": true
         },
         {
             "id": "BRCA",
             "label": "Breast invasive carcinoma",
             "description": "TODO",
             "color": "#0000B9",
-            "isSelected": true
+            "isChecked": true
         },
         {
             "id": "CESC",
             "label": "Cervical squamous cell carcinoma and endocervical adenocarcinoma",
             "description": "TODO",
             "color": "#B1FF4E",
-            "isSelected": true
+            "isChecked": true
         },
         {
             "id": "COAD",

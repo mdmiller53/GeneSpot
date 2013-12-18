@@ -41,7 +41,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                             gene_item[gene_item["type"]] = true; // binarize for template use
                         })
 
-                        var $qvalues = this.$el.find(".stats-" + tumor_type_obj.id + "-" + gene);
+                        var $qvalues = this.$el.find(".stats-" + tumor_type_obj.id + "-" + gene).show();
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
                         $qvalues.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "top" });
                     }, this);
@@ -65,7 +65,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
 
                     var gene_row_items = {};
                     _.each(this.rowLabels, function (rowLabel) {
-                        var $statsEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + rowLabel);
+                        var $statsEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + rowLabel).show();
 
                         gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
 

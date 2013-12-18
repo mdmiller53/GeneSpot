@@ -2,6 +2,7 @@ define   ([
     'backbone',
     'views/gs/region_seqpeek',
     'hbs!templates/gs/mutations_map',
+    'hbs!templates/gs/mutations_map_table',
     'hbs!templates/line_item',
     'vq'
 ],
@@ -9,6 +10,7 @@ function (
     Backbone,
     SeqPeekFactory,
     MutationsMapTemplate,
+    MutationsMapTableTemplate,
     LineItemTemplate,
     vq
 ) {
@@ -19,7 +21,7 @@ return Backbone.View.extend({
     selected_cancers: [],
 
     initialize: function (options) {
-        _.bindAll(this, "initGeneSelector", "initGraph");
+        _.bindAll(this, "renderUI", "initGeneSelector", "initTable");
 
         this.cancers = this.options.cancers;
         this.genes = this.options.genes;
@@ -45,39 +47,51 @@ return Backbone.View.extend({
             this.current_gene = this.genes[0];
         }
 
-        this.model.on("change", this.initGraph);
+        this.model.on("change", this.renderUI);
+    },
+
+    renderUI: function() {
+        this.$el.html("");
+
+        this.$el.html(MutationsMapTemplate({
+            selected_gene: this.current_gene
+        }));
+
+        this.initGeneSelector();
     },
 
     initGeneSelector: function () {
-        var UL = this.$el.find(".seqpeek-gene-selector").empty();
-        _.each(_.without(this.genes, this.current_gene), function(gene) {
-            UL.append(LineItemTemplate({ "label":gene, "id":gene }));
-        }, this);
+        var _this = this,
+            UL = this.$el.find(".seqpeek-gene-selector").empty();
 
-        var _this = this;
+        _.chain(this.genes)
+            .without(this.current_gene)
+            .each(function(gene) {
+                UL.append(LineItemTemplate({ "label":gene, "id":gene }));
+            }, this);
+
         UL.find("li a").click(function(e) {
             _this.current_gene = $(e.target).data("id");
-            _.defer(_this.model.fetch({
+            _this.model.fetch({
                 data: {
                     gene: _this.current_gene,
-                    cancers: _this.cancers
+                    cancer: _this.cancers
                 }
-            }));
-            _.defer(_this.initGraph);
-            _.defer(_this.initGeneSelector);
+            });
         });
+
+        this.initTable();
     },
 
-    initGraph: function(changed) {
-        this.$el.html("");
+    initTable: function(changed) {
+        var $table_el = this.$el.find(".mutations_map_table");
 
         var mutations = this.model.get("mutations"),
             features = this.model.get("features"),
             formatter = function(value) {
                 return parseInt(value) + " %";
-            };
+            },
             template_data = {
-                selected_gene: this.current_gene,
                 items: []
             };
 
@@ -109,13 +123,13 @@ return Backbone.View.extend({
             }
 
             template_data.items.push({
-                tumor_type: tumor_type,
+                tumor_type: tumor_type.toUpperCase(),
                 mutsig_rank: mutsig_data.rank,
                 statistics: statistics
             });
         });
 
-        this.$el.html(MutationsMapTemplate(template_data));
+        $table_el.html(MutationsMapTableTemplate(template_data));
     }
 });
 

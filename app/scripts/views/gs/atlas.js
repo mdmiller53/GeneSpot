@@ -234,10 +234,12 @@ define([
                 if (ViewClass) {
                     var viewDef = this.viewsByUid[$(targetEl).data("uid")];
                     var data_sources = viewDef["sources"] || { "source": viewDef["source"] };
-                    console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources));
+                    console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources) + ":[" + tumor_type_list + "]");
 
                     var map_optns = _.extend(options, viewDef || {});
-                    var models = WebApp.Datamodel.load_datasources(data_sources, tumor_type_list, _.extend(map_optns, {"query": _.omit(query, "cancer") }));
+                    var query_options = { "query": query };
+                    if (viewDef["per_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
+                    var models = WebApp.Datamodel.load_datasources(data_sources, tumor_type_list, _.extend(map_optns || {}, query_options));
 
                     var view = new ViewClass(_.extend(options, map_optns, {"models": models }));
                     $(targetEl).html(view.render().el);

@@ -42,26 +42,5 @@
             "label": "Pubcrawl",
             "url": "http://pubcrawl.systemsbiology.net"
         }
-    ],
-    "colormaps": {
-        "tumor_types": {
-            "BLCA": "#00008F",
-            "BRCA": "#0000B9",
-            "COAD": "#0000E3",
-            "GBM": "#000EFF",
-            "HNSC": "#0038FF",
-            "KIRC": "#0062FF",
-            "LAML": "#008BFF",
-            "LGG": "#00B5FF",
-            "LUAD": "#00DFFF",
-            "LUSC": "#0AFFF5",
-            "OV": "#34FFCB",
-            "PRAD": "#5EFFA1",
-            "READ": "#87FF78",
-            "SKCM": "#FFA500",
-            "STAD": "#FF5200",
-            "THCA": "#FD0000",
-            "UCEC": "#800000"
-        }
-    }
+    ]
 }

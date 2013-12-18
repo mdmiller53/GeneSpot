@@ -1,11 +1,16 @@
+<style>
+    .stats-hm {
+        min-width: 200px;
+    }
+</style>
 <div class="pull-right">
     <a href="#" class="global-hider hider-target hide" onclick="return false;">Hide Details</a>
     <a href="#" class="global-hider hider-target" onclick="return false;">Show Details</a>
 </div>
-{{#each items_by_tumor_type}}
-<a data-toggle="collapse" href="#collapser-{{tumor_type}}-{{../id}}">{{tumor_type}} <i class="icon-chevron-down"></i></a>
-<!--<div id="collapser-{{tumor_type}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">-->
-<div id="collapser-{{tumor_type}}-{{../id}}" class="collapse in">
+{{#each tumor_types}}
+<a data-toggle="collapse" data-toggle="tooltips" class="tooltips" href="#collapser-{{id}}-{{../id}}" onclick="return false;" title="{{label}}">{{id}} <i class="icon-chevron-down"></i></a>
+<!--<div id="collapser-{{id}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">-->
+<div id="collapser-{{id}}-{{../id}}" class="collapse in">
     <table class="table table-bordered table-condensed">
         <thead>
         <tr>
@@ -24,9 +29,9 @@
         </tr>
         </thead>
         <tbody>
-        {{#each items}}
-        <tr class="stats-{{../tumor_type}}-{{gene}}">
-            <td>{{gene}}</td>
+        {{#each ../genes}}
+        <tr class="stats-{{../id}}-{{.}}">
+            <td>{{.}}</td>
             <td class="q-values">&nbsp;</td>
             <td class="hider-target">&nbsp;</td>
             <td class="hider-target hide">&nbsp;</td>

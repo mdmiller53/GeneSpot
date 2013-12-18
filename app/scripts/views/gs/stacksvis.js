@@ -3,10 +3,18 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
         return Backbone.View.extend({
 
             "initialize": function (options) {
-                _.bindAll(this, "renderView", "renderQValue", "renderGraph", "getColumnModel");
+                _.bindAll(this, "render_data_q_value", "render_data_copy_number", "getColumnModel");
 
-                this.options.models["copy_number"].on("load", this.renderView);
-                this.options.models["q_value"].on("load", this.renderQValue);
+                this.options.models["copy_number"].on("load", this.render_data_copy_number);
+                this.options.models["q_value"].on("load", this.render_data_q_value);
+
+                this.$el.html(StacksVisTpl({
+                    "id": Math.floor(Math.random() * 1000),
+                    "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
+                    "genes": this.options.genes
+                }));
+
+                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "bottom" });
             },
 
             "events": {
@@ -18,25 +26,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }
             },
 
-            "renderView": function () {
-                var items_by_cancer = _.groupBy(this.options.models["copy_number"].get("items"), "cancer");
-                var items_by_tumor_type = _.map(items_by_cancer, function (items, cancer) {
-                    return {
-                        "tumor_type": cancer,
-                        "items": _.sortBy(items, function(item) {
-                            return this.options.genes.indexOf(item["gene"]);
-                        }, this)
-                    }
-                }, this);
-
-                this.$el.html(StacksVisTpl({ "id": Math.floor(Math.random() * 1000), "items_by_tumor_type": items_by_tumor_type }));
-                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "bottom" });
-                _.each(_.pluck(items_by_tumor_type, "tumor_type"), this.renderGraph, this);
-
-                this.renderQValue();
-            },
-
-            "renderQValue": function() {
+            "render_data_q_value": function() {
                 if (!this.options.models["q_value"].get("items")) return;
 
                 _.each(_.groupBy(this.options.models["q_value"].get("items"), "cancer"), function(items, tumor_type) {
@@ -44,71 +34,72 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                         _.each(gene_items, function(gene_item) {
                             gene_item[gene_item["type"]] = true; // binarize for template use
                         }, this);
-                        var $qvalues = this.$el.find(".stats-" + tumor_type + "-" + gene);
+                        var $qvalues = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + gene);
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
                         $qvalues.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "top" });
                     }, this);
                 }, this);
             },
 
-            "renderGraph": function (tumor_type) {
-                var ttModel = this.options.models["copy_number"].get("BY_TUMOR_TYPE")[tumor_type];
-                if (_.isEmpty(ttModel.ROWS)) return;
-                if (_.isEmpty(ttModel.COLUMNS)) return;
-                if (_.isEmpty(ttModel.DATA)) return;
-
+            "render_data_copy_number": function () {
                 this.rowLabels = _.map(this.options.genes, function (g) {
                     return g.toLowerCase(); // TODO: not good
                 });
 
-                var columns_by_cluster = this.getColumnModel(ttModel);
-                var data = {};
-                var cbscale = colorbrewer.RdYlBu[5];
+                _.each(this.options.models["copy_number"].get("BY_TUMOR_TYPE"), function(ttModel, tumor_type) {
+                    if (_.isEmpty(ttModel.ROWS)) return;
+                    if (_.isEmpty(ttModel.COLUMNS)) return;
+                    if (_.isEmpty(ttModel.DATA)) return;
 
-                var gene_row_items = {};
-                _.each(this.rowLabels, function (rowLabel) {
-                    var $statsEl = this.$el.find(".stats-" + tumor_type + "-" + rowLabel);
+                    var columns_by_cluster = this.getColumnModel(ttModel);
+                    var data = {};
+                    var cbscale = colorbrewer.RdYlBu[5];
 
-                    gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
+                    var gene_row_items = {};
+                    _.each(this.rowLabels, function (rowLabel) {
+                        var $statsEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + rowLabel);
 
-                    var row_idx = ttModel.ROWS.indexOf(rowLabel);
-                    if (row_idx < 0) return;
+                        gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
 
-                    _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
-                        if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
-                        var columnLabel = ttModel.COLUMNS[cellIdx].trim();
-                        if (!data[columnLabel]) data[columnLabel] = {};
-                        data[columnLabel][rowLabel] = {
-                            "value": cell.value,
-                            "row": rowLabel,
-                            "colorscale": cbscale[cell.value],
-                            "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig
+                        var row_idx = ttModel.ROWS.indexOf(rowLabel);
+                        if (row_idx < 0) return;
+
+                        _.each(ttModel.DATA[row_idx], function (cell, cellIdx) {
+                            if (_.isString(cell.orig)) cell.orig = cell.orig.trim();
+                            var columnLabel = ttModel.COLUMNS[cellIdx].trim();
+                            if (!data[columnLabel]) data[columnLabel] = {};
+                            data[columnLabel][rowLabel] = {
+                                "value": cell.value,
+                                "row": rowLabel,
+                                "colorscale": cbscale[cell.value],
+                                "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig
+                            };
+                        }, this);
+
+                        var counts = _.countBy(ttModel.DATA[row_idx], "value");
+                        var totals = ttModel.DATA[row_idx].length;
+                        var lookupPercentage = function (idx) {
+                            var count = counts[idx];
+                            if (count) return (100 * count / totals).toFixed(1) + "%";
+                            return "";
                         };
+                        $statsEl.find(".stats-samples").html(totals);
+                        $statsEl.find(".stats-0").html(lookupPercentage("0"));
+                        $statsEl.find(".stats-1").html(lookupPercentage("1"));
+                        $statsEl.find(".stats-2").html(lookupPercentage("2"));
+                        $statsEl.find(".stats-3").html(lookupPercentage("3"));
+                        $statsEl.find(".stats-4").html(lookupPercentage("4"));
                     }, this);
 
-                    var counts = _.countBy(ttModel.DATA[row_idx], "value");
-                    var totals = ttModel.DATA[row_idx].length;
-                    var lookupPercentage = function (idx) {
-                        var count = counts[idx];
-                        if (count) return (100 * count / totals).toFixed(1) + "%";
-                        return "";
-                    };
-                    $statsEl.find(".stats-samples").html(totals);
-                    $statsEl.find(".stats-0").html(lookupPercentage("0"));
-                    $statsEl.find(".stats-1").html(lookupPercentage("1"));
-                    $statsEl.find(".stats-2").html(lookupPercentage("2"));
-                    $statsEl.find(".stats-3").html(lookupPercentage("3"));
-                    $statsEl.find(".stats-4").html(lookupPercentage("4"));
+                    var vis = Stacksvis(this.$el, {
+                        "vertical_padding": 1,
+                        "highlight_fill": colorbrewer.RdYlGn[3][2],
+                        "columns_by_cluster": columns_by_cluster,
+                        "row_labels": this.rowLabels,
+                        "row_selectors": gene_row_items
+                    });
+                    vis.draw({ "data": data });
                 }, this);
-
-                var vis = Stacksvis(this.$el, {
-                    "vertical_padding": 1,
-                    "highlight_fill": colorbrewer.RdYlGn[3][2],
-                    "columns_by_cluster": columns_by_cluster,
-                    "row_labels": this.rowLabels,
-                    "row_selectors": gene_row_items
-                });
-                vis.draw({ "data": data });
             },
 
             "getColumnModel": function (ttModel) {

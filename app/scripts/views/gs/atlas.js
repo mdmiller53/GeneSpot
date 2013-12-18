@@ -121,8 +121,12 @@ define([
 
             select_tumor_types: function () {
                 var selected_tumor_types = _.pluck($(".tumor-types-selector").dropdownCheckbox("checked"), "id");
+                var tumor_types = {};
+                _.each(WebApp.Lookups.get("tumor_types").get("items"), function(item) {
+                    tumor_types[item.id] = item;
+                });
                 WebApp.UserPreferences.set("selected_tumor_types", _.compact(_.map(selected_tumor_types, function (tumor_type) {
-                    return WebApp.Lookups.get("tumor_types")[tumor_type];
+                    return tumor_types[tumor_type];
                 })));
             },
 

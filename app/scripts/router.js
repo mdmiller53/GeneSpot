@@ -67,14 +67,10 @@ define(["jquery", "underscore", "backbone", "bootstrap",
             },
 
             viewsByUri: function (uri, view_name, options) {
-                var parts = uri.split("/");
-                var datamodel_root = parts[0];
-                var domain_key = parts[1];
-                var catalog_key = parts[2];
-                var domain_item = WebApp.Datamodel.get(datamodel_root)[domain_key];
-                var catalog_item = domain_item.catalog[catalog_key];
+                var catalog_item = WebApp.Datamodel.find_catalogItem(uri);
+                var Model = WebApp.Models[catalog_item.model] || Backbone.Model;
 
-                var model = new catalog_item.Model(_.extend(options || {}, { "catalog_item": catalog_item }));
+                var model = new Model(_.extend(options || {}, { "catalog_item": catalog_item }));
                 _.defer(function () {
                     model.fetch({
                         "url": catalog_item["url"],
@@ -84,7 +80,7 @@ define(["jquery", "underscore", "backbone", "bootstrap",
                     });
                 });
 
-                var view_options = _.extend({"model": model}, (domain_item.view_options || {}), (options || {}));
+                var view_options = _.extend({"model": model}, (options || {}));
 
                 var ViewClass = WebApp.Views[view_name];
                 var view = new ViewClass(view_options);

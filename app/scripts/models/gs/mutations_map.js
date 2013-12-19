@@ -142,7 +142,6 @@ define(
                 }
 
                 that.set(that.loaded_data);
-                //that.trigger("update");
             });
         }
     });

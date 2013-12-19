@@ -250,17 +250,14 @@ return Backbone.View.extend({
 
     processData: function(param_variants, region_data) {
         var variant_hovercard_items = {
-            "Chromosome": function(d) {
-                return d.chromosome + ":" + d.coordinate;
+            "Location": function(d) {
+                return d.location;
             },
-            "Protein change": function(d) {
-                return d.protein_change_type;
+            "Mutation Type": function(d) {
+                return d.mutation_type;
             },
             "Samples": function(d) {
                 return d.sample_ids.length;
-            },
-            "Variant": function(d) {
-                return d.variant;
             }
         };
 

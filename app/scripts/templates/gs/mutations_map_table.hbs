@@ -10,10 +10,10 @@
     <tbody>
     {{#each items}}
         <tr>
-            <td>{{tumor_type}}</td>
+            <td>{{tumor_type_label}}</td>
             <td>{{mutsig_rank}}</td>
             <td>{{statistics.samples.numberOf}} / {{statistics.samples.totals.percentOf}}</td>
-            <td id="seqpeek-row-{{../tumor_type}}"></td>
+            <td id="seqpeek-row-{{tumor_type}}"></td>
         </tr>
     {{/each}}
     </tbody>

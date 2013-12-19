@@ -298,7 +298,8 @@ return Backbone.View.extend({
             },
             variants: proc_var,
             variant_coordinate_field: 'location',
-            variant_id_field: 'mutation_id',
+            variant_id_field: 'mutation_type',
+            variant_shape_width: 5,
             tooltips: {
                 variants: {
                     items: variant_hovercard_items

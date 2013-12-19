@@ -2076,7 +2076,7 @@ function(
                 .value();
         },
 
-        _buildLocationGroupsForVariantsInRegion: function(region) {
+        _buildLocationGroupsForVariantsInRegion: function(region, track) {
             var that = this;
             var mutationIdFn = this.mutationIdFn,
                 mutations_by_loc = region.variants_by_loc;
@@ -2091,7 +2091,9 @@ function(
 
                     var mutation_ids_sorted = _
                         .chain(mutations)
-                        .map(mutationIdFn)
+                        .map(function(variant) {
+                            return variant[track.variant_id_field];
+                        })
                         .uniq()
                         .value();
 
@@ -2135,7 +2137,7 @@ function(
 
                     _.each(track.region_data, function(region) {
                         var layout = {},
-                            location_groups = self._buildLocationGroupsForVariantsInRegion(region);
+                            location_groups = self._buildLocationGroupsForVariantsInRegion(region, track);
 
                         layout.location_groups = location_groups;
 
@@ -2459,9 +2461,10 @@ function(
             }
         },
 
-        _applyVariantTypeGroups: function(selection, mutationIdFn, track_layout) {
+        _applyVariantTypeGroups: function(selection, mutationIdFn, track) {
             this.each(function(data) {
-                var group = data.group;
+                var group = data.group,
+                    variant_id_field = track.variant_id_field;
 
                 var mutation_type_g = d3
                     .select(this)
@@ -2477,13 +2480,13 @@ function(
                     .append("svg:g")
                     .attr("class", "variant-type")
                     .attr("transform", function(d) {
-                        var x = group.scale(mutationIdFn(d)) + 10.0 / 2.0;
-                        var y = -track_layout.variants.y;
+                        var x = group.scale(d[variant_id_field]) + track.variant_shape_width / 2.0;
+                        var y = -track.layout.variants.y;
                         return "translate(" + x + "," + y + ")";
                     })
                     .style("fill", function(d) {
-                        var colors = track_layout.colors.map,
-                            field = track_layout.colors.field_name;
+                        var colors = track.layout.colors.map,
+                            field = track.layout.colors.field_name;
 
                         if (_.has(colors, d[field])) {
                             return colors[d[field]];
@@ -2591,7 +2594,7 @@ function(
                             return "translate(" + d.group.start_loc + ",0)";
                         });
 
-                    variant_group_g.call(self._applyVariantTypeGroups, self.mutationIdFn, track.layout);
+                    variant_group_g.call(self._applyVariantTypeGroups, self.mutationIdFn, track);
 
                     if (_.has(track, 'color_by')) {
                         variant_group_g

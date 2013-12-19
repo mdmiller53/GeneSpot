@@ -1825,12 +1825,17 @@ function(
         _getDimensionsForGenomicTrack: function(track, config, param_layout) {
             var layout = param_layout || _.extend({}, track.layout);
 
-            layout.protein_scale_line.y = 450;
+            layout.protein_scale_line.y = 150;
 
-            layout.height = 500;
+            layout.height = 200;
 
             layout.variants = {
-                y: 400
+                y: 100
+            };
+
+            layout.colors = {
+                field_name: this.config.variant_color_field,
+                map: this.config.variant_colors
             };
 
             return layout;
@@ -2118,7 +2123,7 @@ function(
         },
 
         alignVariantsGenomic: function() {
-            var that = this;
+            var self = this;
             var data = this.data;
 
 
@@ -2130,7 +2135,7 @@ function(
 
                     _.each(track.region_data, function(region) {
                         var layout = {},
-                            location_groups = that._buildLocationGroupsForVariantsInRegion(region);
+                            location_groups = self._buildLocationGroupsForVariantsInRegion(region);
 
                         layout.location_groups = location_groups;
 
@@ -2150,7 +2155,7 @@ function(
                     var layout = {};
                     var location_groups;
 
-                    location_groups = that._buildLocationGroupsForVariants(track.variants_by_loc);
+                    location_groups = self._buildLocationGroupsForVariants(track.variants_by_loc);
 
                     layout.location_groups = location_groups;
 
@@ -2475,6 +2480,17 @@ function(
                         var x = group.scale(mutationIdFn(d)) + 10.0 / 2.0;
                         var y = -track_layout.variants.y;
                         return "translate(" + x + "," + y + ")";
+                    })
+                    .style("fill", function(d) {
+                        var colors = track_layout.colors.map,
+                            field = track_layout.colors.field_name;
+
+                        if (_.has(colors, d[field])) {
+                            return colors[d[field]];
+                        }
+                        else {
+                            return 'lightgray';
+                        }
                     });
 
                 mutation_type_exit
@@ -2514,6 +2530,26 @@ function(
                             return trs;
                         });
                 });
+
+            var renderCircles = function(d) {
+                d3.select(this)
+                    .selectAll(".variant-type.variant")
+                    .data(d.sample_ids, function(s) {
+                        return s.id;
+                    })
+                    .enter()
+                    .append("svg:circle")
+                    .attr("r", self.config.mutation_shape_width / 2.0)
+                    .attr("class", "mutation")
+                    .attr("cx", 0.0)
+                    .attr("cy", function(sample, index) {
+                        return index * self.config.mutation_shape_width;
+                    });
+
+                d3.select(this).on("mouseover", function(d) {
+                    hovercard.call(this, d);
+                });
+            };
 
             var renderBars = function(d) {
                 d3.select(this)
@@ -2565,6 +2601,14 @@ function(
                                 track.tooltip_handlers.variants.call(this, d);
                             });
                     }
+                    else {
+                        variant_group_g
+                            .selectAll(".variant-type")
+                            .each(renderCircles)
+                            .on("mouseover", function(d) {
+                                track.tooltip_handlers.variants.call(this, d);
+                            });
+                    }
                 });
         },
 
@@ -2578,9 +2622,9 @@ function(
                     _.each(node.scale.domain(), function(variant_type) {
                         stem_array.push({
                             sx: region.layout.get_screen_location_for_coordinate(coordinate),
-                            sy: -track.layout.height + 50.0,
+                            sy: -track.layout.variants.y,
                             tx: node.start_loc + that.config.mutation_shape_width / 2.0 + node.scale(variant_type),
-                            ty: -400,
+                            ty: -track.layout.protein_scale_line.y,
                             coordinate: coordinate
                         });
                     });

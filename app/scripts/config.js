@@ -19,7 +19,8 @@ require.config({
         "jsPlumb" : '../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min',
         "bootstrap-dropdown-checkbox" : "../bower_components/bootstrap-dropdown-checkbox/js/bootstrap-dropdown-checkbox",
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
-        "stacksvis" : "../bower_components/stacksvis/js/stacksvis"
+        "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
+        "carve" : "../bower_components/carve/carve"
     },
     shim: {
         underscore : {

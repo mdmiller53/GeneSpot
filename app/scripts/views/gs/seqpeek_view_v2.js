@@ -168,7 +168,7 @@ return Backbone.View.extend({
             },
             tracks: [
                 _.extend(transcript_track, {
-                    label: 'GENOMIC TRACK'
+                    label: ''
                 })
             ]
         };
@@ -217,7 +217,7 @@ return Backbone.View.extend({
                 horizontal_padding: 0,
                 vertical_padding: 0
             },
-            band_label_width: 180,
+            band_label_width: 0,
             tooltips: {
                 interpro: {
                     items: {

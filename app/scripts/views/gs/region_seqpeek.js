@@ -1827,7 +1827,7 @@ function(
 
             layout.protein_scale_line.y = 150;
 
-            layout.height = 200;
+            layout.height = 160;
 
             layout.variants = {
                 y: 100

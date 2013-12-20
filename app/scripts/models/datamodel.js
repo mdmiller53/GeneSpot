@@ -43,7 +43,10 @@ define(["jquery", "underscore", "backbone"],
                     if (_.has(catalog_item, "url")) {
                         var Model = WebApp.Models[catalog_item.model] || Backbone.Model;
 
-                        var model = models_by_key[key] = new Model(options);
+                        var model = models_by_key[key] = new Model(_.extend(options, {
+                            catalog_item: catalog_item
+                        }));
+
                         if (options.callback) model.on("load", options.callback, model);
                         this.fetch_datasource(model, catalog_item["url"], options["query"]);
                     } else {

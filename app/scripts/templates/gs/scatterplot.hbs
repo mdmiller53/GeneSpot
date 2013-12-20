@@ -73,12 +73,14 @@
             <button class="btn btn-small" data-toggle="button" data-id="{{id}}" style="border-bottom-color: {{color}};">{{id}}</button>
             {{/each}}
         </div>
+        {{#if sample_types}}
         <div class="span3 sample-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
-            <button class="btn btn-small active" data-toggle="button" data-id="all_sample_types">All</button>
+            <button class="btn btn-small active" data-toggle="button" data-id="all_sample_types">All Tissue Types</button>
             {{#each sample_types}}
-            <button class="btn btn-small" data-toggle="button" data-id="{{.}}">{{.}}</button>
+            <button class="btn btn-small" data-toggle="button" data-id="{{key}}">{{label}}</button>
             {{/each}}
         </div>
+        {{/if}}
     </div>
     <div class="row">
         <div class="span3 gene-feature-selectors">

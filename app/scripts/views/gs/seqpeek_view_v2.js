@@ -25,6 +25,8 @@ return Backbone.View.extend({
     initialize: function (options) {
         _.bindAll(this, "renderUI", "initGeneSelector", "initTable", "initSeqPeekTracks", "renderSeqPeek", "processData");
 
+        this.model = this.options.models.source;
+
         this.cancers = this.options.cancers;
         this.genes = this.options.genes;
 

@@ -6,13 +6,18 @@ define(
 ) {
 
     return Backbone.Model.extend({
+        constructor: function(attributes, options) {
+            this.options = attributes;
+
+            Backbone.Model.apply(this, {});
+        },
+
         initialize: function (attributes, options) {
-            this.options = options;
             this.loaded_data = {
                 mutations: {}
             };
 
-            _.bindAll(this, "parseSingleCancerMutations", "parseInterpro", "parseMutsig", "parseFeatures");
+            _.bindAll(this, "parseSingleCancerMutations", "parseMutsig", "parseFeatures");
         },
 
         parseSingleCancerMutations: function(cancer, result) {
@@ -20,10 +25,6 @@ define(
             if (items.length > 0) {
                 this.loaded_data.mutations[cancer.toLowerCase()] = items;
             }
-        },
-
-        parseInterpro: function(uniprot_id, result) {
-
         },
 
         parseMutsig: function(cancer_list, result) {
@@ -58,7 +59,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: "svc/" + this.options.catalog_unit.mutsig_rankings_service,
+                url: this.options.catalog_item.mutsig_rankings_service,
                 context: this,
                 dataType: 'json',
                 data: query
@@ -79,7 +80,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: "svc/" + this.options.catalog_unit.feature_matrix_service + "/" + this.options.catalog_unit.feature_matrix_collection,
+                url: this.options.catalog_item.feature_matrix_service + "/" + this.options.catalog_item.feature_matrix_collection,
                 context: this,
                 dataType: 'json',
                 data: query
@@ -105,8 +106,7 @@ define(
                 cancers = _.map(this.default_cancer_types, function(x) {return x.toLowerCase();});
             }
 
-            var service_uri = this.options["data_uri"];
-            var protein_db = "svc/" + this.options["catalog_unit"]["protein_db"];
+            var service_uri = this.options.catalog_item.service;
 
             var promises = [],
                 parsers = [];

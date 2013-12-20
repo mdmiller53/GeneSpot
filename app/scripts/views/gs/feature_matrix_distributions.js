@@ -18,6 +18,17 @@ define(["jquery", "underscore", "backbone",
                         this.carveVis.highlight(tumor_type);
                     }
                 },
+                "click .sample-type-selector-scatterplot button": function (e) {
+                    var sample_type = $(e.target).data("id");
+                    if (sample_type === "all_sample_types") {
+                        console.log("fmx-dist.all_sample_types");
+                        this.selected_sample_type = null;
+                    } else {
+                        console.log("fmx-dist.sample_type:" + sample_type);
+                        this.selected_sample_type = sample_type;
+                    }
+                    _.defer(this.draw_graph);
+                },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.log("fmx-dist.genes-x:" + $(e.target).data("id"));
                     this.selected_genes.x = $(e.target).data("id");
@@ -38,12 +49,27 @@ define(["jquery", "underscore", "backbone",
                 this.feature_definitions_by_id = {};
 
                 this.selected_tumor_types = WebApp.UserPreferences.get("selected_tumor_types");
+                this.sample_types = _.unique(_.flatten(_.map(_.values(WebApp.Lookups.get("sample_types")), function(st) {
+                    if (_.isArray(st) && !_.isEmpty(st)) return _.unique(_.first(st).values);
+                })));
+                this.samples_by_type = {};
+                _.each(WebApp.Lookups.get("sample_types"), function(sample_type_by_tumor_type, tumor_type) {
+                    this.samples_by_type[tumor_type] = {};
+                    _.each(sample_type_by_tumor_type, function(sample_type) {
+                        _.each(sample_type.values, function(sample_id_type, sample_id) {
+                            var sample_id_array = this.samples_by_type[tumor_type][sample_id_type];
+                            if (!sample_id_array) sample_id_array = this.samples_by_type[tumor_type][sample_id_type] = [];
+                            sample_id_array.push(sample_id);
+                        }, this);
+                    }, this);
+                }, this);
 
                 this.init_selectedGenes();
 
                 this.$el.html(Tpl({
                     "genes": this.options.genes,
                     "tumor_types": this.selected_tumor_types,
+                    "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes
                 }));
 
@@ -154,6 +180,16 @@ define(["jquery", "underscore", "backbone",
                 var Y_feature = this.feature_definitions_by_id[this.selected_features.y];
 
                 var data = this.aggregate_data(this.selected_tumor_types, X_feature, Y_feature);
+                if (_.isEmpty(data)) {
+                    console.log("fmx-dist.draw_graph:no_data_found");
+                    this.carveVis.clear("data");
+
+                    // TODO: Figure out how to properly clear the graph
+                    this.$el.find(".scatterplot-container").empty();
+                    _.defer(this.init_graph);
+                    return;
+                }
+
                 console.log("fmx-dist.draw_graph:data=" + data.length + ":" + JSON.stringify(_.first(data) || {}));
                 console.log("fmx-dist.draw_graph:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
 
@@ -193,11 +229,14 @@ define(["jquery", "underscore", "backbone",
 
                     console.log("fmx-dist.aggregate_data:" + tumor_type.id + ":samples=" + _.keys(X_first.values).length);
 
+                    var matching_sample_types = this.samples_by_type[tumor_type.id][this.selected_sample_type];
                     return _.map(X_first.values, function (X_value, X_key) {
                         if (X_value === "NA") return;
 
                         var Y_value = Y_first.values[X_key];
                         if (Y_value === "NA") return;
+
+                        if (!_.isEmpty(matching_sample_types) && _.indexOf(matching_sample_types, X_key) < 0) return;
 
                         if (_.isNumber(X_value)) X_value = parseFloat(X_value);
                         if (_.isNumber(Y_value)) Y_value = parseFloat(Y_value);

@@ -103,7 +103,7 @@ define([
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
-                WebApp.Views["seqpeekv2"] = SeqPeekView;
+                WebApp.Views["seqpeekv2"] = SeqPeekViewV2;
                 WebApp.Views["minigraph"] = MiniGraphView;
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;

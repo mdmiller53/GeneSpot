@@ -34,7 +34,7 @@ define(["jquery", "underscore", "backbone"],
                         var completeFn = _.after(tumor_type_list.length, lookupsReadyFn);
                         var lookup_obj = this.get(key);
 
-                        var models = WebApp.Datamodel.load_datasources({"source": lookup["source"]}, tumor_type_list, {
+                        var models = WebApp.Datamodel.load_datasources({"source": lookup["tumor_type_source"]}, tumor_type_list, {
                             "source_suffix": lookup["source_suffix"],
                             "query": lookup.query,
                             "callback": function () {

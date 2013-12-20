@@ -34,28 +34,30 @@ define(["jquery", "underscore", "backbone"],
                         var completeFn = _.after(tumor_type_list.length, lookupsReadyFn);
                         var lookup_obj = this.get(key);
 
-                        var models = WebApp.Datamodel.load_datasources({"source": lookup["tumor_type_source"]}, tumor_type_list, {
-                            "source_suffix": lookup["source_suffix"],
-                            "query": lookup.query,
-                            "callback": function () {
-                                var tumor_type = this.get("tumor_type");
-                                var items = this.get("items");
-                                console.log("lookups:" + key + ":complete[" + tumor_type + "," + items.length + "]");
-                                lookup_obj[tumor_type] = items;
-                                completeFn();
-                            }
-                        });
+                        var callbackFn = function () {
+                            var tumor_type = this.get("tumor_type");
+                            var items = this.get("items");
+                            console.log("lookups:" + key + ":complete[" + tumor_type + "," + items.length + "]");
+                            lookup_obj[tumor_type] = items;
+                            completeFn();
+                        };
+
+                        var models = WebApp.Datamodel.load_datasources({
+                            "source": lookup["tumor_type_source"]
+                        }, tumor_type_list, _.extend(lookup, { "callback": callbackFn }));
+                        this.set(key, models["source"]);
 
                     } else if (_.has(lookup, "source")) {
-                        var models = WebApp.Datamodel.load_datasources({"source": lookup["source"]}, [], {
-                            "source_suffix": lookup["source_suffix"],
-                            "query": lookup.query ,
-                            "callback": function () {
-                                var items = this.get("items");
-                                console.log("lookups:" + key + ":complete[" + items.length + "]");
-                                lookupsReadyFn();
-                            }
-                        });
+                        var callbackFn = function() {
+                            var items = this.get("items");
+                            console.log("lookups:" + key + ":complete[" + items.length + "]");
+                            lookupsReadyFn();
+                        };
+                        var models = WebApp.Datamodel.load_datasources({
+                            "source": lookup["source"]
+                        }, [], _.extend(lookup, { "callback": callbackFn }));
+                        this.set(key, models["source"]);
+
                     } else if (_.has(lookup, "url")) {
                         var lookupModel = new Backbone.Model();
                         if (_.has(lookup, "model")) {

@@ -6,10 +6,11 @@ define(["jquery", "underscore", "backbone"],
             },
 
             fetch: function (options) {
-                return Backbone.Model.prototype.fetch.call(this, _.extend(options, { "success": this.after_fetch }));
+                var successFn = (options["success"]) ? _.wrap(options["success"], this.after_fetch): this.after_fetch;
+                return Backbone.Model.prototype.fetch.call(this, _.extend(options, { "success": successFn }));
             },
 
-            after_fetch: function () {
+            after_fetch: function (callbackFn) {
                 var by_sample_type = {};
                 _.each(this.get("items"), function(item) {
                     if (item.values && !_.isEmpty(item.values)) {
@@ -22,6 +23,8 @@ define(["jquery", "underscore", "backbone"],
                 }, this);
 
                 this.set("by_sample_type", by_sample_type);
+
+                if (_.isFunction(callbackFn)) callbackFn();
             }
         });
     });

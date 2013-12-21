@@ -222,7 +222,7 @@ define([
                     var view_spec = this.view_specs_by_uid[$(targetEl).data("uid")];
                     if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
 
-                    var map_optns = _.extend(options, view_spec || query_options || {});
+                    var map_optns = _.extend(options, view_spec, query_options);
                     var models = {};
 
                     if (view_spec["datamodels"]) {
@@ -230,6 +230,9 @@ define([
                         var callbackFn = _.after(_.keys(view_spec["datamodels"]).length, function () {
                             var view = new ViewClass(_.extend(options, map_optns, { "model": models }));
                             $(targetEl).html(view.render().el);
+                            _.each(_.values(models), function(model) {
+                                if (model.get("_is_loaded")) model.trigger("load");
+                            });
                         });
 
                         _.each(view_spec["datamodels"], function (datamodel, datamodel_key) {
@@ -237,6 +240,9 @@ define([
                                 "model_key": datamodel_key,
                                 "callback": function(model) {
                                     models[model.get("model_key")] = model;
+                                    model.on("load", function() {
+                                        model.set("_is_loaded", true);
+                                    });
                                     callbackFn();
                                 }
                             }));

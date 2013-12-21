@@ -13,12 +13,12 @@
                 {
                     "view": "mutsig_grid",
                     "label": "Selected Genes",
-                    "source": "datamodel/mutations/mutsig_rankings"
+                    "datamodel": "datamodel/mutations/mutsig_rankings"
                 },
                 {
                     "view": "mutsig_top_genes",
                     "label": "Top 20",
-                    "source": "datamodel/mutations/mutsig_top20"
+                    "datamodel": "datamodel/mutations/mutsig_top20"
                 }
             ]
         },
@@ -49,7 +49,7 @@
                 {
                     "view": "seqpeek",
                     "label": "SeqPeek",
-                    "source": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
+                    "datamodel": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
                 }
             ]
         },
@@ -65,8 +65,9 @@
                 {
                     "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "tumor_type_source": "datamodel/feature_matrices",
-                    "source_suffix": "/feature_matrix"
+                    "datamodel": "datamodel/feature_matrices",
+                    "by_tumor_type": "tumor_type",
+                    "uri_suffix": "/feature_matrix"
                 }
             ]
         },
@@ -82,7 +83,7 @@
                 {
                     "view": "stacksvis",
                     "label": "Distributions",
-                    "sources": {
+                    "datamodels": {
                         "copy_number": "datamodel/copy_number/copy_number_gistic2",
                         "q_value": "datamodel/copy_number/copy_number_qvalue"
                     }

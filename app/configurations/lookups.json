@@ -1,8 +1,8 @@
 {
     "lookups": {
         "sample_types": {
-            "tumor_type_source": "datamodel/feature_matrices",
-            "source_suffix": "/feature_matrix",
+            "datamodel": "datamodel/feature_matrices",
+            "url_suffix": "/feature_matrix",
             "model": "models/gs/sample_types",
             "query": {
                 "id": "C:SAMP:sampleType:::::"
@@ -16,13 +16,11 @@
         },
         "chromosomes": {
             "url": "svc/data/lookups/chromosomes",
-            "dataType": "text",
-            "model": "Annotations"
+            "model": "models/annotations"
         },
         "genes": {
             "url": "svc/data/lookups/genes",
-            "dataType": "text",
-            "model": "Annotations"
+            "model": "models/annotations"
         }
     }
 }

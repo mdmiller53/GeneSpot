@@ -4,12 +4,11 @@
             "label": "Mutations",
             "catalog": {
                 "Protein_Mutations_Per_Cancer_Type": {
-                    "label": "Protein Mutations Per Cancer Type",
                     "service": "datastores/mutations/interpro/mutations",
-                    "protein_db": "datastores/mutations/interpro/interpro",
-                    "TODO": "switch protein_db usage to datamodel/reference_data/interpro (see below)",
+                    "label": "Protein Mutations Per Cancer Type",
                     "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
-                    "model": "Mutations"
+                    "model": "models/gs/mutations_interpro",
+                    "interpro": "datamodel/reference_data/interpro"
                 },
                 "mutsig_rankings": {
                     "label": "MutSig Rankings",
@@ -22,13 +21,13 @@
                 },
                 "mutsig_provenance": {
                     "label": "MutSig Provenance",
-                    "service": "data/provenance/mutsig_provenance.json"
+                    "url": "data/provenance/mutsig_provenance.json"
                 }
             }
         },
         "feature_matrices": {
             "label": "Feature Matrices (testing)",
-            "group": "tumor_type",
+            "by_tumor_type": "tumor_type",
             "catalog": {
                 "BLCA-SEQ-20131113": {
                     "tumor_type": "BLCA",
@@ -63,7 +62,7 @@
                 "copy_number_gistic2": {
                     "label": "Copy Number Gistic (13sep)",
                     "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
-                    "model": "ByTumorType"
+                    "model": "models/gs/by_tumor_type"
                 },
                 "copy_number_qvalue": {
                     "label": "Copy Number Q-Values",

@@ -5,8 +5,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             "initialize": function (options) {
                 _.bindAll(this, "render_data_q_value", "render_data_copy_number", "getColumnModel");
 
-                this.options.models["copy_number"].on("load", this.render_data_copy_number);
-                this.options.models["q_value"].on("load", this.render_data_q_value);
+                this.options.model["copy_number"].on("load", this.render_data_copy_number);
+                this.options.model["q_value"].on("load", this.render_data_q_value);
 
                 this.$el.html(StacksVisTpl({
                     "id": Math.floor(Math.random() * 1000),
@@ -27,9 +27,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
             },
 
             "render_data_q_value": function () {
-                if (!this.options.models["q_value"].get("items")) return;
+                if (!this.options.model["q_value"].get("items")) return;
 
-                var items_per_tumor_type = _.groupBy(this.options.models["q_value"].get("items"), "cancer");
+                var items_per_tumor_type = _.groupBy(this.options.model["q_value"].get("items"), "cancer");
                 _.each(WebApp.UserPreferences.get("selected_tumor_types"), function (tumor_type_obj) {
 
                     var items_per_gene = _.groupBy(items_per_tumor_type[tumor_type_obj.id.toLowerCase()], "gene");
@@ -54,7 +54,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     return g.toLowerCase(); // TODO: not good
                 });
 
-                _.each(this.options.models["copy_number"].get("BY_TUMOR_TYPE"), function (ttModel, tumor_type) {
+                _.each(this.options.model["copy_number"].get("BY_TUMOR_TYPE"), function (ttModel, tumor_type) {
                     if (_.isEmpty(ttModel.ROWS)) return;
                     if (_.isEmpty(ttModel.COLUMNS)) return;
                     if (_.isEmpty(ttModel.DATA)) return;

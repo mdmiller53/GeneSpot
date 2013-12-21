@@ -1,6 +1,4 @@
-define(["jquery", "underscore", "backbone", "bootstrap",
-    "views/topbar_view", "views/gs/atlas"
-],
+define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "views/gs/atlas"],
     function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView) {
 
         return Backbone.Router.extend({
@@ -50,12 +48,9 @@ define(["jquery", "underscore", "backbone", "bootstrap",
 
             fetchAnnotations: function (catalog_key) {
                 if (_.isEmpty(WebApp.Annotations[catalog_key])) {
-                    var annotations = new WebApp.Models.Annotations({
-                        "url": "svc/data/annotations/" + catalog_key + ".json",
-                        "dataType": "json"
-                    });
-
+                    var annotations = new WebApp.Annotations({});
                     annotations.fetch({
+                        "url": "svc/datastores/annotations/" + catalog_key,
                         "async": false,
                         "dataType": "json",
                         "success": function () {
@@ -67,25 +62,16 @@ define(["jquery", "underscore", "backbone", "bootstrap",
             },
 
             viewsByUri: function (uri, view_name, options) {
-                var catalog_item = WebApp.Datamodel.find_catalogItem(uri);
-                var Model = WebApp.Models[catalog_item.model] || Backbone.Model;
+                var callbackFn = function(model) {
+                    var ViewClass = WebApp.Views[view_name];
+                    var view = new ViewClass(_.extend(options, { "model": model }));
+                    this.$el.html(view.render().el);
 
-                var model = new Model(_.extend(options || {}, { "catalog_item": catalog_item }));
-                _.defer(function () {
-                    model.fetch({
-                        "url": catalog_item["url"],
-                        success: function () {
-                            model.trigger("load");
-                        }
-                    });
-                });
+                    model.trigger("load");
+                    return view;
+                };
 
-                var view_options = _.extend({"model": model}, (options || {}));
-
-                var ViewClass = WebApp.Views[view_name];
-                var view = new ViewClass(view_options);
-                this.$el.html(view.render().el);
-                return view;
+                WebApp.Datamodel.fetch_by_datamodel_uri(uri, _.extend(options, { "callback": callbackFn }));
             },
 
             atlas: function () {

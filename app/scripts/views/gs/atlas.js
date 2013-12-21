@@ -7,21 +7,12 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
-    "views/gs/minigraph",
     "views/gs/mutsig_grid_view",
     "views/gs/mutsig_top_genes_view",
     "views/gs/stacksvis",
-    "views/gs/merged_sources_per_tumor_type",
-    "views/gs/feature_matrix_distributions",
-    "models/gs/mutations_interpro",
-    "models/gs/minigraph",
-    "models/gs/by_tumor_type",
-    "models/feature_matrix"
+    "views/gs/feature_matrix_distributions"
 ],
-    function ($, _, Backbone,
-              AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView, MergedSourcesPerTumorTypeView, FeatureMatrixDistributionsView,
-              MutationsModel, MiniGraphModel, ByTumorTypeModel, FeatureMatrixModel) {
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, MutsigTopGenesView, StacksVisView, FeatureMatrixDistributionsView) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -29,7 +20,7 @@ define([
             "lastPosition": {
                 "top": 0, "left": 0
             },
-            "viewsByUid": {},
+            "view_specs_by_uid": {},
 
             events: {
                 "click a.refresh-loaded": function () {
@@ -82,8 +73,8 @@ define([
             },
 
             initialize: function (options) {
-                _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
-                _.bindAll(this, "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "closeMap");
+                _.bindAll(this, "zoom", "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -100,19 +91,12 @@ define([
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
-                WebApp.Views["minigraph"] = MiniGraphView;
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
                 WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
-                WebApp.Views["merged_sources_per_tumor_type"] = MergedSourcesPerTumorTypeView;
 
-                WebApp.Models["Mutations"] = MutationsModel;
-                WebApp.Models["MiniGraph"] = MiniGraphModel;
-                WebApp.Models["ByTumorType"] = ByTumorTypeModel;
-                WebApp.Models["FeatureMatrix"] = FeatureMatrixModel;
-
-                console.log("atlas:registered models and views")
+                console.log("atlas:registered views")
             },
 
             initMaps: function () {
@@ -170,7 +154,7 @@ define([
                     if (idx == 0) view["li_class"] = "active";
                     view["uid"] = ++uid;
 
-                    this.viewsByUid[uid] = view;
+                    this.view_specs_by_uid[uid] = view;
                 }, this);
 
                 map.assignedPosition = map.position || this.nextPosition();
@@ -224,25 +208,51 @@ define([
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
 
-                    return this.loadView($target, view_name, v_options, q_options, tumor_type_list);
+                    return this.loadView($target, view_name, v_options, q_options);
                 }
                 return null;
             },
 
-            loadView: function (targetEl, view_name, options, query, tumor_type_list) {
+            loadView: function (targetEl, view_name, options, query) {
+                console.log("atlas:loadView:view=" + view_name);
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
-                    var viewDef = this.viewsByUid[$(targetEl).data("uid")];
-                    var data_sources = viewDef["sources"] || { "source": viewDef["tumor_type_source"] || viewDef["source"] };
-                    console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources) + ":[" + tumor_type_list + "]");
-
-                    var map_optns = _.extend(options, viewDef || {});
                     var query_options = { "query": query };
-                    if (viewDef["tumor_type_source"]) query_options = { "query": _.omit(query, "cancer") };
-                    var models = WebApp.Datamodel.load_datasources(data_sources, tumor_type_list, _.extend(map_optns || {}, query_options));
 
-                    var view = new ViewClass(_.extend(options, map_optns, {"models": models }));
-                    $(targetEl).html(view.render().el);
+                    var view_spec = this.view_specs_by_uid[$(targetEl).data("uid")];
+                    if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
+
+                    var map_optns = _.extend(options, view_spec || query_options || {});
+                    var models = {};
+
+                    if (view_spec["datamodels"]) {
+                        // Load multiple datamodels for the view
+                        var callbackFn = _.after(_.keys(view_spec["datamodels"]).length, function () {
+                            var view = new ViewClass(_.extend(options, map_optns, { "model": models }));
+                            $(targetEl).html(view.render().el);
+                        });
+
+                        _.each(view_spec["datamodels"], function (datamodel, datamodel_key) {
+                            WebApp.Datamodel.fetch_by_datamodel_uri(datamodel, _.extend(map_optns, {
+                                "model_key": datamodel_key,
+                                "callback": function(model) {
+                                    models[model.get("model_key")] = model;
+                                    callbackFn();
+                                }
+                            }));
+                        });
+
+                    } else if (view_spec["datamodel"]) {
+                        // Load single datamodel for the view
+
+                        var datamodel = view_spec["datamodel"];
+                        WebApp.Datamodel.fetch_by_datamodel_uri(datamodel, _.extend(map_optns, {
+                            "callback": function (model) {
+                                var view = new ViewClass(_.extend(options, map_optns, { "model": model }));
+                                $(targetEl).html(view.render().el);
+                            }
+                        }));
+                    }
 
                     // TODO : Specify download links
 //                    if (map_optns["url"]) return map_optns["url"] + "?" + this.outputTsvQuery(query);

@@ -23,9 +23,7 @@ define([
                 var section = WebApp.Datamodel.get(sectionId);
                 var catalog = section[unitId].catalog;
                 var item = catalog[itemId];
-                var views = WebApp.ViewMappings[item.model] || [
-                    {"label": "Grid", "id": "grid"}
-                ];
+                var views = [ {"label": "Grid", "id": "grid"} ];
 
                 this.$el.find(".modal-header h4").html(item.label);
                 this.$el.find(".modal-body .info").html(item.description);

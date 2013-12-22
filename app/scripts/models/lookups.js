@@ -21,45 +21,67 @@ define(["jquery", "underscore", "backbone"],
 
             fetch_lookups: function () {
                 var lookups = this.get("lookups");
-                var lookupsReadyFn = _.after(_.keys(lookups).length, function () {
+                var afterAllLookupsFn = _.after(_.keys(lookups).length, function () {
                     WebApp.Events.trigger("webapp:ready:lookups");
                 });
 
-                var _this = this;
                 _.each(lookups, function (lookup, key) {
                     console.log("webapp:lookups:" + key + ":loading...");
+                    var lookup_spec = _.extend({ "lookup_key": key }, lookup);
 
-                    var callbackFn = function () {
+                    var _this = this;
+                    var afterLookupFn = function (model) {
                         console.log("webapp:lookups:" + key + ":loaded");
-                        lookupsReadyFn();
+                        _this.set(key, model);
+                        afterAllLookupsFn();
                     };
 
-                    if (_.has(lookup, "datamodel")) {
-                        var modelspecs = WebApp.Datamodel.modelspecs_by_datamodel_uri[lookup["datamodel"]];
+                    if (_.has(lookup_spec, "datamodel")) {
+                        var modelspecs = WebApp.Datamodel.find_modelspecs(lookup_spec["datamodel"]);
                         if (modelspecs["by_tumor_type"]) {
                             var by_tumor_type = {};
-                            _this.set(key, by_tumor_type);
+                            var afterTumorTypeLookupFn = _.after(_.keys(modelspecs["by_tumor_type"]).length, function() {
+                                afterLookupFn(by_tumor_type);
+                            });
 
-                            var tumor_type_list = _.keys(_.groupBy(modelspecs["catalog"], modelspecs["by_tumor_type"]));
+                            _.each(modelspecs["by_tumor_type"], function(modelspec, tumor_type) {
+                                this.fetch_model(_.extend({}, modelspec, lookup_spec), function(model) {
+                                    console.log("webapp:lookups:" + key + ":[" + tumor_type + "]:loaded");
+                                    by_tumor_type[tumor_type] = model;
+                                    afterTumorTypeLookupFn();
+                                });
+                            }, this);
 
-                            var ttCbFn = _.after(tumor_type_list.length, callbackFn);
-                            var wrapperFn = function (model) {
-                                by_tumor_type[model.get("tumor_type")] = model;
-                                ttCbFn();
-                            };
-
-                            WebApp.Datamodel.fetch_by_datamodel_uri(lookup["datamodel"], _.extend(lookup, { "callback": wrapperFn }));
+                        } else if (modelspec["single"]) {
+                            this.fetch_model(_.extend({}, modelspecs["single"], lookup_spec), afterLookupFn);
                         }
 
-                    } else if (_.has(lookup, "url")) {
-                        var wrapperFn = function(model) {
-                            _this.set(key, model);
-                            callbackFn(model);
-                        };
-
-                        WebApp.Datamodel.fetch_by_modelspec(lookup, _.extend(lookup, { "callback": wrapperFn }));
+                    } else if (_.has(lookup_spec, "url")) {
+                        this.fetch_model(lookup_spec, afterLookupFn);
                     }
-                });
+                }, this);
+            },
+
+            fetch_model: function (options, callback) {
+                var modelFetchFn = function (Model) {
+                    _.defer(function() {
+                        var model = new Model(options);
+                        model.fetch({
+                            "url": model.get("url") + (model.get("url_suffix") || ""),
+                            "data": options["query"],
+                            "traditional": true,
+                            "success": function() {
+                                callback(model);
+                            }
+                        });
+                    });
+                };
+
+                if (options["model"]) {
+                    require([options["model"]], modelFetchFn);
+                } else {
+                    modelFetchFn(Backbone.Model);
+                }
             }
         });
 

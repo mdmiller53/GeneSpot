@@ -67,7 +67,7 @@
                     "label": "Feature Selector",
                     "datamodel": "datamodel/feature_matrices",
                     "by_tumor_type": "tumor_type",
-                    "uri_suffix": "/feature_matrix"
+                    "url_suffix": "/feature_matrix"
                 }
             ]
         },

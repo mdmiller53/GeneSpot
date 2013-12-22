@@ -132,7 +132,7 @@ define([
                                     return _.isEqual(m.id, mapFromSession.id);
                                 });
                                 if (matchedMap) {
-                                    return _.extend(_.clone(matchedMap), _.clone(mapFromSession));
+                                    return _.extend({}, matchedMap, mapFromSession);
                                 }
                                 return null;
                             }));
@@ -217,48 +217,94 @@ define([
                 console.log("atlas:loadView:view=" + view_name);
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
-                    var query_options = { "query": query };
-
                     var view_spec = this.view_specs_by_uid[$(targetEl).data("uid")];
+
+                    var query_options = { "query": query };
                     if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
 
-                    var map_optns = _.extend(options, view_spec, query_options);
-                    var models = {};
+                    // 1. Lookup model specification(s) for datamodel(s)
+                    var modelspecs = [];
+                    var appendModelSpecsFn = function(modelspec, datamodel_key) {
+                        if (modelspec["by_tumor_type"]) {
+                            _.each(modelspec["by_tumor_type"], function(modelspec, tumor_type) {
+                                var dk_tt = { "datamodel_key": datamodel_key, "tumor_type": tumor_type };
+                                modelspecs.push(_.extend(dk_tt, modelspec));
+                            });
+                        } else if (modelspec["single"]) {
+                            modelspecs.push(_.extend({ "datamodel_key": datamodel_key }, modelspec["single"]));
+                        }
+                    };
 
                     if (view_spec["datamodels"]) {
-                        // Load multiple datamodels for the view
-                        var callbackFn = _.after(_.keys(view_spec["datamodels"]).length, function () {
-                            var view = new ViewClass(_.extend(options, map_optns, { "model": models }));
-                            $(targetEl).html(view.render().el);
-                            _.each(_.values(models), function(model) {
-                                if (model.get("_is_loaded")) model.trigger("load");
+                        _.each(view_spec["datamodels"], function(datamodel, datamodel_key) {
+                            appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(datamodel), datamodel_key);
+                        });
+                    } else if (view_spec["datamodel"]) {
+                        appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(view_spec["datamodel"]), "model");
+                    }
+
+                    var model_bucket = {};
+                    var createViewFn = _.after(modelspecs.length, function () {
+                        // NOTE: May seem out of order, but is called after all modelspecs are turned to models
+                        // 3. Create view and pass model_bucket
+                        var model_obj = { "models": model_bucket };
+                        var model_arr = _.values(model_bucket);
+                        if (model_arr.length === 1) {
+                            if (view_spec["by_tumor_type"]) {
+                                var by_tumor_type = {};
+                                _.each(_.omit(_.first(model_arr), "by_tumor_type"), function(ttModel, tt) {
+                                    by_tumor_type[tt] = ttModel;
+                                });
+                                model_obj = { "models": by_tumor_type };
+                                model_arr = _.values(by_tumor_type);
+                            } else {
+                                model_obj = { "model": _.first(model_arr) };
+                            }
+                        }
+
+                        var view = new ViewClass(_.extend({}, options, view_spec, model_obj));
+                        $(targetEl).html(view.render().el);
+
+                        // 4. Fetch data and load models
+                        _.each(model_arr, function (model) {
+                            _.defer(function () {
+                                model.fetch({
+                                    "url": model.get("url"),
+                                    "data": query_options["query"],
+                                    "traditional": true,
+                                    "success": function () {
+                                        model.trigger("load");
+                                    }
+                                });
                             });
                         });
+                    });
 
-                        _.each(view_spec["datamodels"], function (datamodel, datamodel_key) {
-                            WebApp.Datamodel.fetch_by_datamodel_uri(datamodel, _.extend(map_optns, {
-                                "model_key": datamodel_key,
-                                "callback": function(model) {
-                                    models[model.get("model_key")] = model;
-                                    model.on("load", function() {
-                                        model.set("_is_loaded", true);
-                                    });
-                                    callbackFn();
-                                }
-                            }));
-                        });
-
-                    } else if (view_spec["datamodel"]) {
-                        // Load single datamodel for the view
-
-                        var datamodel = view_spec["datamodel"];
-                        WebApp.Datamodel.fetch_by_datamodel_uri(datamodel, _.extend(map_optns, {
-                            "callback": function (model) {
-                                var view = new ViewClass(_.extend(options, map_optns, { "model": model }));
-                                $(targetEl).html(view.render().el);
+                    // 2. Create model(s) from model specifications
+                    _.each(modelspecs, function (modelspec) {
+                        var prepModelFn = function (Model) {
+                            var model = new Model(modelspec);
+                            if (view_spec["url_suffix"]) {
+                                model.set("url", model.get("url") + view_spec["url_suffix"]);
                             }
-                        }));
-                    }
+
+                            if (modelspec["tumor_type"]) {
+                                var modelspec_group = model_bucket[modelspec["datamodel_key"]];
+                                if (!modelspec_group) modelspec_group = model_bucket[modelspec["datamodel_key"]] = {};
+                                modelspec_group[modelspec["tumor_type"]] = model;
+                            } else {
+                                model_bucket[modelspec["datamodel_key"]] = model;
+                            }
+
+                            createViewFn();
+                        };
+
+                        if (modelspec["model"]) {
+                            require([modelspec["model"]], prepModelFn);
+                        } else {
+                            prepModelFn(Backbone.Model);
+                        }
+                    });
 
                     // TODO : Specify download links
 //                    if (map_optns["url"]) return map_optns["url"] + "?" + this.outputTsvQuery(query);

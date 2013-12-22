@@ -62,12 +62,10 @@ define(["jquery", "underscore", "backbone",
 
                 _.defer(this.init_graph);
 
-                var drawFn = _.after(this.selected_tumor_types.length, this.draw_graph);
-
-                var models = _.values(this.options.models.source);
-                _.each(models, function (model) {
+                var drawFn = _.after(_.keys(this.options.models).length, this.draw_graph);
+                _.each(this.options.models, function (model, tumor_type) {
                     model.on("load", function () {
-                        _.defer(this.load_featureDefinitions, model.get("tumor_type"));
+                        _.defer(this.load_featureDefinitions, tumor_type);
                         _.defer(drawFn);
                     }, this);
                 }, this);
@@ -102,7 +100,7 @@ define(["jquery", "underscore", "backbone",
 
             load_featureDefinitions: function (tumor_type) {
                 console.log("fmx-dist.load_featureDefinitions(" + tumor_type + ")");
-                var items = this.options.models.source[tumor_type].get("items");
+                var items = this.options.models[tumor_type].get("items");
 
                 var items_by_gene = _.groupBy(items, "gene");
                 _.each(items_by_gene, function (item_by_gene, gene) {
@@ -201,8 +199,6 @@ define(["jquery", "underscore", "backbone",
             },
 
             aggregate_data: function (tumor_types, X_feature, Y_feature) {
-                var model_source = this.options.models.source;
-
                 var sampleTypes = WebApp.Lookups.get("sample_types") || {};
 
                 var EMPTY_MODEL = new Backbone.Model();
@@ -212,7 +208,7 @@ define(["jquery", "underscore", "backbone",
                     var by_sample_type = stModel.get("by_sample_type") || {};
                     var select_samples = by_sample_type[this.selected_sample_type];
 
-                    var model = model_source[tumor_type.id] || EMPTY_MODEL;
+                    var model = this.options.models[tumor_type.id] || EMPTY_MODEL;
 
                     var items_by_id = _.groupBy(model.get("items"), "id");
                     if (!_.has(items_by_id, X_feature.id) || !_.has(items_by_id, Y_feature.id)) return null;

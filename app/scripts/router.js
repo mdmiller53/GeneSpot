@@ -62,16 +62,43 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "v
             },
 
             viewsByUri: function (uri, view_name, options) {
-                var callbackFn = function(model) {
-                    var ViewClass = WebApp.Views[view_name];
-                    var view = new ViewClass(_.extend(options, { "model": model }));
-                    this.$el.html(view.render().el);
+                // 1. Lookup model specification(s) for datamodel(s)
+                var modelspecs = WebApp.Datamodel.find_modelspecs(uri);
+                if (_.isUndefined(modelspecs) || !_.has(modelspecs, "single")) {
+                    console.log("webapp:router:uri_not_found:" + uri);
+                    return;
+                }
 
-                    model.trigger("load");
-                    return view;
+                var modelspec = modelspecs["single"];
+                var _this = this;
+                var createViewFn = function (Model) {
+                    // NOTE: May seem out of order, but is called after modelspec is turned to model
+                    // 3. Create view
+                    var model = new Model(modelspec);
+
+                    var ViewClass = WebApp.Views[view_name];
+                    var view = new ViewClass(_.extend({ "model": model }, options));
+                    _this.$el.html(view.render().el);
+
+                    // 4. Fetch data and load model
+                    _.defer(function () {
+                        model.fetch({
+                            "url": model.get("url") + (model.get("url_prefix") || ""),
+                            "data": options,
+                            "traditional": true,
+                            "success": function () {
+                                model.trigger("load");
+                            }
+                        });
+                    });
                 };
 
-                WebApp.Datamodel.fetch_by_datamodel_uri(uri, _.extend(options, { "callback": callbackFn }));
+                // 2. Create model(s) from model specifications
+                if (modelspec["model"]) {
+                    require([modelspec["model"]], createViewFn);
+                } else {
+                    createViewFn(Backbone.Model);
+                }
             },
 
             atlas: function () {

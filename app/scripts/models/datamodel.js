@@ -4,8 +4,7 @@ define(["jquery", "underscore", "backbone"],
             "modelspecs_by_datamodel_uri": {},
 
             initialize: function () {
-                _.bindAll(this, "fetch", "after_fetch", "fetch_datasource", "pretty_print");
-                _.bindAll(this, "fetch_by_modelspec", "fetch_by_datamodel_uri");
+                _.bindAll(this, "fetch", "after_fetch", "find_modelspecs", "pretty_print");
             },
 
             fetch: function (options) {
@@ -35,70 +34,27 @@ define(["jquery", "underscore", "backbone"],
                 WebApp.Events.trigger("webapp:ready:datamodel");
             },
 
-            fetch_by_datamodel_uri: function (datamodel_uri, model_options) {
-                if (_.isUndefined(datamodel_uri)) return;
+            find_modelspecs: function (datamodel_uri) {
+                var modelspecs = this.modelspecs_by_datamodel_uri[datamodel_uri];
+                if (!modelspecs) return null;
 
-                var model_specs = _.clone(this.modelspecs_by_datamodel_uri[datamodel_uri]);
-                if (!model_specs) return;
-
-                if (model_specs["by_tumor_type"]) {
-                    var model_specs_by_tumor_type = _.groupBy(model_specs["catalog"], model_specs["by_tumor_type"]);
-                    var tumor_types = model_options["tumor_types"] || _.keys(model_specs_by_tumor_type);
-
-                    _.each(tumor_types, function (tumor_type) {
-                        var model_spec_array = model_specs_by_tumor_type[tumor_type];
-                        // grap active modelspec
-                        if (model_spec_array.length > 1) {
-                            var active_model_spec = _.find(model_spec_array, function (model_spec_item) {
+                if (modelspecs["by_tumor_type"]) {
+                    var cleanspecs_by_tumor_type = {};
+                    var modelspecs_by_tumor_type = _.groupBy(modelspecs["catalog"], modelspecs["by_tumor_type"]);
+                    _.each(modelspecs_by_tumor_type, function (modelspec_group, tumor_type) {
+                        // grab active modelspec
+                        if (modelspec_group.length > 1) {
+                            var active_spec = _.find(modelspec_group, function (model_spec_item) {
                                 return model_spec_item["active"];
                             });
-                            model_spec_array = [active_model_spec]
+                            cleanspecs_by_tumor_type[tumor_type] = _.extend({}, active_spec);
+                        } else {
+                            cleanspecs_by_tumor_type[tumor_type] = _.extend({}, _.first(modelspec_group));
                         }
-                        _.each(model_spec_array, function (model_spec_item) {
-                            this.fetch_by_modelspec(model_spec_item, model_options);
-                        }, this);
-                    }, this);
-                } else {
-                    this.fetch_by_modelspec(model_specs, model_options);
+                    });
+                    return { "by_tumor_type": cleanspecs_by_tumor_type };
                 }
-            },
-
-            fetch_by_modelspec: function (model_spec, options) {
-                model_spec = _.extend(model_spec, options);
-
-                var _this = this;
-                var clojureFn = function (Model) {
-                    var model = new Model(model_spec);
-                    if (_.has(options, "url_suffix")) model.set("url", model.get("url") + options["url_suffix"]);
-                    _this.fetch_datasource(model, options);
-                };
-
-                var model = options["model"] || model_spec["model"];
-                if (model) {
-                    require([model], clojureFn);
-                } else {
-                    clojureFn(Backbone.Model);
-                }
-            },
-
-            fetch_datasource: function (model, options) {
-                _.defer(function () {
-                    var url = model.get("url") || options["url"];
-                    if (url) {
-                        model.fetch({
-                            "url": url,
-                            "data": options["query"] || {},
-                            "traditional": true,
-                            "success": function () {
-                                if (options["callback"]) options["callback"](model);
-                                model.trigger("load");
-                            }
-                        });
-                    } else {
-                        if (options["callback"]) options["callback"](model);
-                        model.trigger("load");
-                    }
-                });
+                return { "single": _.extend({}, modelspecs) };
             },
 
             pretty_print: function () {

@@ -32,7 +32,7 @@ define(["jquery", "underscore", "backbone",
             });
             _.each(webappTasks, function (task) {
                 WebApp.Events.on("webapp:ready:" + task, function () {
-                    console.log("[SUCCESS] webapp:ready:" + task + " [" + (new Date().getTime() - startTasks) + "ms]");
+                    console.log("webapp:ready:" + task + "[SUCCESS:" + (new Date().getTime() - startTasks) + "ms]");
                 });
                 WebApp.Events.on("webapp:ready:" + task, webappReadyFn);
             });

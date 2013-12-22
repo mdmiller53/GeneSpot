@@ -67,3 +67,16 @@ require.config({
 require(['webapp'], function (WebApp) {
     WebApp.initialize();
 });
+
+require(
+    [
+        "models/annotations",
+        "models/feature_matrix",
+        "models/gs/by_tumor_type",
+        "models/gs/mutations_interpro",
+        "models/gs/sample_types"
+    ],
+    function () {
+        console.log("making modules available for dynamic loading");
+    }
+);

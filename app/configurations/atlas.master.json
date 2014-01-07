@@ -1,22 +1,6 @@
 {
     "maps": [
         {
-            "id": "seqpeekv2",
-            "label": "Mutations Per Cancer Type",
-            "isOpen": true,
-            "position": {
-                "top": 300,
-                "left": 20
-            },
-            "views": [
-                {
-                    "id": "seqpeekv2",
-                    "label": "SeqPeek",
-                    "source": "datamodel/mutations/Mutations_Per_Cancer_type"
-                }
-            ]
-        },
-        {
             "id": "mutsig_ranks",
             "label": "MutSig Ranks",
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
@@ -44,7 +28,7 @@
             "links": {
                 "home": "http://pubcrawl.systemsbiology.net"
             },
-            "disabled": false,
+            "disabled": true,
             "views": [
                 {
                     "view": "pubcrawl_network",
@@ -72,7 +56,7 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
                 "top": 20,
                 "left": 200
@@ -89,7 +73,7 @@
         {
             "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
                 "top": 50,
                 "left": 50

@@ -59,7 +59,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: this.options.catalog_item.mutsig_rankings_service,
+                url: this.options.mutsig_rankings_service,
                 context: this,
                 dataType: 'json',
                 data: query
@@ -80,7 +80,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: this.options.catalog_item.feature_matrix_service + "/" + this.options.catalog_item.feature_matrix_collection,
+                url: this.options.feature_matrix_service + "/" + this.options.feature_matrix_collection,
                 context: this,
                 dataType: 'json',
                 data: query
@@ -106,7 +106,7 @@ define(
                 cancers = _.map(this.default_cancer_types, function(x) {return x.toLowerCase();});
             }
 
-            var service_uri = this.options.catalog_item.service;
+            var service_uri = this.options.service;
 
             var promises = [],
                 parsers = [];

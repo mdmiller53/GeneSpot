@@ -16,7 +16,7 @@
                     "protein_db": "svc/datastores/interpro/interpro/interpro",
                     "mutsig_rankings_service": "svc/datastores/mutations/qed_lookups/mutsig_rankings",
                     "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
-                    "model": "MutationsMap",
+                    "model": "models/gs/mutations_map",
                     "feature_matrix_service": "svc/datastores/mutations/qed_lookups",
                     "feature_matrix_collection": "fmx_newMerge_05nov",
                     "lookups": ["genes", "cancers"],

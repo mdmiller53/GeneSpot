@@ -31,7 +31,6 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
 
                 var items_per_tumor_type = _.groupBy(this.options.models["q_value"].get("items"), "cancer");
                 _.each(WebApp.UserPreferences.get("selected_tumor_types"), function (tumor_type_obj) {
-
                     var items_per_gene = _.groupBy(items_per_tumor_type[tumor_type_obj.id.toLowerCase()], "gene");
                     _.each(this.options.genes, function (gene) {
                         var gene_items = items_per_gene[gene] || items_per_gene[gene.toLowerCase()];

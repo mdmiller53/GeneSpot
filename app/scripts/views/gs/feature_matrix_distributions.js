@@ -18,6 +18,17 @@ define(["jquery", "underscore", "backbone",
                         this.carveVis.highlight(tumor_type);
                     }
                 },
+                "click .sample-type-selector-scatterplot button": function (e) {
+                    var sample_type = $(e.target).data("id");
+                    if (sample_type === "all_sample_types") {
+                        console.log("fmx-dist.all_sample_types");
+                        this.selected_sample_type = null;
+                    } else {
+                        console.log("fmx-dist.selected_sample_type:" + sample_type);
+                        this.selected_sample_type = sample_type;
+                    }
+                    _.defer(this.draw_graph);
+                },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.log("fmx-dist.genes-x:" + $(e.target).data("id"));
                     this.selected_genes.x = $(e.target).data("id");
@@ -39,25 +50,34 @@ define(["jquery", "underscore", "backbone",
 
                 this.selected_tumor_types = WebApp.UserPreferences.get("selected_tumor_types");
 
+                this.init_sampleTypes();
                 this.init_selectedGenes();
 
                 this.$el.html(Tpl({
                     "genes": this.options.genes,
                     "tumor_types": this.selected_tumor_types,
+                    "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes
                 }));
 
                 _.defer(this.init_graph);
 
-                var drawFn = _.after(this.selected_tumor_types.length, this.draw_graph);
-
-                var models = _.values(this.options.models.source);
-                _.each(models, function (model) {
+                var drawFn = _.after(_.keys(this.options.models).length, this.draw_graph);
+                _.each(this.options.models, function (model, tumor_type) {
                     model.on("load", function () {
-                        _.defer(this.load_featureDefinitions, model.get("tumor_type"));
+                        _.defer(this.load_featureDefinitions, tumor_type);
                         _.defer(drawFn);
                     }, this);
                 }, this);
+            },
+
+            init_sampleTypes: function() {
+                var sample_type_models = WebApp.Lookups.get("sample_types") || {};
+                var models = _.values(sample_type_models) || [];
+                var firstModel = _.first(models) || new Backbone.Model();
+                this.sample_types = _.map(firstModel.get("definitions"), function(label, key) {
+                    return { "label": label, "key": key };
+                });
             },
 
             init_selectedGenes: function () {
@@ -80,7 +100,7 @@ define(["jquery", "underscore", "backbone",
 
             load_featureDefinitions: function (tumor_type) {
                 console.log("fmx-dist.load_featureDefinitions(" + tumor_type + ")");
-                var items = this.options.models.source[tumor_type].get("items");
+                var items = this.options.models[tumor_type].get("items");
 
                 var items_by_gene = _.groupBy(items, "gene");
                 _.each(items_by_gene, function (item_by_gene, gene) {
@@ -154,11 +174,21 @@ define(["jquery", "underscore", "backbone",
                 var Y_feature = this.feature_definitions_by_id[this.selected_features.y];
 
                 var data = this.aggregate_data(this.selected_tumor_types, X_feature, Y_feature);
+                if (_.isEmpty(data)) {
+                    console.log("fmx-dist.draw_graph:no_data_found");
+                    this.carveVis.clear("data");
+
+                    // TODO: Figure out how to properly clear the graph
+                    this.$el.find(".scatterplot-container").empty();
+                    _.defer(this.init_graph);
+                    return;
+                }
+
                 console.log("fmx-dist.draw_graph:data=" + data.length + ":" + JSON.stringify(_.first(data) || {}));
                 console.log("fmx-dist.draw_graph:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
 
                 this.carveVis.colorBy({
-                        label: "tumor_type",
+                    label: "tumor_type",
                     list: _.pluck(this.selected_tumor_types, "id"),
                     colors: _.pluck(this.selected_tumor_types, "color")
                 }).axisLabel({ x: X_feature.label, y: Y_feature.label })
@@ -169,35 +199,35 @@ define(["jquery", "underscore", "backbone",
             },
 
             aggregate_data: function (tumor_types, X_feature, Y_feature) {
-                var model_source = this.options.models.source;
+                var sampleTypes = WebApp.Lookups.get("sample_types") || {};
+
+                var EMPTY_MODEL = new Backbone.Model();
 
                 var data = _.map(tumor_types, function (tumor_type) {
-                    var model = model_source[tumor_type.id];
-                    if (_.isUndefined(model)) return;
+                    var stModel = sampleTypes[tumor_type.id] || EMPTY_MODEL;
+                    var by_sample_type = stModel.get("by_sample_type") || {};
+                    var select_samples = by_sample_type[this.selected_sample_type];
 
-                    var items = model.get("items");
-                    if (_.isUndefined(items) || !_.isArray(items)) return;
+                    var model = this.options.models[tumor_type.id] || EMPTY_MODEL;
 
-                    var items_by_id = _.groupBy(items, "id");
-                    if (_.isUndefined(items_by_id) || !_.has(items_by_id, X_feature.id) || !_.has(items_by_id, Y_feature.id)) return;
+                    var items_by_id = _.groupBy(model.get("items"), "id");
+                    if (!_.has(items_by_id, X_feature.id) || !_.has(items_by_id, Y_feature.id)) return null;
 
-                    var X_features = items_by_id[X_feature.id];
-                    if (_.isUndefined(X_features) || _.isEmpty(X_features)) return;
-
-                    var Y_features = items_by_id[Y_feature.id];
-                    if (_.isUndefined(Y_features) || _.isEmpty(Y_features)) return;
+                    var X_features = items_by_id[X_feature.id] || [];
+                    var Y_features = items_by_id[Y_feature.id] || [];
+                    if (_.isEmpty(X_features) || _.isEmpty(Y_features)) return null;
 
                     var X_first = _.first(X_features);
                     var Y_first = _.first(Y_features);
-                    if (!_.has(X_first, "values") || !_.has(Y_first, "values")) return;
-
-                    console.log("fmx-dist.aggregate_data:" + tumor_type.id + ":samples=" + _.keys(X_first.values).length);
+                    if (!_.has(X_first, "values") || !_.has(Y_first, "values")) return null;
 
                     return _.map(X_first.values, function (X_value, X_key) {
-                        if (X_value === "NA") return;
+                        if (X_value === "NA") return null;
 
                         var Y_value = Y_first.values[X_key];
-                        if (Y_value === "NA") return;
+                        if (Y_value === "NA") return null;
+
+                        if (this.selected_sample_type && _.indexOf(select_samples, X_key) < 0) return null;
 
                         if (_.isNumber(X_value)) X_value = parseFloat(X_value);
                         if (_.isNumber(Y_value)) Y_value = parseFloat(Y_value);

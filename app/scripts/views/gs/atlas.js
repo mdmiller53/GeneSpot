@@ -7,24 +7,13 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
-    "views/gs/seqpeek_view_v2",
-    "views/gs/minigraph",
     "views/gs/mutsig_grid_view",
     "views/gs/mutsig_top_genes_view",
     "views/gs/stacksvis",
-    "views/gs/merged_sources_per_tumor_type",
     "views/gs/feature_matrix_distributions",
-    "models/gs/mutations_interpro",
-    "models/gs/mutations_map",
-    "models/gs/minigraph",
-    "models/gs/by_tumor_type",
-    "models/feature_matrix"
+    "views/gs/seqpeek_view_v2"
 ],
-    function ($, _, Backbone,
-              AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl,
-              QuickTutorialView, MapTextView, SeqPeekView, SeqPeekViewV2, MiniGraphView, MutsigGridView, MutsigTopGenesView, StacksVisView, MergedSourcesPerTumorTypeView, FeatureMatrixDistributionsView,
-              MutationsModel, MutationsMapModel, MiniGraphModel, ByTumorTypeModel, FeatureMatrixModel) {
-
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, MutsigTopGenesView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -32,7 +21,7 @@ define([
             "lastPosition": {
                 "top": 0, "left": 0
             },
-            "viewsByUid": {},
+            "view_specs_by_uid": {},
 
             events: {
                 "click a.refresh-loaded": function () {
@@ -85,8 +74,8 @@ define([
             },
 
             initialize: function (options) {
-                _.bindAll(this, "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "loadView", "closeMap", "zoom");
-                _.bindAll(this, "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "closeMap");
+                _.bindAll(this, "zoom", "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -103,21 +92,13 @@ define([
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
-                WebApp.Views["seqpeekv2"] = SeqPeekViewV2;
-                WebApp.Views["minigraph"] = MiniGraphView;
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
                 WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
-                WebApp.Views["merged_sources_per_tumor_type"] = MergedSourcesPerTumorTypeView;
+                WebApp.Views["seqpeekv2"] = SeqPeekViewV2;
 
-                WebApp.Models["Mutations"] = MutationsModel;
-                WebApp.Models["MutationsMap"] = MutationsMapModel;
-                WebApp.Models["MiniGraph"] = MiniGraphModel;
-                WebApp.Models["ByTumorType"] = ByTumorTypeModel;
-                WebApp.Models["FeatureMatrix"] = FeatureMatrixModel;
-
-                console.log("atlas:registered models and views")
+                console.log("atlas:registered views")
             },
 
             initMaps: function () {
@@ -153,7 +134,7 @@ define([
                                     return _.isEqual(m.id, mapFromSession.id);
                                 });
                                 if (matchedMap) {
-                                    return _.extend(_.clone(matchedMap), _.clone(mapFromSession));
+                                    return _.extend({}, matchedMap, mapFromSession);
                                 }
                                 return null;
                             }));
@@ -175,7 +156,7 @@ define([
                     if (idx == 0) view["li_class"] = "active";
                     view["uid"] = ++uid;
 
-                    this.viewsByUid[uid] = view;
+                    this.view_specs_by_uid[uid] = view;
                 }, this);
 
                 map.assignedPosition = map.position || this.nextPosition();
@@ -229,25 +210,103 @@ define([
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
 
-                    return this.loadView($target, view_name, v_options, q_options, tumor_type_list);
+                    return this.loadView($target, view_name, v_options, q_options);
                 }
                 return null;
             },
 
-            loadView: function (targetEl, view_name, options, query, tumor_type_list) {
+            loadView: function (targetEl, view_name, options, query) {
+                console.log("atlas:loadView:view=" + view_name);
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
-                    var viewDef = this.viewsByUid[$(targetEl).data("uid")];
-                    var data_sources = viewDef["sources"] || { "source": viewDef["tumor_type_source"] || viewDef["source"] };
-                    console.log("atlas:loadView(" + view_name + "):" + _.values(data_sources) + ":[" + tumor_type_list + "]");
+                    var view_spec = this.view_specs_by_uid[$(targetEl).data("uid")];
 
-                    var map_optns = _.extend(options, viewDef || {});
                     var query_options = { "query": query };
-                    if (viewDef["tumor_type_source"]) query_options = { "query": _.omit(query, "cancer") };
-                    var models = WebApp.Datamodel.load_datasources(data_sources, tumor_type_list, _.extend(map_optns || {}, query_options));
+                    if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
 
-                    var view = new ViewClass(_.extend(options, map_optns, {"models": models }));
-                    $(targetEl).html(view.render().el);
+                    // 1. Lookup model specification(s) for datamodel(s)
+                    var modelspecs = [];
+                    var appendModelSpecsFn = function(modelspec, datamodel_key) {
+                        if (modelspec["by_tumor_type"]) {
+                            _.each(modelspec["by_tumor_type"], function(modelspec, tumor_type) {
+                                var dk_tt = { "datamodel_key": datamodel_key, "tumor_type": tumor_type };
+                                modelspecs.push(_.extend(dk_tt, modelspec));
+                            });
+                        } else if (modelspec["single"]) {
+                            modelspecs.push(_.extend({ "datamodel_key": datamodel_key }, modelspec["single"]));
+                        }
+                    };
+
+                    if (view_spec["datamodels"]) {
+                        _.each(view_spec["datamodels"], function(datamodel, datamodel_key) {
+                            appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(datamodel), datamodel_key);
+                        });
+                    } else if (view_spec["datamodel"]) {
+                        appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(view_spec["datamodel"]), "model");
+                    }
+
+                    var model_bucket = {};
+                    var createViewFn = _.after(modelspecs.length, function () {
+                        // NOTE: May seem out of order, but is called after all modelspecs are turned to models
+                        // 3. Create view and pass model_bucket
+                        var model_obj = { "models": model_bucket };
+                        var model_arr = _.values(model_bucket);
+                        if (model_arr.length === 1) {
+                            if (view_spec["by_tumor_type"]) {
+                                var by_tumor_type = {};
+                                _.each(_.omit(_.first(model_arr), "by_tumor_type"), function(ttModel, tt) {
+                                    by_tumor_type[tt] = ttModel;
+                                });
+                                model_obj = { "models": by_tumor_type };
+                                model_arr = _.values(by_tumor_type);
+                            } else {
+                                model_obj = { "model": _.first(model_arr) };
+                            }
+                        }
+
+                        var view = new ViewClass(_.extend({}, options, view_spec, model_obj));
+                        $(targetEl).html(view.render().el);
+
+                        // 4. Fetch data and load models
+                        _.each(model_arr, function (model) {
+                            _.defer(function () {
+                                model.fetch({
+                                    "url": model.get("url"),
+                                    "data": query_options["query"],
+                                    "traditional": true,
+                                    "success": function () {
+                                        model.trigger("load");
+                                    }
+                                });
+                            });
+                        });
+                    });
+
+                    // 2. Create model(s) from model specifications
+                    _.each(modelspecs, function (modelspec) {
+                        var prepModelFn = function (Model) {
+                            var model = new Model(modelspec);
+                            if (view_spec["url_suffix"]) {
+                                model.set("url", model.get("url") + view_spec["url_suffix"]);
+                            }
+
+                            if (modelspec["tumor_type"]) {
+                                var modelspec_group = model_bucket[modelspec["datamodel_key"]];
+                                if (!modelspec_group) modelspec_group = model_bucket[modelspec["datamodel_key"]] = {};
+                                modelspec_group[modelspec["tumor_type"]] = model;
+                            } else {
+                                model_bucket[modelspec["datamodel_key"]] = model;
+                            }
+
+                            createViewFn();
+                        };
+
+                        if (modelspec["model"]) {
+                            require([modelspec["model"]], prepModelFn);
+                        } else {
+                            prepModelFn(Backbone.Model);
+                        }
+                    });
 
                     // TODO : Specify download links
 //                    if (map_optns["url"]) return map_optns["url"] + "?" + this.outputTsvQuery(query);

@@ -21,51 +21,67 @@ define(["jquery", "underscore", "backbone"],
 
             fetch_lookups: function () {
                 var lookups = this.get("lookups");
-                var lookupsReadyFn = _.after(_.keys(lookups).length - 1, function () {
+                var afterAllLookupsFn = _.after(_.keys(lookups).length, function () {
                     WebApp.Events.trigger("webapp:ready:lookups");
                 });
 
                 _.each(lookups, function (lookup, key) {
                     console.log("webapp:lookups:" + key + ":loading...");
-                    this.set(key, {});
+                    var lookup_spec = _.extend({ "lookup_key": key }, lookup);
 
-                    if (_.has(lookup, "tumor_type_source")) {
-                        var tumor_type_list = _.pluck(WebApp.Lookups.get("tumor_types").get("items"), "id");
-                        var completeFn = _.after(tumor_type_list.length, lookupsReadyFn);
-                        var lookup_obj = this.get(key);
+                    var _this = this;
+                    var afterLookupFn = function (model) {
+                        console.log("webapp:lookups:" + key + ":loaded");
+                        _this.set(key, model);
+                        afterAllLookupsFn();
+                    };
 
-                        var models = WebApp.Datamodel.load_datasources({"source": lookup["source"]}, tumor_type_list, {
-                            "source_suffix": lookup["source_suffix"],
-                            "query": lookup.query,
-                            "callback": function () {
-                                var tumor_type = this.get("tumor_type");
-                                var items = this.get("items");
-                                console.log("lookups:" + key + ":complete[" + tumor_type + "," + items.length + "]");
-                                lookup_obj[tumor_type] = items;
-                                completeFn();
-                            }
-                        });
+                    if (_.has(lookup_spec, "datamodel")) {
+                        var modelspecs = WebApp.Datamodel.find_modelspecs(lookup_spec["datamodel"]);
+                        if (modelspecs["by_tumor_type"]) {
+                            var by_tumor_type = {};
+                            var afterTumorTypeLookupFn = _.after(_.keys(modelspecs["by_tumor_type"]).length, function() {
+                                afterLookupFn(by_tumor_type);
+                            });
 
-                    } else if (_.has(lookup, "source")) {
-                        var models = WebApp.Datamodel.load_datasources({"source": lookup["source"]}, [], {
-                            "source_suffix": lookup["source_suffix"],
-                            "query": lookup.query ,
-                            "callback": function () {
-                                var items = this.get("items");
-                                console.log("lookups:" + key + ":complete[" + items.length + "]");
-                                lookupsReadyFn();
-                            }
-                        });
-                    } else if (_.has(lookup, "url")) {
-                        var lookupModel = new Backbone.Model();
-                        if (_.has(lookup, "model")) {
-                            var M = WebApp.Models[lookup["model"]];
-                            if (M) lookupModel = new M({});
+                            _.each(modelspecs["by_tumor_type"], function(modelspec, tumor_type) {
+                                this.fetch_model(_.extend({}, modelspec, lookup_spec), function(model) {
+                                    console.log("webapp:lookups:" + key + ":[" + tumor_type + "]:loaded");
+                                    by_tumor_type[tumor_type] = model;
+                                    afterTumorTypeLookupFn();
+                                });
+                            }, this);
+
+                        } else if (modelspec["single"]) {
+                            this.fetch_model(_.extend({}, modelspecs["single"], lookup_spec), afterLookupFn);
                         }
-                        this.set(key, lookupModel);
-                        lookupModel.fetch(_.extend(lookup, { "success": lookupsReadyFn, "error": lookupsReadyFn }));
+
+                    } else if (_.has(lookup_spec, "url")) {
+                        this.fetch_model(lookup_spec, afterLookupFn);
                     }
                 }, this);
+            },
+
+            fetch_model: function (options, callback) {
+                var modelFetchFn = function (Model) {
+                    _.defer(function() {
+                        var model = new Model(options);
+                        model.fetch({
+                            "url": model.get("url") + (model.get("url_suffix") || ""),
+                            "data": options["query"],
+                            "traditional": true,
+                            "success": function() {
+                                callback(model);
+                            }
+                        });
+                    });
+                };
+
+                if (options["model"]) {
+                    require([options["model"]], modelFetchFn);
+                } else {
+                    modelFetchFn(Backbone.Model);
+                }
             }
         });
 

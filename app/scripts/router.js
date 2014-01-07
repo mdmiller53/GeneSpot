@@ -1,6 +1,4 @@
-define(["jquery", "underscore", "backbone", "bootstrap",
-    "views/topbar_view", "views/gs/atlas"
-],
+define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "views/gs/atlas"],
     function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView) {
 
         return Backbone.Router.extend({
@@ -50,12 +48,9 @@ define(["jquery", "underscore", "backbone", "bootstrap",
 
             fetchAnnotations: function (catalog_key) {
                 if (_.isEmpty(WebApp.Annotations[catalog_key])) {
-                    var annotations = new WebApp.Models.Annotations({
-                        "url": "svc/data/annotations/" + catalog_key + ".json",
-                        "dataType": "json"
-                    });
-
+                    var annotations = new WebApp.Annotations({});
                     annotations.fetch({
+                        "url": "svc/datastores/annotations/" + catalog_key,
                         "async": false,
                         "dataType": "json",
                         "success": function () {
@@ -67,25 +62,43 @@ define(["jquery", "underscore", "backbone", "bootstrap",
             },
 
             viewsByUri: function (uri, view_name, options) {
-                var catalog_item = WebApp.Datamodel.find_catalogItem(uri);
-                var Model = WebApp.Models[catalog_item.model] || Backbone.Model;
+                // 1. Lookup model specification(s) for datamodel(s)
+                var modelspecs = WebApp.Datamodel.find_modelspecs(uri);
+                if (_.isUndefined(modelspecs) || !_.has(modelspecs, "single")) {
+                    console.log("webapp:router:uri_not_found:" + uri);
+                    return;
+                }
 
-                var model = new Model(_.extend(options || {}, { "catalog_item": catalog_item }));
-                _.defer(function () {
-                    model.fetch({
-                        "url": catalog_item["url"],
-                        success: function () {
-                            model.trigger("load");
-                        }
+                var modelspec = modelspecs["single"];
+                var _this = this;
+                var createViewFn = function (Model) {
+                    // NOTE: May seem out of order, but is called after modelspec is turned to model
+                    // 3. Create view
+                    var model = new Model(modelspec);
+
+                    var ViewClass = WebApp.Views[view_name];
+                    var view = new ViewClass(_.extend({ "model": model }, options));
+                    _this.$el.html(view.render().el);
+
+                    // 4. Fetch data and load model
+                    _.defer(function () {
+                        model.fetch({
+                            "url": model.get("url") + (model.get("url_prefix") || ""),
+                            "data": options,
+                            "traditional": true,
+                            "success": function () {
+                                model.trigger("load");
+                            }
+                        });
                     });
-                });
+                };
 
-                var view_options = _.extend({"model": model}, (options || {}));
-
-                var ViewClass = WebApp.Views[view_name];
-                var view = new ViewClass(view_options);
-                this.$el.html(view.render().el);
-                return view;
+                // 2. Create model(s) from model specifications
+                if (modelspec["model"]) {
+                    require([modelspec["model"]], createViewFn);
+                } else {
+                    createViewFn(Backbone.Model);
+                }
             },
 
             atlas: function () {

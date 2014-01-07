@@ -24,6 +24,10 @@ define(["jquery", "underscore", "backbone", "d3"],
                     });
                 }
                 return { "itemsById": itemsById, "keys": _.keys(itemsById) };
+            },
+
+            fetch:function (options) {
+                return Backbone.Model.prototype.fetch.call(this, _.extend({}, options, {dataType:"text"}));
             }
         });
 

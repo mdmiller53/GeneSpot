@@ -1,26 +1,12 @@
 define(["jquery", "underscore", "backbone",
     "router",
-    "models/sessions", "models/catalog", "models/annotations", "models/mappings", "models/feature_matrix", "models/datamodel", "models/lookups",
+    "models/sessions", "models/datamodel", "models/lookups",
     "views/items_grid_view"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, CatalogModel, AnnotationsModel, MappingsModel, FeatureMatrixModel, Datamodel, LookupsModel, ItemGridView) {
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
             Annotations: {},
-            Models: {
-                "Catalogs": CatalogModel,
-                "Annotations": AnnotationsModel,
-                "Mappings": MappingsModel,
-                "FeatureMatrix": FeatureMatrixModel
-            },
-            ViewMappings: {
-                "Annotations": [
-                    { "id": "items_grid", label: "Grid" }
-                ],
-                "FeatureMatrix": [
-                    { "id": "items_grid", label: "Grid" }
-                ]
-            },
             Views: {
                 "grid": ItemGridView,
                 "items_grid": ItemGridView
@@ -46,12 +32,12 @@ define(["jquery", "underscore", "backbone",
             });
             _.each(webappTasks, function (task) {
                 WebApp.Events.on("webapp:ready:" + task, function () {
-                    console.log("[SUCCESS] webapp:ready:" + task + " [" + (new Date().getTime() - startTasks) + "ms]");
+                    console.log("webapp:ready:" + task + "[SUCCESS:" + (new Date().getTime() - startTasks) + "ms]");
                 });
                 WebApp.Events.on("webapp:ready:" + task, webappReadyFn);
             });
 
-            // 1. Load display elements asynchronously
+            // 2. Load display elements asynchronously
             WebApp.Display.fetch({
                 url: "configurations/display.json",
                 success: function () {
@@ -60,18 +46,18 @@ define(["jquery", "underscore", "backbone",
                 }
             });
 
-            // 2. Fetch and prep datamodel
+            // 3. Fetch and prep datamodel
             WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
 
-            // 3. Fetch and prep lookups
+            // 4. Fetch and prep lookups
             WebApp.Events.on("webapp:ready:datamodel", function () {
                 WebApp.Lookups.fetch({ "url": "configurations/lookups.json" });
             });
 
-            // 4. Start router
+            // 5. Start router
             WebApp.Events.on("webapp:ready:lookups", WebApp.Router.start);
 
-            // 5. Start sessions
+            // 6. Start sessions
             WebApp.Sessions.All.fetch({
                 "url": "svc/storage/sessions",
                 "success": function (json) {

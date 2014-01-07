@@ -1,0 +1,20 @@
+<table class="table table-bordered table-condensed">
+    <thead>
+    <tr>
+        <td>Tumor</td>
+        <td>MutSig rank</td>
+        <td>samples (#/%)</td>
+        <td>track</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each items}}
+        <tr>
+            <td>{{tumor_type_label}}</td>
+            <td>{{mutsig_rank}}</td>
+            <td>{{statistics.samples.numberOf}} / {{statistics.samples.totals.percentOf}}</td>
+            <td id="seqpeek-row-{{tumor_type}}"></td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>

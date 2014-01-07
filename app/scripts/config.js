@@ -17,7 +17,10 @@ require.config({
         'i18nprecompile' : '../bower_components/require-handlebars-plugin/hbs/i18nprecompile',
         vq : '../bower_components/visquick/vq',
         "jsPlumb" : '../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min',
-        "bootstrap-dropdown-checkbox" : "../bower_components/bootstrap-dropdown-checkbox/js/bootstrap-dropdown-checkbox"
+        "bootstrap-dropdown-checkbox" : "../bower_components/bootstrap-dropdown-checkbox/js/bootstrap-dropdown-checkbox",
+        "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
+        "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
+        "carve" : "../bower_components/carve/carve"
     },
     shim: {
         underscore : {
@@ -64,3 +67,17 @@ require.config({
 require(['webapp'], function (WebApp) {
     WebApp.initialize();
 });
+
+require(
+    [
+        "models/annotations",
+        "models/feature_matrix",
+        "models/gs/by_tumor_type",
+        "models/gs/mutations_interpro",
+        "models/gs/mutations_map",
+        "models/gs/sample_types"
+    ],
+    function () {
+        console.log("making modules available for dynamic loading");
+    }
+);

@@ -7,10 +7,6 @@ return Backbone.Model.extend({
         _.extend(this, options);
     },
 
-    url:function () {
-        return this.data_uri;
-    },
-
     parse:function (tsv_text) {
         var tsv_rows = tsv_text.split("\n");
 

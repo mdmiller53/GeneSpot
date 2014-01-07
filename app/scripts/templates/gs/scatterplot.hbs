@@ -17,16 +17,16 @@
         visibility: hidden;
     }
 
-    .y.axis path, .y.axis line{
-        stroke:#aaa;
+    .y.axis path, .y.axis line {
+        stroke: #aaa;
     }
 
     .x.axis path, .x.axis line {
-        stroke:none;
+        stroke: none;
     }
 
     .axis_label, .ticks {
-        font-size:16px;
+        font-size: 16px;
     }
 
     .data_totals {
@@ -44,34 +44,70 @@
         width: 540px;
         height: 405px;
     }
+
+    .gene-feature-selectors {
+        border-right-color: lightgray;
+        border-right-width: 2px;
+        border-right-style: solid;
+    }
+
+    .tumor-type-selector-scatterplot {
+        margin-top: 0px;
+        margin-bottom: 10px;
+    }
+
+    .tumor-type-selector-scatterplot .btn {
+        border-bottom-width: 4px;
+    }
+
+    .sample-type-selector-scatterplot .btn {
+        border-bottom-width: 4px;
+    }
 </style>
 
 <div class="container">
-    <ul class="nav nav-pills cancer-selector-scatterplot"></ul>
     <div class="row">
-        <div class="span6 scatterplot-controls well">
-            <div class="row">
-                <div class="span3">
-                    <div class="input-prepend">
-                        <span class="add-on">x-axis</span>
-                        <input class="input-small genes-typeahead-x span2" type="text" placeholder="Type a gene name (x-axis) ...">
-                    </div>
-                    <ul class="nav nav-list feature-selector-x pre-scrollable">Loading features...</ul>
-                </div>
-                <div class="span3">
-                    <div class="input-prepend">
-                        <span class="add-on">y-axis</span>
-                        <input class="input-small genes-typeahead-y span2" type="text" placeholder="Type a gene name (y-axis) ...">
-                    </div>
-                    <ul class="nav nav-list feature-selector-y pre-scrollable">Loading features...</ul>
-                </div>
-            </div>
+        <div class="span3 tumor-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
+            <button class="btn btn-small active" data-toggle="button" data-id="all_tumor_types">All</button>
+            {{#each tumor_types}}
+            <button class="btn btn-small" data-toggle="button" data-id="{{id}}" style="border-bottom-color: {{color}};">{{id}}</button>
+            {{/each}}
         </div>
-        <div class="span5">
-            <div class="scatterplot-container"></div>
-            <div class="download-container"></div>
+        {{#if sample_types}}
+        <div class="span3 sample-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
+            <button class="btn btn-small active" data-toggle="button" data-id="all_sample_types">All Tissue Types</button>
+            {{#each sample_types}}
+            <button class="btn btn-small" data-toggle="button" data-id="{{key}}">{{label}}</button>
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+    <div class="row">
+        <div class="span3 gene-feature-selectors">
+            <div class="dropdown">
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
+                <ul class="dropdown-menu genes-selector-x" role="menu">
+                    {{#each genes}}
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+            <div class="feature-selector-x">Loading features...</div>
+            <div class="dropdown">
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
+                <ul class="dropdown-menu genes-selector-y" role="menu">
+                    {{#each genes}}
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+            <div class="feature-selector-y">Loading features...</div>
+        </div>
+        <div class="span8">
+            <div class="scatterplot-container well"></div>
+            <div class="download-container well"></div>
         </div>
     </div>
-    <a href="#" class="hide-controls hide" onclick="return false;">show axis control</a>
-    <a href="#" class="hide-controls" onclick="return false;">hide axis control</a>
 </div>

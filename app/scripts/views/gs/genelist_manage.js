@@ -5,7 +5,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/line_item", "hbs!temp
                 _.extend(this, options);
 
                 _.bindAll(this, "initTypeahead", "newGL", "saveGL", "loadGL", "appendGenelists");
-                $.ajax({ url: "svc/data/lookups/genes", type: "GET", dataType: "text", context: this, success: this.initTypeahead });
+
+                _.defer(this.initTypeahead);
 
                 this.model.on("load", this.appendGenelists);
                 $("body").append(GeneListManageTpl());
@@ -34,7 +35,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/line_item", "hbs!temp
             },
 
             initTypeahead: function (txt) {
-                this.genelist = txt.trim().split("\n");
+                this.genelist = WebApp.Lookups.get("genes").get("keys");
 
                 var _this = this;
                 this.$el.find(".genes-typeahead").typeahead({

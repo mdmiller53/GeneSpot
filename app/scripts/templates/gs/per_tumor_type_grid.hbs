@@ -1,0 +1,33 @@
+{{#each items_by_tumor_type}}
+<a data-toggle="collapse" href="#collapser-{{tumor_type}}-{{../id}}">{{tumor_type}} <i class="icon-chevron-down"></i></a>
+<div id="collapser-{{tumor_type}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+        <tr>
+            <td>Gene</td>
+            <td>Cytoband</td>
+            <td>Q-Value</td>
+            <td>Type</td>
+            <td>Samples (#/%NA)</td>
+            <td>Deletions (#/%)</td>
+            <td>Gains (#/%)</td>
+            <td>Mutations (#/%)</td>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each items}}
+        <tr>
+            <td>{{gene}}</td>
+            <td>{{cytoband}}</td>
+            <td>{{q_value}}
+            <td>{{type}}</td>
+            <td>{{samples.numberOf}} / {{samples.percentOf}}</td>
+            <td>{{deletions.numberOf}} / {{deletions.percentOf}}</td>
+            <td>{{gains.numberOf}} / {{gains.percentOf}}</td>
+            <td>{{mutations.numberOf}} / {{mutations.percentOf}}</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+{{/each}}

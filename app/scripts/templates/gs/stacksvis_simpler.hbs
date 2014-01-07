@@ -1,37 +1,47 @@
-<div class="stacksvis-container"></div>
-
-<div class="accordion-heading">
-    <a class="accordion-toggle" data-toggle="collapse" href="#accordion-collapse-bottom-{{id}}">Controls <i class="icon-chevron-down"></i></a>
+<style>
+    .stats-hm {
+        min-width: 400px;
+    }
+</style>
+<div class="pull-right">
+    <a href="#" class="global-hider hider-target hide" onclick="return false;">Hide Sample Stats</a>
+    <a href="#" class="global-hider hider-target" onclick="return false;">Show Sample Stats</a>
 </div>
-<div id="accordion-collapse-bottom-{{id}}" class="accordion-body collapse">
-    <div class="accordion-inner">
-        <div class="row">
-            <div class="span2">Bar Height</div>
-            <div class="span4 slider_barheight"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Row Spacing</div>
-            <div class="span4 slider_rowspacing"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Bar Width</div>
-            <div class="span4 slider_barwidth"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Bar Spacing</div>
-            <div class="span4 slider_barspacing"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Cluster Spacing</div>
-            <div class="span4 slider_clusterspacing"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Label Font Size</div>
-            <div class="span4 slider_fontsize"></div>
-        </div>
-        <div class="row">
-            <div class="span2">Label Width</div>
-            <div class="span4 slider_label_width"></div>
-        </div>
-    </div>
+{{#each tumor_types}}
+<a data-toggle="collapse" data-toggle="tooltips" class="tooltips" href="#collapser-{{id}}-{{../id}}" onclick="return false;" title="{{label}}">{{id}} <i class="icon-chevron-down"></i></a>
+<!--<div id="collapser-{{id}}-{{../id}}" class="collapse {{#unless @index}}in{{/unless}}">-->
+<div id="collapser-{{id}}-{{../id}}" class="collapse in">
+    <table class="table table-bordered table-condensed">
+        <thead>
+        <tr>
+            <td>Gene</td>
+            <td>Q-value</td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Samples">Samples</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Number of Mutated Samples">Mutated</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Amplifications">Amplifications</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Gains">Gains</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Diploid Samples">Diploids</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Heterozygous Loss">Heterozygous<br/>Loss</a></td>
+            <td class="hider-target hide"><a href="#" class="tooltips" data-toggle="tooltip" onclick="return false;" title="Percent of Samples with Homozygous Loss">Homozygous<br/>Loss</a></td>
+            <td></td>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each ../genes}}
+        <tr class="stats-{{../id}}-{{.}} hide">
+            <td>{{.}}</td>
+            <td class="q-values">&nbsp;</td>
+            <td class="hider-target hide stats-samples"></td>
+            <td class="hider-target hide stats-mutations"></td>
+            <td class="hider-target hide stats-1"></td>
+            <td class="hider-target hide stats-2"></td>
+            <td class="hider-target hide stats-0"></td>
+            <td class="hider-target hide stats-3"></td>
+            <td class="hider-target hide stats-4"></td>
+            <td class="stats-hm"></td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
 </div>
+{{/each}}

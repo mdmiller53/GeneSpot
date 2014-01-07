@@ -1,0 +1,41 @@
+<style>
+    .feature-defs li {
+        font-size: 10px;
+        line-height: 10px;
+    }
+
+    .feature-defs.tabs-left > .nav-tabs > li > a {
+        min-width: 0px;
+    }
+
+    .feature-defs .nav-tabs {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .feature-defs .tab-content {
+        margin-top: 10px;
+    }
+
+    .feature-defs .nav-tabs > li > a {
+        line-height: 10px;
+    }
+
+    .feature-defs .nav-list > li > a {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+</style>
+<div class="feature-defs tabbable tabs-left">
+    <ul class="nav nav-tabs">
+        <li><a class="brand" href="#" onclick="return false;"><strong>{{axis}}-axis</strong></a></li>
+        {{#each feature_sources}}
+        <li><a id="tab-{{uid}}" data-toggle="tab" href="#tab-pane-{{uid}}" onclick="return false;">{{label}}</a></li>
+        {{/each}}
+    </ul>
+    <div class="tab-content">
+        {{#each feature_sources}}
+        <ul id="tab-pane-{{uid}}" data-uid="{{uid}}" class="{{item_class}} tab-pane nav nav-list"></ul>
+        {{/each}}
+    </div>
+</div>

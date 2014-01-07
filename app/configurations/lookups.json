@@ -1,0 +1,26 @@
+{
+    "lookups": {
+        "sample_types": {
+            "datamodel": "datamodel/feature_matrices",
+            "url_suffix": "/feature_matrix",
+            "model": "models/gs/sample_types",
+            "query": {
+                "id": "C:SAMP:sampleType:::::"
+            },
+            "definitions": {
+                "TP": "Tumor",
+                "NT": "Normal",
+                "TM": "Metastatic",
+                "CELLC": "Cell Culture"
+            }
+        },
+        "chromosomes": {
+            "url": "svc/data/lookups/chromosomes",
+            "model": "models/annotations"
+        },
+        "genes": {
+            "url": "svc/data/lookups/genes",
+            "model": "models/annotations"
+        }
+    }
+}

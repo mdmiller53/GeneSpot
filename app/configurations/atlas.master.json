@@ -1,24 +1,6 @@
 {
     "maps": [
         {
-            "id": "seqpeekv2",
-            "label": "Mutations Per Cancer Type",
-            "isOpen": true,
-            "position": {
-                "top": 300,
-                "left": 20
-            },
-            "views": [
-                {
-                    "id": "seqpeekv2",
-                    "label": "SeqPeek",
-                    "datamodels": {
-                        "mutations_map": "datamodel/mutations/Mutations_Per_Cancer_type"
-                    }
-                }
-            ]
-        },
-        {
             "id": "mutsig_ranks",
             "label": "MutSig Ranks",
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
@@ -31,12 +13,12 @@
                 {
                     "view": "mutsig_grid",
                     "label": "Selected Genes",
-                    "datamodel": "datamodel/mutations/mutsig_rankings"
+                    "source": "datamodel/mutations/mutsig_rankings"
                 },
                 {
                     "view": "mutsig_top_genes",
                     "label": "Top 20",
-                    "datamodel": "datamodel/mutations/mutsig_top20"
+                    "source": "datamodel/mutations/mutsig_top20"
                 }
             ]
         },
@@ -46,7 +28,7 @@
             "links": {
                 "home": "http://pubcrawl.systemsbiology.net"
             },
-            "disabled": false,
+            "disabled": true,
             "views": [
                 {
                     "view": "pubcrawl_network",
@@ -67,14 +49,14 @@
                 {
                     "view": "seqpeek",
                     "label": "SeqPeek",
-                    "datamodel": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
+                    "source": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
                 }
             ]
         },
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
                 "top": 20,
                 "left": 200
@@ -83,16 +65,15 @@
                 {
                     "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "datamodel": "datamodel/feature_matrices",
-                    "by_tumor_type": "tumor_type",
-                    "url_suffix": "/feature_matrix"
+                    "tumor_type_source": "datamodel/feature_matrices",
+                    "source_suffix": "/feature_matrix"
                 }
             ]
         },
         {
             "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
                 "top": 50,
                 "left": 50
@@ -101,7 +82,7 @@
                 {
                     "view": "stacksvis",
                     "label": "Distributions",
-                    "datamodels": {
+                    "sources": {
                         "copy_number": "datamodel/copy_number/copy_number_gistic2",
                         "q_value": "datamodel/copy_number/copy_number_qvalue"
                     }

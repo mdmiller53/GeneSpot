@@ -12,6 +12,11 @@ return Backbone.View.extend({
 
     processData:function () {
         var items = this.model.get("items");
+        if (_.isEmpty(items)) {
+            this.$el.html("No results");
+            return;
+        }
+
         var headers = _.without(_.keys(items[0]), "uri", "id");
         var rows = _.map(items, function (item) {
             return { "values":_.map(headers, function (header) {

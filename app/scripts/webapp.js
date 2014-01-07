@@ -1,119 +1,74 @@
-define   (['jquery', 'underscore', 'backbone', 'router',
-    'models/sessions',
-    'models/catalog',
-    'models/annotations',
-    'models/mappings',
-    'models/feature_matrix',
+define(["jquery", "underscore", "backbone",
+    "router",
+    "models/sessions", "models/datamodel", "models/lookups",
+    "views/items_grid_view"],
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView) {
+        WebApp = {
+            Events: _.extend(Backbone.Events),
 
-    'views/items_grid_view'],
-function ( $,        _,            Backbone,   AppRouter,
-           SessionsCollection,
-           CatalogModel,
-           AnnotationsModel,
-           MappingsModel,
-           FeatureMatrixModel,
-
-           ItemGridView
-    ) {
-
-    WebApp = {
-        Events: _.extend(Backbone.Events),
-
-        Annotations: {},
-        Models:{
-            "Catalogs": CatalogModel,
-            "Annotations": AnnotationsModel,
-            "Mappings": MappingsModel,
-            "FeatureMatrix": FeatureMatrixModel,
-            "Default":Backbone.Model.extend({
-                url: function() {
-                    return this.get("data_uri");
-                }
-            })
-        },
-        ViewMappings:{
-            "Annotations":[
-                { "id":"items_grid", label:"Grid" }
-            ],
-            "FeatureMatrix":[
-                { "id":"items_grid", label:"Grid" }
-            ]
-        },
-        Views:{
-            "items_grid": ItemGridView
-        },
-        Lookups:{
-            Chromosomes: new AnnotationsModel({ url:"svc/data/lookups/chromosomes" }),
-            Labels:{},
-            TumorTypes: new Backbone.Model()
-        },
-        Display:new Backbone.Model(),
-        Datamodel:new Backbone.Model(),
-        Sessions: {
-            All: null,
-            Active: null,
-            Producers: {}
-        }
-    };
-
-    WebApp.startRouter = function() {
-        this.Router = new AppRouter({
-            Annotations: this.Annotations,
-            Datamodel: this.Datamodel,
-            Sessions: this.Sessions,
-            Views: this.Views,
-            Models: this.Models,
-            ViewMappings: this.ViewMappings
-        });
-        this.Router.initTopNavBar({
-            Display: this.Display
-        });
-
-        Backbone.history.start();
-        this.Events.trigger("ready");
-    };
-
-    WebApp.startupUI = function() {
-        var that = this;
-
-        $.ajax({
-            "url": "svc/storage/sessions",
-            "method": "GET",
-            success: function(json) {
-                that.Sessions.All = new SessionsCollection(json.items);
-                that.startRouter();
+            Annotations: {},
+            Views: {
+                "grid": ItemGridView,
+                "items_grid": ItemGridView
             },
-            error: function() {
-                that.Sessions.All = new SessionsCollection([]);
-                that.startRouter();
-            }
-        });
-    };
+            Lookups: new LookupsModel(),
+            Display: new Backbone.Model(),
+            Datamodel: new Datamodel(),
+            Router: new AppRouter(),
+            Sessions: {
+                All: new SessionsCollection([]),
+                Active: null,
+                Producers: {}
+            },
+            UserPreferences: new Backbone.Model()
+        };
 
-    WebApp.initialize = function() {
-        var that = this;
+        WebApp.initialize = function () {
+            // 1. Start and Monitor WebApp Initialization Tasks
+            var startTasks = new Date().getTime();
+            var webappTasks = ["display", "lookups", "datamodel", "router"];
+            var webappReadyFn = _.after(webappTasks.length, function () {
+                WebApp.Events.trigger("webapp:ready");
+            });
+            _.each(webappTasks, function (task) {
+                WebApp.Events.on("webapp:ready:" + task, function () {
+                    console.log("webapp:ready:" + task + "[SUCCESS:" + (new Date().getTime() - startTasks) + "ms]");
+                });
+                WebApp.Events.on("webapp:ready:" + task, webappReadyFn);
+            });
 
-        this.Display.fetch({
-            url:"configurations/display.json",
-            success:function () {
-                document.title = (that.Display.get("title") || "Web App Base");
-            }
-        });
+            // 2. Load display elements asynchronously
+            WebApp.Display.fetch({
+                url: "configurations/display.json",
+                success: function () {
+                    document.title = (WebApp.Display.get("title") || "Web App Base");
+                    WebApp.Events.trigger("webapp:ready:display");
+                }
+            });
 
-        this.Datamodel.fetch({
-            url:"configurations/datamodel.json",
-            success: that.startupUI,
-            error: that.startupUI
-        });
+            // 3. Fetch and prep datamodel
+            WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
 
-        this.Lookups.Chromosomes.fetch({
-            dataType: "text"
-        });
+            // 4. Fetch and prep lookups
+            WebApp.Events.on("webapp:ready:datamodel", function () {
+                WebApp.Lookups.fetch({ "url": "configurations/lookups.json" });
+            });
 
-        this.Lookups.TumorTypes.fetch({ "url": "configurations/tumor_types.json" });
-    };
+            // 5. Start router
+            WebApp.Events.on("webapp:ready:lookups", WebApp.Router.start);
 
-    _.bindAll(WebApp, 'startRouter', 'startupUI', 'initialize');
+            // 6. Start sessions
+            WebApp.Sessions.All.fetch({
+                "url": "svc/storage/sessions",
+                "success": function (json) {
+                    // Is this necessary?
+                    WebApp.Sessions.All = new SessionsCollection(json.items);
+                    WebApp.Events.trigger("webapp:ready:sessions");
+                }
+            });
+        };
 
-    return WebApp;
-});
+        _.bindAll(WebApp, "initialize");
+
+        return WebApp;
+    });

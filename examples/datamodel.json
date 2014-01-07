@@ -34,15 +34,13 @@
             "label":"Merged Feature Matrices (11/05/2012)",
             "catalog":{
                 "all_pairs":{
-                    "service":"lookups/newMerge_05nov",
-                    "model":"FeatureMatrix"
+                    "service":"lookups/newMerge_05nov"
                 },
                 "annotated_features":{
-                    "id":"annotated_features",
                     "service":"lookups/fmx_newMerge_05nov",
                     "description":"This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
                     "label":"Annotated Features",
-                    "model":"FeatureMatrix"
+                    "model":"models/feature_matrix"
                 }
             }
         },

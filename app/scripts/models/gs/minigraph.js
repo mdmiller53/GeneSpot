@@ -75,9 +75,7 @@ define(["jquery", "underscore", "backbone"],
             },
 
             get_base_uri: function (suffix) {
-                var data_uri = this.get("data_uri");
-                var dataset_id = this.get("dataset_id");
-                return data_uri + "/" + this.get("catalog_unit")[suffix];
+                return this.get("url") + "/" + this.get("catalog_item")[suffix];
             }
         });
     });

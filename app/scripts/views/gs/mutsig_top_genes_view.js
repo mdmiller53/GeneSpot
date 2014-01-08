@@ -12,37 +12,32 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
             },
 
             processData: function () {
-                var items = this.model.get("items");
+                var items = _.map(this.model.get("items"), function (item) {
+                    item["cell_value"] = item[this.cell_attribute];
+                    item["cell_cls"] = "plain-cell";
+                    _.each(this.genes, function (g) {
+                        if (_.isEqual(g.toLowerCase(), item["cell_value"].toLowerCase())) {
+                            item["cell_cls"] = "highlight-cell";
+                        }
+                    });
+                    return item;
+                }, this);
+
                 var data = _.groupBy(items, "rank");
 
-                var rowlabels = _
-                    .chain(items)
-                    .pluck("rank")
-                    .uniq()
-                    .sortBy(function (d) {
+                var rowlabels = _.chain(items).pluck("rank").uniq().sortBy(function (d) {
                         return d;
-                    })
-                    .value();
+                    }).value();
 
                 var headers = _.map(_.uniq(_.pluck(items, this.header_attribute)), function (h) {
                     return { "id": h };
                 });
 
-                _.each(items, function (item) {
-                    item["cell_value"] = item[this.cell_attribute];
-                    _.each(this.genes, function (g) {
-                        if (_.isEqual(g.toLowerCase(), item["cell_value"].toLowerCase())) {
-                            item["cell_cls"] = "highlight-cell";
-                        } else {
-                            item["cell_cls"] = "plain-cell";
-                        }
-                    });
-                }, this);
-
                 var _this = this;
                 this.$el.html(Template({
-                    "header_cls": "centered-header",
-                    "headers": headers,
+                    "headers": _.map(headers, function(header) {
+                        return { "id": header.id.toUpperCase() };
+                    }),
                     "rows": _.map(rowlabels, function (rowlabel) {
                         var rank_data = data[rowlabel];
                         var row_data = _.groupBy(rank_data, "cancer");

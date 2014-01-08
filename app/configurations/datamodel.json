@@ -31,7 +31,7 @@
                 },
                 "mutsig_top20": {
                     "label": "MutSig Top20",
-                    "service": "datastores/mutations/qed_lookups/mutsig_rankings"
+                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20"
                 },
                 "mutsig_provenance": {
                     "label": "MutSig Provenance",

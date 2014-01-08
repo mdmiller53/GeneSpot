@@ -5,12 +5,12 @@
             "label": "Mutations Per Cancer Type",
             "isOpen": true,
             "position": {
-                "top": 300,
-                "left": 20
+                "top": 170,
+                "left": 70
             },
             "views": [
                 {
-                    "id": "seqpeekv2",
+                    "view": "seqpeekv2",
                     "label": "SeqPeek",
                     "datamodels": {
                         "mutations_map": "datamodel/mutations/Mutations_Per_Cancer_type"
@@ -24,15 +24,10 @@
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
             "isOpen": false,
             "position": {
-                "top": 10,
-                "left": 50
+                "top": 250,
+                "left": 600
             },
             "views": [
-                {
-                    "view": "mutsig_grid",
-                    "label": "Selected Genes",
-                    "datamodel": "datamodel/mutations/mutsig_rankings"
-                },
                 {
                     "view": "mutsig_top_genes",
                     "label": "Top 20",
@@ -46,7 +41,7 @@
             "links": {
                 "home": "http://pubcrawl.systemsbiology.net"
             },
-            "disabled": false,
+            "disabled": true,
             "views": [
                 {
                     "view": "pubcrawl_network",
@@ -56,27 +51,11 @@
             ]
         },
         {
-            "id": "seqpeek_protein_mutations",
-            "label": "Protein Mutations Per Cancer Type",
-            "isOpen": false,
-            "position": {
-                "top": 300,
-                "left": 20
-            },
-            "views": [
-                {
-                    "view": "seqpeek",
-                    "label": "SeqPeek",
-                    "datamodel": "datamodel/mutations/Protein_Mutations_Per_Cancer_Type"
-                }
-            ]
-        },
-        {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
-                "top": 20,
+                "top": -50,
                 "left": 200
             },
             "views": [
@@ -92,10 +71,10 @@
         {
             "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
-                "top": 50,
-                "left": 50
+                "top": 75,
+                "left": 125
             },
             "views": [
                 {
@@ -112,10 +91,10 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": false,
+            "isOpen": true,
             "position": {
-                "top": 20,
-                "left": 200
+                "top": 0,
+                "left": 720
             },
             "views": [
                 {

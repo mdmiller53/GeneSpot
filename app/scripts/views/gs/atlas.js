@@ -223,6 +223,7 @@ define([
 
                     var query_options = { "query": query };
                     if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
+                    if (view_spec["query_all_genes"]) query_options = { "query": _.omit(query, "gene") };
 
                     // 1. Lookup model specification(s) for datamodel(s)
                     var modelspecs = [];

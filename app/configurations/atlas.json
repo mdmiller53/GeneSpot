@@ -21,7 +21,6 @@
         {
             "id": "mutsig_ranks",
             "label": "MutSig Ranks",
-            "isOpen": true,
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
             "isOpen": true,
             "position": {

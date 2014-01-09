@@ -8,12 +8,12 @@ define([
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
     "views/gs/mutsig_grid_view",
-    "views/gs/mutsig_top_genes_view",
+    "views/sorted_data_grid",
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2"
 ],
-    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, MutsigTopGenesView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2) {
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -93,7 +93,6 @@ define([
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
                 WebApp.Views["mutsig_grid"] = MutsigGridView;
-                WebApp.Views["mutsig_top_genes"] = MutsigTopGenesView;
                 WebApp.Views["stacksvis"] = StacksVisView;
                 WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
                 WebApp.Views["seqpeekv2"] = SeqPeekViewV2;

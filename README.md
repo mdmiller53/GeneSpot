@@ -44,26 +44,32 @@ This project adds the following files into the [configurations directory](https:
             },
             "views": [
                 {
-                    "id": "mutsig_grid",
-                    "label": "Selected Genes",
-                    "source": "datamodel/mutations/mutsig_rankings"
-                },
-                {
-                    "id": "mutsig_top_genes",
+                    "view": "sorted_data_grid",
+                    "dimensions": {
+                        "column_value": "cancer",
+                        "cell_value": "gene",
+                        "sort_by": "rank"
+                    },
                     "label": "Top 20",
-                    "source": "datamodel/mutations/mutsig_top20"
+                    "datamodel": "datamodel/mutations/mutsig_top20",
+                    "query_all_genes": true
                 }
             ]
         },
-        {
+{
             "id": "sample_distributions",
             "label": "Sample Distributions",
+            "position": {
+                "top": -50,
+                "left": 200
+            },
             "views": [
                 {
-                    "id": "scatterplot",
+                    "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "source": "datamodel/feature_matrices/BLCA-SEQ-20131113",
-                    "comment": "need to handle multiple tumor types"
+                    "datamodel": "datamodel/feature_matrices",
+                    "by_tumor_type": "tumor_type",
+                    "url_suffix": "/feature_matrix"
                 }
             ]
         }

@@ -3,7 +3,6 @@
         {
             "id": "seqpeekv2",
             "label": "Mutations Per Cancer Type",
-            "isOpen": true,
             "position": {
                 "top": 170,
                 "left": 70
@@ -29,7 +28,12 @@
             },
             "views": [
                 {
-                    "view": "mutsig_top_genes",
+                    "view": "sorted_data_grid",
+                    "dimensions": {
+                        "column_value": "cancer",
+                        "cell_value": "gene",
+                        "sort_by": "rank"
+                    },
                     "label": "Top 20",
                     "datamodel": "datamodel/mutations/mutsig_top20",
                     "query_all_genes": true
@@ -54,7 +58,6 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": true,
             "position": {
                 "top": -50,
                 "left": 200
@@ -72,7 +75,6 @@
         {
             "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
-            "isOpen": true,
             "position": {
                 "top": 75,
                 "left": 125
@@ -92,7 +94,6 @@
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
             "description": "General information about this web application",
-            "isOpen": true,
             "position": {
                 "top": 0,
                 "left": 720

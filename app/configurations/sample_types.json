@@ -1,0 +1,137 @@
+{
+    "sample_types": [
+        {
+            "id": "TP",
+            "category": "Tumor",
+            "label": "Primary Tumor",
+            "description": "Primary solid Tumor",
+            "code": "01"
+        },
+        {
+            "id": "TR",
+            "category": "Tumor",
+            "label": "Recurrent Tumor",
+            "description": "Recurrent Solid Tumor",
+            "code": "02"
+        },
+        {
+            "id": "TB",
+            "category": "Blood",
+            "label": "Peripheral Blood",
+            "description": "Primary Blood Derived Cancer - Peripheral Blood",
+            "code": "03"
+        },
+        {
+            "id": "TRBM",
+            "category": "Tumor",
+            "label": "Bone Marrow",
+            "description": "Recurrent Blood Derived Cancer - Bone Marrow",
+            "code": "04"
+        },
+        {
+            "id": "TAP",
+            "category": "Tumor",
+            "label": "New Primary",
+            "description": "Additional - New Primary",
+            "code": "05"
+        },
+        {
+            "id": "TM",
+            "category": "Tumor",
+            "label": "Metastatic",
+            "description": "Metastatic",
+            "code": "06"
+        },
+        {
+            "id": "TAM",
+            "category": "Tumor",
+            "label": "Additional Metastatic",
+            "description": "Additional Metastatic",
+            "code": "07"
+        },
+        {
+            "id": "THOC",
+            "category": "Tumor",
+            "label": "Original Cells",
+            "description": "Human Tumor Original Cells",
+            "code": "08"
+        },
+        {
+            "id": "TBM",
+            "category": "Tumor",
+            "label": "Bone Marrow",
+            "description": "Primary Blood Derived Cancer - Bone Marrow",
+            "code": "09"
+        },
+        {
+            "id": "NB",
+            "category": "Normal",
+            "label": "Blood Derived Normal",
+            "description": "Blood Derived Normal",
+            "code": "10"
+        },
+        {
+            "id": "NT",
+            "category": "Normal",
+            "label": "Solid Tissue Normal",
+            "description": "Solid Tissue Normal",
+            "code": "11"
+        },
+        {
+            "id": "NBC",
+            "category": "Normal",
+            "label": "Buccal Cell Normal",
+            "description": "Buccal Cell Normal",
+            "code": "12"
+        },
+        {
+            "id": "NEBV",
+            "category": "Normal",
+            "label": "EBV Normal",
+            "description": "EBV Immortalized Normal",
+            "code": "13"
+        },
+        {
+            "id": "NBM",
+            "category": "Normal",
+            "label": "Bone Marrow Normal",
+            "description": "Bone Marrow Normal",
+            "code": "14"
+        },
+        {
+            "id": "CELLC",
+            "category": "Cell Line",
+            "label": "Control Analyte",
+            "description": "Control Analyte",
+            "code": "20"
+        },
+        {
+            "id": "TRB",
+            "category": "Tumor",
+            "label": "Recurrent Peripheral Blood",
+            "description": "Recurrent Blood Derived Cancer - Peripheral Blood",
+            "code": "40"
+        },
+        {
+            "id": "CELL",
+            "category": "Other",
+            "label": "Cell Lines",
+            "description": "Cell Lines",
+            "code": "50"
+        },
+        {
+            "id": "XP",
+            "category": "Cell Line",
+            "label": "Primary Xenograft",
+            "description": "Primary Xenograft Tissue",
+            "code": "61"
+        },
+        {
+            "id": "XCL",
+            "category": "Cell Line",
+            "label": "Cell Line Xenograft",
+            "description": "Cell Line Derived Xenograft Tissue",
+            "code": "61"
+        }
+    ]
+}

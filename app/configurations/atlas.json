@@ -3,6 +3,7 @@
         {
             "id": "seqpeekv2",
             "label": "Mutations Per Cancer Type",
+            "isOpen": true,
             "position": {
                 "top": 170,
                 "left": 70
@@ -20,6 +21,7 @@
         {
             "id": "mutsig_ranks",
             "label": "MutSig Ranks",
+            "isOpen": true,
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
             "isOpen": true,
             "position": {
@@ -58,6 +60,7 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
+            "isOpen": true,
             "position": {
                 "top": -50,
                 "left": 200
@@ -75,6 +78,7 @@
         {
             "id": "copy_number_distributions",
             "label": "Copy Number Distributions",
+            "isOpen": true,
             "position": {
                 "top": 75,
                 "left": 125
@@ -93,6 +97,7 @@
         {
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
+            "isOpen": true,
             "description": "General information about this web application",
             "position": {
                 "top": 0,

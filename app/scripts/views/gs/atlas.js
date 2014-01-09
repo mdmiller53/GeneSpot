@@ -8,7 +8,6 @@ define([
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
     "views/gs/mutsig_grid_view",
-    "views/sorted_data_grid",
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2"

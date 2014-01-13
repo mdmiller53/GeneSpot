@@ -109,11 +109,13 @@ define(["jquery", "underscore", "backbone",
 
                     _.each(_.groupBy(item_by_gene, "source"), function (item_by_source, feature_source) {
                         var fd_by_fsource = fd_by_gene[feature_source];
-                        if (_.isUndefined(fd_by_fsource)) fd_by_fsource = fd_by_gene[feature_source] = [];
-                        _.each(item_by_source, function (i_by_s) {
-                            fd_by_fsource.push(_.omit(i_by_s, "values"));
-                            this.feature_definitions_by_id[i_by_s.id] = { "id": i_by_s.id, "source": feature_source, "label": i_by_s.id };
-                        }, this);
+                        if (_.isUndefined(fd_by_fsource) || _.isEmpty(fd_by_fsource)) {
+                            fd_by_fsource = fd_by_gene[feature_source] = [];
+                            _.each(item_by_source, function (i_by_s) {
+                                fd_by_fsource.push(_.omit(i_by_s, "values"));
+                                this.feature_definitions_by_id[i_by_s.id] = { "id": i_by_s.id, "source": feature_source, "label": i_by_s.id };
+                            }, this);
+                        }
                     }, this);
                 }, this);
 

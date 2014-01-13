@@ -44,11 +44,11 @@ This project adds the following files into the [configurations directory](https:
             },
             "views": [
                 {
-                    "view": "sorted_data_grid",
+                    "view": "pivot_data_view",
                     "dimensions": {
-                        "column_value": "cancer",
-                        "cell_value": "gene",
-                        "sort_by": "rank"
+                        "pivot": "cancer",
+                        "values": "gene",
+                        "groupBy": "rank"
                     },
                     "label": "Top 20",
                     "datamodel": "datamodel/mutations/mutsig_top20",

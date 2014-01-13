@@ -2,9 +2,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
     function ($, _, Backbone, Template) {
         return Backbone.View.extend({
             "dimensions": {
-                "column_value": "",
-                "cell_value": "",
-                "sort_by": ""
+                "pivot": "",
+                "values": "",
+                "groupBy": ""
             },
 
             "styles": {
@@ -21,7 +21,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
 
             processData: function () {
                 var items = _.map(this.model.get("items"), function (item) {
-                    item["cell_value"] = item[this.dimensions["cell_value"]];
+                    item["cell_value"] = item[this.dimensions["values"]];
                     item["cell_cls"] = this.styles["plain"];
                     if (item["cell_value"]) {
                         _.each(this.genes, function (g) {
@@ -33,7 +33,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
                     return item;
                 }, this);
 
-                var headers = _.map(_.uniq(_.pluck(items, this.dimensions["column_value"])), function (h) {
+                var headers = _.map(_.uniq(_.pluck(items, this.dimensions["pivot"])), function (h) {
                     return { "id": h };
                 });
 
@@ -43,8 +43,8 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
                     return header;
                 });
 
-                var rows = _.map(_.groupBy(items, this.dimensions["sort_by"]), function (sorted_data, row_label) {
-                    var sorted_by_column = _.groupBy(sorted_data, this.dimensions["column_value"]);
+                var rows = _.map(_.groupBy(items, this.dimensions["groupBy"]), function (sorted_data, row_label) {
+                    var sorted_by_column = _.groupBy(sorted_data, this.dimensions["pivot"]);
                     var values = _.map(headers, function (header) {
                         if (sorted_by_column[header.id]) return sorted_by_column[header.id][0];
                         return [];

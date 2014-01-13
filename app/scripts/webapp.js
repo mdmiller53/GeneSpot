@@ -1,8 +1,8 @@
 define(["jquery", "underscore", "backbone",
     "router",
     "models/sessions", "models/datamodel", "models/lookups",
-    "views/items_grid_view", "views/sorted_data_grid"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, SortedDataGridView) {
+    "views/items_grid_view", "views/pivot_data_view"],
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
@@ -10,7 +10,7 @@ define(["jquery", "underscore", "backbone",
             Views: {
                 "grid": ItemGridView,
                 "items_grid": ItemGridView,
-                "sorted_data_grid": SortedDataGridView
+                "pivot_data_view": PivotDataView
             },
             Lookups: new LookupsModel(),
             Display: new Backbone.Model(),

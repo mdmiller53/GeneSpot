@@ -142,7 +142,7 @@ define(["jquery", "underscore", "backbone",
 
                 _.each(fd_by_gene, function (features, source) {
                     var collapserUL = $feature_selector.find("#tab-pane-" + fdefs_uid_by_source[source]);
-                    _.each(features, function (feature) {
+                    _.each(_.sortBy(features, "modifier"), function (feature) {
                         var label = feature.modifier || "chr" + feature.chr + ":" + feature.start + ":" + feature.end + ":" + feature.strand;
                         collapserUL.append(LineItemTpl({ "label": label, "id": feature.id, "a_class": "feature-selector-" + axis }));
                     });

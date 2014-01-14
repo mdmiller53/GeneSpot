@@ -226,10 +226,11 @@ define([
                     // 1. Lookup model specification(s) for datamodel(s)
                     var modelspecs = [];
                     var appendModelSpecsFn = function(modelspec, datamodel_key) {
-                        if (modelspec["by_tumor_type"]) {
-                            _.each(modelspec["by_tumor_type"], function(modelspec, tumor_type) {
+                        if (modelspec["by_tumor_type"] && options["cancers"]) {
+                            _.each(options["cancers"], function(tumor_type) {
+                                var ms_tt = modelspec["by_tumor_type"][tumor_type];
                                 var dk_tt = { "datamodel_key": datamodel_key, "tumor_type": tumor_type };
-                                modelspecs.push(_.extend(dk_tt, modelspec));
+                                modelspecs.push(_.extend(dk_tt, ms_tt));
                             });
                         } else if (modelspec["single"]) {
                             modelspecs.push(_.extend({ "datamodel_key": datamodel_key }, modelspec["single"]));

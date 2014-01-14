@@ -5,13 +5,12 @@
             "url_suffix": "/feature_matrix",
             "model": "models/gs/sample_types",
             "query": {
-                "id": "C:SAMP:sampleType:::::"
+                "id": "C:SAMP:TNtype:::::"
             },
             "definitions": {
-                "TP": "Tumor",
-                "NT": "Normal",
-                "TM": "Metastatic",
-                "CELLC": "Cell Culture"
+                "Tumor": "Tumor",
+                "Normal": "Normal",
+                "NA": "Other"
             }
         },
         "chromosomes": {

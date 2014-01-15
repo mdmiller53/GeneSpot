@@ -1,0 +1,47 @@
+<html>
+<head>
+    <!--
+        This file was created to resolve an issue with non-expiring cookies.  It will help users remove their cookies by hand.
+    -->
+    <script type="text/javascript">
+        function clean_cookies() {
+            var cookies = document.cookie.split(";");
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                var eqPos = cookie.indexOf("=");
+                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                console.log("cookie[" + i + "," + name + "]=[" + cookie + "]");
+                document.cookie = name + "=; expires=" + new Date();
+                document.cookie = name + "=; expires=" + new Date() + "; domain=" + document.domain;
+            }
+            return check_cookies();
+        }
+
+        function create_cookies() {
+            document.cookie = "test_cookie_" + Math.round(Math.random() * 100) + "=test_cookie_value";
+            return check_cookies();
+        }
+
+        function check_cookies() {
+            document.getElementById("cookie_drop").innerHTML = document.cookie;
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <h3>Unauthorized Access</h3>
+    <div>
+        <h4>There has been a problem with your access to this website.</h4>
+        Clearing your cookies may resolve this issue.
+        <br/><b><a href="../" onclick="clean_cookies();">Click here to clear cookies and proceed to our website</a></b>
+        <br/>We apologize for any inconvenience.
+        <ul>
+            <li><a href="#" onclick="return clean_cookies();">Clear cookies</a></li>
+            <li><a href="#" onclick="return create_cookies();">Create test cookies</a></li>
+            <li><a href="#" onclick="return check_cookies();">Show cookies</a></li>
+        </ul>
+        <textarea id="cookie_drop" cols="100" rows="10"></textarea>
+    </div>
+</body>
+</html>

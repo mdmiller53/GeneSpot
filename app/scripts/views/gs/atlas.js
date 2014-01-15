@@ -74,7 +74,8 @@ define([
 
             initialize: function (options) {
                 _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "closeMap");
-                _.bindAll(this, "zoom", "init_genelist_typeahead", "nextZindex", "nextPosition", "currentState");
+                _.bindAll(this, "init_genelist_typeahead", "prepopulate_selected_genes");
+                _.bindAll(this, "zoom", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
@@ -82,6 +83,7 @@ define([
                 _.defer(this.init_genelist_typeahead);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
+                this.options.model.on("load", this.prepopulate_selected_genes);
                 this.options.model.on("load", this.initMaps);
 
                 WebApp.Events.on("webapp:tumor-types:selector:change", function() {
@@ -377,6 +379,15 @@ define([
                 });
 
                 UL.sortable();
+            },
+
+            prepopulate_selected_genes: function() {
+                var UL = this.$el.find(".gene-selector");
+
+                var genes_in_list = this.options.model.get("default_genelist");
+                _.each(genes_in_list, function(gene_in_list) {
+                    UL.append(LineItemTpl({ "a_class": "item-remover", "id": gene_in_list, "label": gene_in_list, "i_class": "icon-trash" }));
+                }, this);
             },
 
             nextZindex: function () {

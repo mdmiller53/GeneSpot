@@ -14,6 +14,10 @@ define([
 ],
     function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2) {
 
+        var extract_data_id = function (link) {
+            return $(link).data("id")
+        };
+
         return Backbone.View.extend({
             "last-z-index": 10,
             "currentZoomLevel": 1.0,
@@ -54,7 +58,7 @@ define([
                     this.loadMapData($(e.target).parents(".atlas-map"));
                 },
                 "click a.open-map": function (e) {
-                    var mapId = $(e.target).data("id");
+                    var mapId = extract_data_id(e.target);
                     _.each(this.options.model.get("maps"), function (map) {
                         if (_.isEqual(map.id, mapId)) {
                             map.isOpen = true;
@@ -89,6 +93,9 @@ define([
                 WebApp.Events.on("webapp:tumor-types:selector:change", function() {
                     _.each(this.$el.find(".atlas-map"), this.loadMapData);
                 }, this);
+                WebApp.Events.on("gene-selector-updated", function (ev) {
+                    console.log("gene-selector-updated:" + JSON.stringify(ev));
+                }, this);
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
@@ -98,7 +105,7 @@ define([
                 WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
                 WebApp.Views["seqpeekv2"] = SeqPeekViewV2;
 
-                console.log("atlas:registered views")
+                console.log("atlas:registered views");
             },
 
             initMaps: function () {
@@ -116,14 +123,8 @@ define([
                     var session_atlas = WebApp.Sessions.Active.get("atlas_maps");
                     if (session_atlas) {
                         if (session_atlas.genes) {
-                            var UL = this.$el.find(".gene-selector");
-                            UL.empty();
-                            _.each(session_atlas.genes, function (gene) {
-                                UL.append(LineItemTpl({ "label": gene, "id": gene, "a_class": "item-remover", "i_class": "icon-trash" }));
-                                UL.find(".item-remover").click(function (e) {
-                                    $(e.target).parent().remove();
-                                });
-                            });
+                            this.$el.find(".gene-selector").empty();
+                            _.each(session_atlas.genes, this.append_genelist_remover_event, this);
                         }
 
                         // TODO : Restore selected tumor types from session
@@ -200,12 +201,8 @@ define([
                 var $target = $(contentContainer);
                 var view_name = $target.data("view");
                 if (view_name) {
-                    var afn = function (link) {
-                        return $(link).data("id")
-                    };
-
                     var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
-                    var geneList = _.map(this.$el.find(".gene-selector .item-remover"), afn);
+                    var geneList = _.map(this.$el.find(".gene-selector .item-remover"), extract_data_id);
 
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
@@ -355,7 +352,7 @@ define([
             init_genelist_typeahead: function () {
                 var genelist = WebApp.Lookups.get("genes").get("keys");
 
-                var UL = this.$el.find(".gene-selector");
+                var _this = this;
                 this.$el.find(".genes-typeahead").typeahead({
                     source: function (q, p) {
                         p(_.compact(_.flatten(_.map(q.toLowerCase().split(" "), function (qi) {
@@ -366,28 +363,46 @@ define([
                     },
 
                     updater: function (gene) {
-                        UL.append(LineItemTpl({ "label": gene, "id": gene, "a_class": "item-remover", "i_class": "icon-trash" }));
-                        UL.find(".item-remover").click(function (e) {
-                            $(e.target).parent().remove();
-                        });
+                        if (_this.append_genelist_remover_event(gene)) {
+                            WebApp.Events.trigger("gene-selector-updated", { "add": [gene] });
+                        }
                         return "";
                     }
                 });
 
-                UL.find(".item-remover").click(function (e) {
-                    $(e.target).parent().remove();
+                this.$el.find(".gene-selector").sortable({
+                    "update": function (e, ui) {
+                        var reorder = _.map($(e.target).find("a"), extract_data_id);
+                        WebApp.Events.trigger("gene-selector-updated", { "reorder": reorder });
+                    }
                 });
-
-                UL.sortable();
             },
 
-            prepopulate_selected_genes: function() {
-                var UL = this.$el.find(".gene-selector");
-
+            prepopulate_selected_genes: function () {
                 var genes_in_list = this.options.model.get("default_genelist");
-                _.each(genes_in_list, function(gene_in_list) {
-                    UL.append(LineItemTpl({ "a_class": "item-remover", "id": gene_in_list, "label": gene_in_list, "i_class": "icon-trash" }));
-                }, this);
+                _.each(genes_in_list, this.append_genelist_remover_event, this);
+            },
+
+            append_genelist_remover_event: function (gene) {
+                var UL = this.$el.find(".gene-selector");
+                var LI_A_existing = _.find(UL.find("a"), function(link) {
+                    return extract_data_id(link) == gene;
+                });
+                if (LI_A_existing) {
+                    console.log("append_genelist_remover_event(" + gene + "):already exists");
+                    return false;
+                }
+
+                UL.append(LineItemTpl({ "a_class": "item-remover", "id": gene, "label": gene, "i_class": "icon-trash" }));
+                var LI_A = _.find(UL.find("a"), function(link) {
+                    return extract_data_id(link) == gene;
+                });
+                $(LI_A).click(function (e) {
+                    $(e.target).parent().remove();
+                    WebApp.Events.trigger("gene-selector-updated", { "remove": [extract_data_id(e.target)] });
+                });
+
+                return true;
             },
 
             nextZindex: function () {
@@ -414,13 +429,9 @@ define([
                     return { "id": mapid, "isOpen": true, "position": { "top": top, "left": left }, "zindex": zindex };
                 });
 
-                var afn = function (link) {
-                    return $(link).data("id")
-                };
-
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 return {
-                    "genes": _.map(this.$el.find(".gene-selector .item-remover"), afn),
+                    "genes": _.map(this.$el.find(".gene-selector .item-remover"), extract_data_id),
                     "tumor_types": tumor_type_list,
                     "maps": openMaps
                 }

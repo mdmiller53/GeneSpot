@@ -28,9 +28,7 @@ define([
             "view_specs_by_uid": {},
 
             events: {
-                "click a.refresh-loaded": function () {
-                    _.each(this.$el.find(".atlas-map"), this.loadMapData);
-                },
+                "click a.refresh-loaded": "reloadAllMaps",
                 "click a.zoom-in": function () {
                     this.currentZoomLevel = this.currentZoomLevel * 1.15;
                     this.zoom(this.currentZoomLevel);
@@ -78,7 +76,7 @@ define([
             },
 
             initialize: function (options) {
-                _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "loadMapContents", "closeMap");
+                _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "reloadAllMaps", "loadMapContents", "closeMap");
                 _.bindAll(this, "zoom", "nextZindex", "nextPosition", "currentState");
 
                 this.$el.html(AtlasTpl());
@@ -87,11 +85,15 @@ define([
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
 
-                WebApp.Events.on("webapp:tumor-types:selector:change", function() {
-                    _.each(this.$el.find(".atlas-map"), this.loadMapData);
-                }, this);
+                WebApp.Events.on("webapp:tumor-types:selector:change", _.debounce(this.reloadAllMaps, 1000), this);
                 WebApp.Events.on("gene-selector-updated", function (ev) {
-                    console.log("gene-selector-updated:" + JSON.stringify(ev));
+                    console.log("atlas:gene-selector-updated:" + JSON.stringify(ev));
+                    if (ev["reorder"]) {
+                        console.log("atlas:gene-selector-updated:reorder:ignore");
+                        return;
+                    }
+
+                    this.reloadAllMaps();
                 }, this);
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
@@ -179,6 +181,10 @@ define([
                         $atlasMap.draggable({ "handle": ".icon-move", "scroll": true });
                     }
                 }, 750);
+            },
+
+            reloadAllMaps: function() {
+                _.each(this.$el.find(".atlas-map"), this.loadMapData);
             },
 
             loadMapData: function (atlasMap) {

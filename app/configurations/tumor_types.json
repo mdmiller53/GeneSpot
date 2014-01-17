@@ -85,7 +85,8 @@
             "id": "OV",
             "label": "Ovarian serous cystadenocarcinoma",
             "description": "TODO",
-            "color": "#34FFCB"
+            "color": "#34FFCB",
+            "isChecked": true
         },
         {
             "id": "PRAD",

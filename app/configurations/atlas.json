@@ -1,5 +1,5 @@
 {
-    "default_genelist": ["TP53","KRAS"],
+    "default_genelist": ["BRCA1", "RAD51", "TP53","KRAS"],
     "maps": [
         {
             "id": "seqpeekv2",

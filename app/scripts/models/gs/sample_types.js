@@ -1,16 +1,12 @@
-define(["jquery", "underscore", "backbone"],
-    function ($, _, Backbone) {
-        return Backbone.Model.extend({
-            initialize: function () {
-                _.bindAll(this, "fetch", "after_fetch");
+define(["jquery", "underscore", "backbone", "models/localsync"],
+    function ($, _, Backbone, LocalSyncModel) {
+        return LocalSyncModel.extend({
+            initialize: function (options) {
+                _.bindAll(this, "after_sync");
+                this.set("storage_key", options["storage_key"] + ":" + this.get(options["storage_suffix"]));
             },
 
-            fetch: function (options) {
-                var successFn = (options["success"]) ? _.wrap(options["success"], this.after_fetch): this.after_fetch;
-                return Backbone.Model.prototype.fetch.call(this, _.extend(options, { "success": successFn }));
-            },
-
-            after_fetch: function (callbackFn) {
+            after_sync: function () {
                 var by_sample_type = {};
                 _.each(this.get("items"), function(item) {
                     if (item.values && !_.isEmpty(item.values)) {
@@ -23,8 +19,6 @@ define(["jquery", "underscore", "backbone"],
                 }, this);
 
                 this.set("by_sample_type", by_sample_type);
-
-                if (_.isFunction(callbackFn)) callbackFn();
             }
         });
     });

@@ -11,15 +11,19 @@
                 "Tumor": "Tumor",
                 "Normal": "Normal",
                 "NA": "Other"
-            }
+            },
+            "storage_key": "sample_types",
+            "storage_suffix": "tumor_type"
         },
         "chromosomes": {
             "url": "svc/data/lookups/chromosomes",
-            "model": "models/annotations"
+            "model": "models/localannotations",
+            "storage_key": "annotations:chromosomes"
         },
         "genes": {
             "url": "svc/data/lookups/genes",
-            "model": "models/annotations"
+            "model": "models/localannotations",
+            "storage_key": "annotations:genes"
         }
     }
 }

@@ -10,11 +10,11 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/line_item" ],
             initialize: function (options) {
                 _.bindAll(this, "init_typeahead", "load_selected_genes", "append_to_genelist");
 
-                this.init_typeahead();
+                _.defer(this.init_typeahead);
+
+                WebApp.Events.on("webapp:ready:lookups", this.init_typeahead);
 
                 this.options.model.on("load", this.load_selected_genes);
-
-                console.log("genelist:init:ready");
             },
 
             init_typeahead: function () {

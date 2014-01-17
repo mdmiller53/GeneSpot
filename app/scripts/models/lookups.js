@@ -1,8 +1,8 @@
-define(["jquery", "underscore", "backbone"],
-    function ($, _, Backbone) {
+define(["jquery", "underscore", "backbone", "models/localsync"],
+    function ($, _, Backbone, LocalSyncModel) {
 
         return Backbone.Model.extend({
-            initialize: function () {
+            initialize: function (options) {
                 _.bindAll(this, "fetch", "after_fetch", "fetch_lookups");
             },
 
@@ -11,7 +11,7 @@ define(["jquery", "underscore", "backbone"],
             },
 
             after_fetch: function () {
-                var m = new Backbone.Model();
+                var m = new LocalSyncModel({ "storage_key": "tumor_types" });
                 WebApp.Lookups.set("tumor_types", m);
                 m.fetch({
                     "url": "configurations/tumor_types.json",

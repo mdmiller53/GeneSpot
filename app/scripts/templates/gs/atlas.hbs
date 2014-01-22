@@ -8,56 +8,7 @@
     }
 </style>
 <div>
-    <div class="span5" style="position: fixed; top:44px; left:40px;">
-        <button class="btn btn-success" data-toggle="collapse" data-target="#glists-container" type="button">Gene Lists</button>
-
-        <div id="glists-container" class="collapse">
-            <div class="well">
-                <div class="row">
-                    <div class="span6">
-                        <h5>Create List</h5>
-                        <form class="form-horizontal" role="form">
-                            <input type="text" placeholder="New list name...">
-                            <button class="btn btn-small" type="button">+</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="span6">
-                        <h5>Lists</h5>
-
-                        <div class="tabs-left">
-                            <ul class="nav nav-tabs">
-                                <li class="active"><a href="#tab-glists-default" data-toggle="tab">Default List</a></li>
-                                <li><a href="#tab-glists-glist-a" data-toggle="tab">List A</a></li>
-                                <li><a href="#tab-glists-glist-b" data-toggle="tab">List B</a></li>
-                                <li><a href="#tab-glists-glist-c" data-toggle="tab">List C</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tab-glists-default">
-                                <input class="genes-typeahead" type="text" placeholder="Add a gene..."/>
-                                <ul class="gene-selector"></ul>
-                            </div>
-                            <div class="tab-pane" id="tab-glists-glist-a">
-                                <input class="genes-typeahead" type="text" placeholder="Add a gene..."/>
-                                <ul class="gene-selector"></ul>
-                            </div>
-                            <div class="tab-pane" id="tab-glists-glist-b">
-                                <input class="genes-typeahead" type="text" placeholder="Add a gene..."/>
-                                <ul class="gene-selector"></ul>
-                            </div>
-                            <div class="tab-pane" id="tab-glists-glist-c">
-                                <input class="genes-typeahead" type="text" placeholder="Add a gene..."/>
-                                <ul class="gene-selector"></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="genelist-container span5" style="position: fixed; top:44px; left:40px;"></div>
 
     <ul class="atlas-navigator nav nav-list">
         <li><a href="#" onclick="return false;" class="zoom-home" rel="toolbar" title="Reset Zoom Level"> <i class="icon-home"/></i> </a></li>
@@ -71,13 +22,6 @@
         <li class="dropdown">
             <button class="maps-btn dropdown-toggle btn btn-success" data-toggle="dropdown" type="button">Maps</button>
             <ul class="dropdown-menu maps-selector"></ul>
-        </li>
-        <li class="dropdown">
-            <button class="dropdown-toggle btn btn-success" data-toggle="dropdown" type="button">Genes</button>
-            <ul class="dropdown-menu gene-selector"></ul>
-        </li>
-        <li>
-            <input class="genes-typeahead" type="text" placeholder="Add a gene..."/>
         </li>
     </ul>
 </div>

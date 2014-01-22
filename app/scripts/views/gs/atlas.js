@@ -11,13 +11,9 @@ define([
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2",
-    "views/gs/genelist"
+    "views/genes/genelist_control"
 ],
-    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2, GenelistView) {
-
-        var extract_data_id = function (link) {
-            return $(link).data("id")
-        };
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2, GenelistControl) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -57,7 +53,7 @@ define([
                     this.loadMapData($(e.target).parents(".atlas-map"));
                 },
                 "click a.open-map": function (e) {
-                    var mapId = extract_data_id(e.target);
+                    var mapId = $(e.target).data("id");
                     _.each(this.options.model.get("maps"), function (map) {
                         if (_.isEqual(map.id, mapId)) {
                             map.isOpen = true;
@@ -86,15 +82,6 @@ define([
                 this.options.model.on("load", this.initMaps);
 
                 WebApp.Events.on("webapp:tumor-types:selector:change", _.debounce(this.reloadAllMaps, 1000), this);
-                WebApp.Events.on("gene-selector-updated", function (ev) {
-                    console.log("atlas:gene-selector-updated:" + JSON.stringify(ev));
-                    if (ev["reorder"]) {
-                        console.log("atlas:gene-selector-updated:reorder:ignore");
-                        return;
-                    }
-
-                    this.reloadAllMaps();
-                }, this);
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
@@ -106,7 +93,18 @@ define([
 
                 console.log("atlas:registered views");
 
-                this.genelistView = new GenelistView(_.extend({"$el": this.$el}, options));
+                this.genelistControl = new GenelistControl(_.extend({}, options));
+                this.genelistControl.on("updated", function (ev) {
+                    console.log("atlas:genelistControl:updated:" + JSON.stringify(ev));
+                    if (ev["reorder"]) {
+                        console.log("atlas:genelistControl:updated:reorder:ignore");
+                        return;
+                    }
+
+                    this.reloadAllMaps();
+                }, this);
+
+                this.$el.find(".genelist-container").html(this.genelistControl.render().el);
             },
 
             initMaps: function () {
@@ -123,11 +121,7 @@ define([
                 if (WebApp.Sessions.Active) {
                     var session_atlas = WebApp.Sessions.Active.get("atlas_maps");
                     if (session_atlas) {
-                        if (session_atlas.genes) {
-                            this.$el.find(".gene-selector").empty();
-                            _.each(session_atlas.genes, this.genelistView.append_to_genelist, this);
-                        }
-
+                        // TODO : Restore selected genes from session
                         // TODO : Restore selected tumor types from session
 
                         if (session_atlas.maps) {
@@ -207,7 +201,7 @@ define([
                 var view_name = $target.data("view");
                 if (view_name) {
                     var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
-                    var geneList = _.map(this.$el.find(".gene-selector .item-remover"), extract_data_id);
+                    var geneList = this.genelistControl.getCurrentGeneList();
 
                     var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
                     var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
@@ -380,7 +374,7 @@ define([
 
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 return {
-                    "genes": _.map(this.$el.find(".gene-selector .item-remover"), extract_data_id),
+                    "genes": this.genelistControl.getCurrentGeneList(),
                     "tumor_types": tumor_type_list,
                     "maps": openMaps
                 }

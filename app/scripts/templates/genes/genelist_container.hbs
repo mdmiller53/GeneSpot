@@ -1,0 +1,37 @@
+<button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapsible" type="button">Gene Lists</button>
+<div id="genelist-collapsible" class="collapse in">
+    <div class="well">
+        <div class="row">
+            <div class="span6">
+                <h5>Create List</h5>
+
+                <form class="form-horizontal" role="form">
+                    <input type="text" placeholder="New list name...">
+                    <button class="btn btn-small" type="button">+</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span6">
+                <h5>Lists</h5>
+
+                <div class="tabs-left">
+                    <ul class="nav nav-tabs">
+                        {{#each genelists}}
+                            <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a href="#tab-glists-glist-{{id}}" data-toggle="tab">{{label}}</a></li>
+                        {{/each}}
+                    </ul>
+                </div>
+
+                <div class="tab-content">
+                    {{#each genelists}}
+                    <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-glists-glist-{{id}}">
+                        <input class="genes-typeahead" type="text" placeholder="Add a gene to {{label}}..."/>
+                        <ul class="gene-selector"></ul>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

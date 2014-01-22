@@ -7,16 +7,13 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
 
         return Backbone.View.extend({
             initialize: function (options) {
+                _.bindAll(this, "remove_gene_el", "reordered_gene_els");
+
                 this.model.on("load", this.load_selected_genes, this);
 
                 console.log("genelist:init:ready");
 
-                var _this = this;
-                this.$el.sortable({
-                    "update": function (e) {
-                        _this.trigger("updated", { "reorder": _.map($(e.target).find("a"), extract_data_id) });
-                    }
-                });
+                this.$el.sortable({ "update": this.reordered_gene_els });
             },
 
             load_selected_genes: function () {
@@ -44,21 +41,26 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
                 console.log("genes/itemizer:append_gene_el(" + gene + ")");
 
                 this.$el.append(GeneItemTpl({ "a_class": "item-remover", "id": gene, "label": gene }));
-                var LI_A = _.find(this.$el.find("a"), function (link) {
+
+                var genelink = _.find(this.$el.find("a"), function (link) {
                     return extract_data_id(link) == gene;
                 });
+                $(genelink).click(this.remove_gene_el);
+            },
 
-                var _this = this;
-                $(LI_A).click(function (e) {
-                    $(e.target).parents("li").remove();
+            remove_gene_el: function(e) {
+                $(e.target).parents("li").remove();
 
-                    var index = _this.model.get("genes").indexOf(gene);
-                    if (index > -1) {
-                        _this.model.get("genes").splice(index, 1);
-                    }
+                var gene = $(e.target).parents("a").data("id");
 
-                    _this.trigger("updated", { "removed": [extract_data_id(e.target)] });
-                });
+                var modelIdx = this.model.get("genes").indexOf(gene);
+                if (modelIdx > -1) this.model.get("genes").splice(modelIdx, 1);
+
+                this.trigger("updated", { "removed": [ gene ] });
+            },
+
+            reordered_gene_els: function(e) {
+                this.trigger("updated", { "reorder": _.map($(e.target).find("a"), extract_data_id) });
             }
         });
     });

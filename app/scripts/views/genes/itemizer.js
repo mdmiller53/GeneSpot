@@ -6,13 +6,10 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
         };
 
         return Backbone.View.extend({
-            initialize: function (options) {
+            initialize: function () {
                 _.bindAll(this, "remove_gene_el", "reordered_gene_els");
 
                 this.model.on("load", this.load_selected_genes, this);
-
-                console.log("genelist:init:ready");
-
                 this.$el.sortable({ "update": this.reordered_gene_els });
             },
 

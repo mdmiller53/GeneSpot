@@ -1,14 +1,27 @@
-<button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapsible" type="button">Gene Lists</button>
+<button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapsible" type="button">Gene Lists
+</button>
 <div id="genelist-collapsible" class="collapse in">
     <div class="well">
         <div class="row">
             <div class="span6">
                 <h5>Create List</h5>
 
-                <form class="form-horizontal" role="form">
-                    <input type="text" placeholder="New list name...">
-                    <button class="btn btn-small" type="button">+</button>
-                </form>
+                <div class="input-append">
+                    <input type="text" class="new-list-name" placeholder="New list name...">
+                    <button class="btn add-new-list" type="button">+</button>
+                </div>
+
+                <div class="span4">
+                    <div class="alert alert-danger invalid-list-name hide">
+                        <strong>Error!</strong> Not a valid list name
+                    </div>
+                    <div class="alert alert-danger duplicate-list-name hide">
+                        <strong>Error!</strong> List name already exists
+                    </div>
+                    <div class="alert alert-success list-added-success hide">
+                        <strong>Success!</strong> New list added
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">

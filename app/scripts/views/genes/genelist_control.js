@@ -1,7 +1,44 @@
 define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes/typeahead", "hbs!templates/genes/genelist_container"],
     function ($, _, Backbone, Itemizer, TypeAhead, Tpl) {
+        var do_alert = function(alertEl, timeout) {
+            $(alertEl).show();
+            _.delay(function() {
+                $(alertEl).hide({ "effect": "fade" });
+            }, timeout || 2000);
+        };
+
         return Backbone.View.extend({
             itemizers: {},
+            id_counter: Math.round(Math.random() * 10000),
+
+            events: {
+                "click .add-new-list": function() {
+                    this.$el.find(".alert").hide();
+
+                    var $newlistname = this.$el.find(".new-list-name");
+                    var newlistname = $newlistname.val();
+                    $newlistname.val("");
+
+                    if (_.isEmpty(newlistname)) {
+                        do_alert(this.$el.find(".invalid-list-name"), 3000);
+                        return;
+                    }
+
+                    var listlabels = _.pluck(this.genelists_model.get("items"), "label");
+                    if (listlabels.indexOf(newlistname) >= 0) {
+                        do_alert(this.$el.find(".duplicate-list-name"), 3000);
+                        return;
+                    }
+
+                    console.log("storing:new-list-name=" + newlistname + ":" + this.id_counter);
+                    this.genelists_model.get("items").push({
+                        "id": ++this.id_counter, "label": newlistname, "genes": []
+                    });
+                    this.genelists_model.trigger("load");
+
+                    do_alert(this.$el.find(".list-added-success"));
+                }
+            },
 
             initialize: function(options) {
                 this.genelists_model = new Backbone.Model({

@@ -1,12 +1,14 @@
-define([ "jquery", "underscore", "backbone", "hbs!templates/line_item" ],
-    function ($, _, Backbone, LineItemTpl) {
+define([ "jquery", "underscore", "backbone" ],
+    function ($, _, Backbone) {
         return Backbone.View.extend({
-            render: function() {
-                console.log("genes/typeahead.render");
-                var genelist = WebApp.Lookups.get("genes").get("keys");
-                if (_.isEmpty(genelist)) return;
+            initialize: function() {
+                _.bindAll(this, "render", "typed");
+            },
 
-                var _this = this;
+            render: function() {
+                var genelist = WebApp.Lookups.get("genes").get("keys");
+                if (_.isEmpty(genelist)) return this;
+
                 this.$el.typeahead({
                     source: function (q, p) {
                         p(_.compact(_.flatten(_.map(q.toLowerCase().split(" "), function (qi) {
@@ -16,13 +18,15 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/line_item" ],
                         }))));
                     },
 
-                    updater: function (gene) {
-                        _this.trigger("typed", gene);
-                        return "";
-                    }
+                    updater: this.typed
                 });
 
                 return this;
+            },
+
+            typed: function(gene) {
+                this.trigger("typed", gene);
+                return "";
             }
         });
     });

@@ -1,5 +1,5 @@
-define([ "jquery", "underscore", "backbone", "hbs!templates/line_item" ],
-    function ($, _, Backbone, LineItemTpl) {
+define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
+    function ($, _, Backbone, GeneItemTpl) {
 
         var extract_data_id = function (link) {
             return $(link).data("id")
@@ -43,14 +43,14 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/line_item" ],
             append_gene_el: function (gene) {
                 console.log("genes/itemizer:append_gene_el(" + gene + ")");
 
-                this.$el.append(LineItemTpl({ "a_class": "item-remover", "id": gene, "label": gene, "i_class": "icon-trash" }));
+                this.$el.append(GeneItemTpl({ "a_class": "item-remover", "id": gene, "label": gene }));
                 var LI_A = _.find(this.$el.find("a"), function (link) {
                     return extract_data_id(link) == gene;
                 });
 
                 var _this = this;
                 $(LI_A).click(function (e) {
-                    $(e.target).parent().remove();
+                    $(e.target).parents("li").remove();
 
                     var index = _this.model.get("genes").indexOf(gene);
                     if (index > -1) {

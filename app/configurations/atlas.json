@@ -1,5 +1,5 @@
 {
-    "default_genelist": ["BRCA1", "RAD51", "TP53","KRAS"],
+    "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A", "DDA1", "F10", "CFB", "ADC", "C10orf10", "XAGE-4", "ANKHD1-EIF4EBP3"],
     "maps": [
         {
             "id": "seqpeekv2",
@@ -58,7 +58,6 @@
         {
             "id": "sample_distributions",
             "label": "Sample Distributions",
-            "isOpen": true,
             "position": {
                 "top": -50,
                 "left": 200

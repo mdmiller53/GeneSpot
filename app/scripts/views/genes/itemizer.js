@@ -6,17 +6,19 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
         };
 
         return Backbone.View.extend({
+            events: {
+                "click .item-remover": "remove_gene_el"
+            },
+
             initialize: function () {
                 _.bindAll(this, "remove_gene_el", "reordered_gene_els");
 
                 this.model.on("load", this.load_selected_genes, this);
-                this.$el.sortable({ "update": this.reordered_gene_els });
+                this.$el.sortable({ "update": this.reordered_gene_els, "handle": "button", "cancel": "" });
             },
 
             load_selected_genes: function () {
-                var genes_in_list = this.model.get("genes");
-                _.each(genes_in_list, this.append_gene_el, this);
-                console.log("genes/itemizer:selected_genes:ready");
+                _.each(this.model.get("genes"), this.append_gene_el, this);
             },
 
             append_gene: function (gene) {
@@ -35,20 +37,13 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
             },
 
             append_gene_el: function (gene) {
-                console.log("genes/itemizer:append_gene_el(" + gene + ")");
-
                 this.$el.append(GeneItemTpl({ "a_class": "item-remover", "id": gene, "label": gene }));
-
-                var genelink = _.find(this.$el.find("a"), function (link) {
-                    return extract_data_id(link) == gene;
-                });
-                $(genelink).click(this.remove_gene_el);
             },
 
             remove_gene_el: function(e) {
                 $(e.target).parents("li").remove();
 
-                var gene = $(e.target).parents("a").data("id");
+                var gene = $(e.target).data("id");
 
                 var modelIdx = this.model.get("genes").indexOf(gene);
                 if (modelIdx > -1) this.model.get("genes").splice(modelIdx, 1);

@@ -6,7 +6,7 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
             initialize: function(options) {
                 this.genelists_model = new Backbone.Model({
                     "items": [
-                        { "id": "default-list", "label": "Default List", "genes": ["BRCA1", "RAD51", "TP53", "KRAS"] },
+                        { "id": "default-list", "label": "Default List", "genes": options["default_genelist"] },
                         { "id": "gl1", "label": "Gene List 1", "genes": ["TP53", "AKT1", "AKT2"]},
                         { "id": "gl2", "label": "Gene List 2", "genes": ["KRAS", "DIABLO", "EGFR"]},
                         { "id": "gl3", "label": "Gene List 3", "genes": ["A4GNT", "ACYP1", "ACYP2"]}

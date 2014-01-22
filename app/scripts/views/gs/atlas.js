@@ -80,6 +80,7 @@ define([
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
+                this.options.model.on("load", this.initGenelistControl, this);
 
                 WebApp.Events.on("webapp:tumor-types:selector:change", _.debounce(this.reloadAllMaps, 1000), this);
 
@@ -92,8 +93,10 @@ define([
                 WebApp.Views["seqpeekv2"] = SeqPeekViewV2;
 
                 console.log("atlas:registered views");
+            },
 
-                this.genelistControl = new GenelistControl(_.extend({}, options));
+            initGenelistControl: function() {
+                this.genelistControl = new GenelistControl({ "default_genelist": this.options.model.get("default_genelist") });
                 this.genelistControl.on("updated", function (ev) {
                     console.log("atlas:genelistControl:updated:" + JSON.stringify(ev));
                     if (ev["reorder"]) {

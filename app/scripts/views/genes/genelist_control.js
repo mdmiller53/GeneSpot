@@ -36,6 +36,16 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
                     });
 
                     do_alert(this.$el.find(".list-added-success"));
+                },
+
+                "click .list-remover": function(e) {
+                    console.log("remove list");
+
+                    var listid = $(e.target).data("id");
+
+                    Backbone.sync("delete", new Backbone.Model({}), {
+                        "url": "svc/collections/genelists/" + listid, "success": this.refreshGeneLists
+                    });
                 }
             },
 
@@ -46,13 +56,6 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
                 this.genelists_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
                     Backbone.sync("update", item, {
-                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refreshGeneLists
-                    });
-                });
-
-                this.genelists_collection.on("remove", function(item) {
-                    console.log("genelists_collection.remove=" + JSON.stringify(item));
-                    Backbone.sync("delete", item, {
                         "url": "svc/collections/genelists/" + item.get("id"), "success": this.refreshGeneLists
                     });
                 });
@@ -67,7 +70,13 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
                     return { "id": gl_model.get("id"), "label": gl_model.get("label") };
                 });
 
-                var default_gl = { "id": "default-list", "label": "Default List", "genes": this.options["default_genelist"], "sort": 1 };
+                var default_gl = {
+                    "id": "default-list",
+                    "label": "Default List",
+                    "genes": this.options["default_genelist"],
+                    "sort": 1,
+                    "isDefault": true
+                };
                 genelists.push(default_gl);
 
                 this.$el.html(Tpl({ "genelists": _.sortBy(genelists, "sort") }));

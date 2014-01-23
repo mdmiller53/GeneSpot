@@ -41,6 +41,10 @@
                     <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-glists-glist-{{id}}">
                         <input class="genes-typeahead" type="text" placeholder="Add a gene to {{label}}..."/>
                         <ul class="gene-selector nav nav-list"></ul>
+                        {{#unless isDefault}}
+                            <hr/>
+                            <a href="#" class="list-remover" data-id="{{id}}" onclick="return false;">delete list</a><br/>
+                        {{/unless}}
                     </div>
                     {{/each}}
                 </div>

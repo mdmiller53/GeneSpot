@@ -122,7 +122,7 @@
 .maps-n-genes {
     position: fixed;
     top:44px;
-    right:20px;
+    left:100px;
 }
 
 .maps-n-genes li {

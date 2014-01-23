@@ -1,5 +1,5 @@
 {
-    "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A", "DDA1", "F10", "CFB", "ADC", "C10orf10", "XAGE-4", "ANKHD1-EIF4EBP3"],
+    "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "maps": [
         {
             "id": "seqpeekv2",
@@ -24,8 +24,9 @@
             "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
             "position": {
                 "top": 10,
-                "left": 300
+                "left": 76
             },
+            "isOpen": true,
             "views": [
                 {
                     "view": "pivot_data_view",
@@ -59,9 +60,10 @@
             "id": "sample_distributions",
             "label": "Sample Distributions",
             "position": {
-                "top": -50,
+                "top": 100,
                 "left": 200
             },
+            "isOpen": true,
             "views": [
                 {
                     "view": "feature_matrix_distributions",

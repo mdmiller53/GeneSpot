@@ -8,76 +8,82 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
         };
 
         return Backbone.View.extend({
+            genelists_collection: new Backbone.Collection([], { "url": "svc/collections/genelists" }),
             itemizers: {},
-            id_counter: Math.round(Math.random() * 10000),
 
             events: {
                 "click .add-new-list": function() {
                     this.$el.find(".alert").hide();
 
-                    var $newlistname = this.$el.find(".new-list-name");
-                    var newlistname = $newlistname.val();
-                    $newlistname.val("");
+                    var newname = this.$el.find(".new-list-name").val();
+                    this.$el.find(".new-list-name").val("");
 
-                    if (_.isEmpty(newlistname)) {
+                    if (_.isEmpty(newname)) {
                         do_alert(this.$el.find(".invalid-list-name"), 3000);
                         return;
                     }
 
-                    var listlabels = _.pluck(this.genelists_model.get("items"), "label");
-                    if (listlabels.indexOf(newlistname) >= 0) {
+                    var listlabels = _.map(this.genelists_collection["models"], function(gl_model) {
+                        return gl_model.get("label");
+                    });
+                    if (listlabels.indexOf(newname) >= 0) {
                         do_alert(this.$el.find(".duplicate-list-name"), 3000);
                         return;
                     }
 
-                    console.log("storing:new-list-name=" + newlistname + ":" + this.id_counter);
-                    this.genelists_model.get("items").push({
-                        "id": ++this.id_counter, "label": newlistname, "genes": []
+                    Backbone.sync("create", new Backbone.Model({ "label": newname, "genes": [] }), {
+                        "url": "svc/collections/genelists", "success": this.refreshGeneLists
                     });
-                    this.genelists_model.trigger("load");
 
                     do_alert(this.$el.find(".list-added-success"));
                 }
             },
 
-            initialize: function(options) {
-                this.genelists_model = new Backbone.Model({
-                    "items": [
-                        { "id": "default-list", "label": "Default List", "genes": options["default_genelist"] },
-                        { "id": "gl1", "label": "Gene List 1", "genes": ["TP53", "AKT1", "AKT2"]},
-                        { "id": "gl2", "label": "Gene List 2", "genes": ["KRAS", "DIABLO", "EGFR"]},
-                        { "id": "gl3", "label": "Gene List 3", "genes": ["A4GNT", "ACYP1", "ACYP2"]}
-                    ]
+            initialize: function() {
+                _.bindAll(this, "loadGeneLists", "refreshGeneLists");
+                _.defer(this.refreshGeneLists);
+
+                this.genelists_collection.on("change", function(item) {
+                    if (_.isEmpty(item)) return;
+                    Backbone.sync("update", item, {
+                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refreshGeneLists
+                    });
                 });
-                this.genelists_model.on("load", this.loadGeneLists, this);
+
+                this.genelists_collection.on("remove", function(item) {
+                    console.log("genelists_collection.remove=" + JSON.stringify(item));
+                    Backbone.sync("delete", item, {
+                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refreshGeneLists
+                    });
+                });
             },
 
-            render: function() {
-                this.genelists_model.trigger("load");
-
-                return this;
+            refreshGeneLists: function() {
+                this.genelists_collection.fetch({ "success": this.loadGeneLists });
             },
 
             loadGeneLists: function() {
-                var genelists = this.genelists_model.get("items");
-                this.$el.html(Tpl({ "genelists": genelists }));
+                var genelists = _.map(this.genelists_collection["models"], function(gl_model) {
+                    return { "id": gl_model.get("id"), "label": gl_model.get("label") };
+                });
 
-                _.each(genelists, function(genelist) {
-                    var $geneSelector = this.$el.find("#tab-glists-glist-" + genelist["id"]).find(".gene-selector");
-                    var glmodel = new Backbone.Model(genelist);
-                    var itemizer = this.itemizers[genelist["id"]] = new Itemizer({"el": $geneSelector, "model": glmodel });
-                    itemizer.on("updated", function(upd) {
-                        this.trigger("updated", upd);
-                    }, this);
-                    itemizer.render();
+                var default_gl = { "id": "default-list", "label": "Default List", "genes": this.options["default_genelist"], "sort": 1 };
+                genelists.push(default_gl);
 
-                    var $geneTypeahead = this.$el.find("#tab-glists-glist-" + genelist["id"]).find(".genes-typeahead");
-                    var typeahead = new TypeAhead({ "el": $geneTypeahead });
-                    typeahead.render();
-                    typeahead.on("typed", itemizer.append_gene, itemizer);
+                this.$el.html(Tpl({ "genelists": _.sortBy(genelists, "sort") }));
+                this.renderGeneLists(new Backbone.Model(default_gl));
+                _.each(this.genelists_collection["models"], this.renderGeneLists, this);
+            },
 
-                    glmodel.trigger("load");
-                }, this);
+            renderGeneLists: function(gl_model) {
+                var $geneSelector = this.$el.find("#tab-glists-glist-" + gl_model.get("id")).find(".gene-selector");
+                var itemizer = this.itemizers[gl_model.get("id")] = new Itemizer({"el": $geneSelector, "model": gl_model });
+                itemizer.render();
+
+                var $geneTypeahead = this.$el.find("#tab-glists-glist-" + gl_model["id"]).find(".genes-typeahead");
+                var typeahead = new TypeAhead({ "el": $geneTypeahead });
+                typeahead.render();
+                typeahead.on("typed", itemizer.append_gene, itemizer);
             },
 
             getCurrentGeneList: function() {

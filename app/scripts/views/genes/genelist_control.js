@@ -1,5 +1,8 @@
-define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes/typeahead", "hbs!templates/genes/genelist_container"],
-    function ($, _, Backbone, Itemizer, TypeAhead, Tpl) {
+define(["jquery", "underscore", "backbone",
+    "views/genes/itemizer", "views/genes/typeahead",
+    "hbs!templates/genes/genelist_container",
+    "models/genes/default_genelist"],
+    function ($, _, Backbone, Itemizer, TypeAhead, Tpl, DefaultGenelistModel) {
         var do_alert = function(alertEl, timeout) {
             $(alertEl).show();
             _.delay(function() {
@@ -80,7 +83,7 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
                 genelists.push(default_gl);
 
                 this.$el.html(Tpl({ "genelists": _.sortBy(genelists, "sort") }));
-                this.renderGeneLists(new Backbone.Model(default_gl));
+                this.renderGeneLists(new DefaultGenelistModel(default_gl));
                 _.each(this.genelists_collection["models"], this.renderGeneLists, this);
             },
 
@@ -92,7 +95,17 @@ define(["jquery", "underscore", "backbone", "views/genes/itemizer", "views/genes
                 var $geneTypeahead = this.$el.find("#tab-glists-glist-" + gl_model["id"]).find(".genes-typeahead");
                 var typeahead = new TypeAhead({ "el": $geneTypeahead });
                 typeahead.render();
-                typeahead.on("typed", itemizer.append_gene, itemizer);
+                typeahead.on("typed", function(gene) {
+                    var genes_from_model = _.map(gl_model.get("genes"), function(g) {return g;});
+                    if (genes_from_model.indexOf(gene) >= 0) {
+                        console.log("genes/genelist_control:typeahead.typed(" + gene + "):duplicate:ignore:" + genes_from_model);
+                        // todo: show duplicate gene message
+                        return;
+                    }
+
+                    genes_from_model.push(gene);
+                    gl_model.set("genes", genes_from_model);
+                }, this);
             },
 
             getCurrentGeneList: function() {

@@ -98,8 +98,7 @@ define(["jquery", "underscore", "backbone",
                 typeahead.on("typed", function(gene) {
                     var genes_from_model = _.map(gl_model.get("genes"), function(g) {return g;});
                     if (genes_from_model.indexOf(gene) >= 0) {
-                        console.log("genes/genelist_control:typeahead.typed(" + gene + "):duplicate:ignore:" + genes_from_model);
-                        // todo: show duplicate gene message
+                        do_alert(this.$el.find(".duplicate-gene-entered"), 3000);
                         return;
                     }
 

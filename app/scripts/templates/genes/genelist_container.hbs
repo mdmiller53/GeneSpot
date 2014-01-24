@@ -1,6 +1,6 @@
 <button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapsible" type="button">Gene Lists
 </button>
-<div id="genelist-collapsible" class="collapse">
+<div id="genelist-collapsible" class="collapse in">
     <div class="well">
         <div class="row">
             <div class="span6">
@@ -37,6 +37,9 @@
                 </div>
 
                 <div class="tab-content">
+                    <div class="alert alert-warning duplicate-gene-entered hide">
+                        <strong>Oops!</strong> Gene already in list
+                    </div>
                     {{#each genelists}}
                     <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-glists-glist-{{id}}">
                         <input class="genes-typeahead" type="text" placeholder="Add a gene to {{label}}..."/>

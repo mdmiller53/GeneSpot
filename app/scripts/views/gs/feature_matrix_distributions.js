@@ -12,10 +12,10 @@ define(["jquery", "underscore", "backbone",
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
                         console.log("fmx-dist.carve.clear(\"highlight\")");
-                        this.carveVis.clear("highlight");
+                        this.carveVis.highlight(null).render();
                     } else {
                         console.log("fmx-dist.carve.highlight:" + tumor_type);
-                        this.carveVis.highlight(tumor_type);
+                        this.carveVis.highlight(tumor_type).render();
                     }
                 },
                 "click .sample-type-selector-scatterplot button": function (e) {

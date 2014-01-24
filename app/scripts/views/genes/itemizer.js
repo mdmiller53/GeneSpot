@@ -3,7 +3,7 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
         return Backbone.View.extend({
             events: {
                 "click .item-remover": function (e) {
-                    $(e.target).parents("li").remove();
+                    $(e.target).parents("li.gene-item").remove();
                     _.defer(this.update_genelist);
                 }
             },

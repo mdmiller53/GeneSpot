@@ -52,15 +52,6 @@ define(["jquery", "underscore", "backbone",
 
                 this.init_sampleTypes();
                 this.init_selectedGenes();
-                _.defer(this.init_graph);
-
-                this.$el.html(Tpl({
-                    "genes": this.options["genes"],
-                    "clinical_variables": this.options["clinical_variables"],
-                    "tumor_types": this.selected_tumor_types,
-                    "sample_types": this.sample_types,
-                    "selected_genes": this.selected_genes
-                }));
 
                 var numberOfModels = _.keys(this.options["models"]).length +
                                      _.keys(this.options["clinicalvars_models"]).length;
@@ -77,6 +68,20 @@ define(["jquery", "underscore", "backbone",
                         _.defer(drawFn);
                     }, this);
                 }, this);
+            },
+
+            render: function() {
+                _.defer(this.init_graph);
+
+                this.$el.html(Tpl({
+                    "genes": this.options["genes"],
+                    "clinical_variables": this.options["clinical_variables"],
+                    "tumor_types": this.selected_tumor_types,
+                    "sample_types": this.sample_types,
+                    "selected_genes": this.selected_genes
+                }));
+
+                return this;
             },
 
             init_sampleTypes: function() {

@@ -69,6 +69,13 @@ define(["jquery", "underscore", "backbone",
             });
         };
 
+        WebApp.alert = function(alertEl, timeout) {
+            $(alertEl).show();
+            _.delay(function() {
+                $(alertEl).hide({ "effect": "fade" });
+            }, timeout || 2000);
+        },
+
         _.bindAll(WebApp, "initialize");
 
         return WebApp;

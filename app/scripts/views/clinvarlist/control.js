@@ -2,13 +2,6 @@ define(["jquery", "underscore", "backbone",
     "views/clinvarlist/itemizer", "views/clinvarlist/typeahead",
     "hbs!templates/clinvarlist/container"],
     function ($, _, Backbone, Itemizer, TypeAhead, Tpl) {
-        var do_alert = function(alertEl, timeout) {
-            $(alertEl).show();
-            _.delay(function() {
-                $(alertEl).hide({ "effect": "fade" });
-            }, timeout || 2000);
-        };
-
         return Backbone.View.extend({
             clinvarlist_collection: new Backbone.Collection([], { "url": "svc/collections/clinvarlist" }),
             itemizers: {},
@@ -21,7 +14,7 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".new-list-name").val("");
 
                     if (_.isEmpty(newname)) {
-                        do_alert(this.$el.find(".invalid-list-name"), 3000);
+                        WebApp.alert(this.$el.find(".invalid-list-name"), 3000);
                         return;
                     }
 
@@ -29,7 +22,7 @@ define(["jquery", "underscore", "backbone",
                         return gl_model.get("label");
                     });
                     if (listlabels.indexOf(newname) >= 0) {
-                        do_alert(this.$el.find(".duplicate-list-name"), 3000);
+                        WebApp.alert(this.$el.find(".duplicate-list-name"), 3000);
                         return;
                     }
 
@@ -37,7 +30,7 @@ define(["jquery", "underscore", "backbone",
                         "url": "svc/collections/clinvarlist", "success": this.refreshClinvarLists
                     });
 
-                    do_alert(this.$el.find(".list-added-success"));
+                    WebApp.alert(this.$el.find(".list-added-success"));
                 },
 
                 "click .list-remover": function(e) {
@@ -90,7 +83,7 @@ define(["jquery", "underscore", "backbone",
                         return _.isEqual(clin.id, item_from_model.id);
                     });
                     if (found_item) {
-                        do_alert(this.$el.find(".duplicate-clin-entered"), 3000);
+                        WebApp.alert(this.$el.find(".duplicate-clin-entered"), 3000);
                         return;
                     }
 

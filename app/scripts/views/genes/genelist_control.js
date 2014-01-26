@@ -3,13 +3,6 @@ define(["jquery", "underscore", "backbone",
     "hbs!templates/genes/genelist_container",
     "models/genes/default_genelist"],
     function ($, _, Backbone, Itemizer, TypeAhead, Tpl, DefaultGenelistModel) {
-        var do_alert = function(alertEl, timeout) {
-            $(alertEl).show();
-            _.delay(function() {
-                $(alertEl).hide({ "effect": "fade" });
-            }, timeout || 2000);
-        };
-
         return Backbone.View.extend({
             genelists_collection: new Backbone.Collection([], { "url": "svc/collections/genelists" }),
             itemizers: {},
@@ -22,7 +15,7 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".new-list-name").val("");
 
                     if (_.isEmpty(newname)) {
-                        do_alert(this.$el.find(".invalid-list-name"), 3000);
+                        WebApp.alert(this.$el.find(".invalid-list-name"), 3000);
                         return;
                     }
 
@@ -30,7 +23,7 @@ define(["jquery", "underscore", "backbone",
                         return gl_model.get("label");
                     });
                     if (listlabels.indexOf(newname) >= 0) {
-                        do_alert(this.$el.find(".duplicate-list-name"), 3000);
+                        WebApp.alert(this.$el.find(".duplicate-list-name"), 3000);
                         return;
                     }
 
@@ -38,7 +31,7 @@ define(["jquery", "underscore", "backbone",
                         "url": "svc/collections/genelists", "success": this.refreshGeneLists
                     });
 
-                    do_alert(this.$el.find(".list-added-success"));
+                    WebApp.alert(this.$el.find(".list-added-success"));
                 },
 
                 "click .list-remover": function(e) {
@@ -98,7 +91,7 @@ define(["jquery", "underscore", "backbone",
                 typeahead.on("typed", function(gene) {
                     var genes_from_model = _.map(gl_model.get("genes"), function(g) {return g;});
                     if (genes_from_model.indexOf(gene) >= 0) {
-                        do_alert(this.$el.find(".duplicate-gene-entered"), 3000);
+                        WebApp.alert(this.$el.find(".duplicate-gene-entered"), 3000);
                         return;
                     }
 

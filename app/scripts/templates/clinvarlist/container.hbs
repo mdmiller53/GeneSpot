@@ -1,56 +1,49 @@
-<button class="btn btn-success" data-toggle="collapse" data-target="#clinlist-collapsible" type="button">Clinical Variables</button>
-<div id="clinlist-collapsible" class="collapse">
-    <div class="well">
-        <div class="row">
-            <div class="span6">
-                <h5>Create List</h5>
+<div class="well">
+    <h4>Clinical Variable Lists</h4>
+    <div class="row">
+        <div class="span6">
+            <div class="input-append">
+                <input type="text" class="new-list-name" placeholder="New list name...">
+                <button class="btn add-new-list" type="button">+</button>
+            </div>
 
-                <div class="input-append">
-                    <input type="text" class="new-list-name" placeholder="New list name...">
-                    <button class="btn add-new-list" type="button">+</button>
+            <div class="span4">
+                <div class="alert alert-danger invalid-list-name hide">
+                    <strong>Error!</strong> Not a valid list name
                 </div>
-
-                <div class="span4">
-                    <div class="alert alert-danger invalid-list-name hide">
-                        <strong>Error!</strong> Not a valid list name
-                    </div>
-                    <div class="alert alert-danger duplicate-list-name hide">
-                        <strong>Error!</strong> List name already exists
-                    </div>
-                    <div class="alert alert-success list-added-success hide">
-                        <strong>Success!</strong> New list added
-                    </div>
+                <div class="alert alert-danger duplicate-list-name hide">
+                    <strong>Error!</strong> List name already exists
+                </div>
+                <div class="alert alert-success list-added-success hide">
+                    <strong>Success!</strong> New list added
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="span7">
-                <h5>Lists</h5>
-
-                <div class="tabs-left">
-                    <ul class="nav nav-tabs clinvar-lists">
-                        {{#each clinvarlist}}
-                            <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
-                                    href="#tab-clists-{{id}}" data-toggle="tab">{{label}}</a></li>
-                        {{/each}}
-                    </ul>
-                </div>
-
-                <div class="tab-content">
-                    <div class="alert alert-warning duplicate-clin-entered hide">
-                        <strong>Oops!</strong> Variable already in list
-                    </div>
+    </div>
+    <div class="row">
+        <div class="span7">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs clinvar-lists">
                     {{#each clinvarlist}}
-                        <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-clists-{{id}}">
-                            <input class="clin-typeahead span4" type="text" placeholder="Add a clinical variable to {{label}}..."/>
-                            <ul class="clinvar-selector nav nav-list"></ul>
-                            {{#unless isDefault}}
-                                <hr/>
-                                <a href="#" class="list-remover" data-id="{{id}}" onclick="return false;">delete list</a><br/>
-                            {{/unless}}
-                        </div>
+                        <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                                href="#tab-clists-{{id}}" data-toggle="tab">{{label}}</a></li>
                     {{/each}}
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                <div class="alert alert-warning duplicate-clin-entered hide">
+                    <strong>Oops!</strong> Variable already in list
                 </div>
+                {{#each clinvarlist}}
+                    <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-clists-{{id}}">
+                        <input class="clin-typeahead span4" type="text"
+                               placeholder="Add a clinical variable to {{label}}..."/>
+                        <ul class="clinvar-selector nav nav-list"></ul>
+                        <hr/>
+                        <a href="#" class="list-remover" data-id="{{id}}" onclick="return false;">delete list</a><br/>
+                    </div>
+                {{/each}}
             </div>
         </div>
     </div>

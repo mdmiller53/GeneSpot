@@ -111,7 +111,7 @@ define([
                     this.reloadAllMaps();
                 }, this);
 
-                this.$el.find(".genelist-container").html(this.genelistControl.render().el);
+                this.$el.find("#genelist-container").html(this.genelistControl.render().el);
             },
 
             initClinicalListControl: function() {
@@ -126,7 +126,7 @@ define([
                     this.reloadAllMaps();
                 }, this);
 
-                this.$el.find(".clinvarlist-container").html(this.clinicalListControl.render().el);
+                this.$el.find("#clinvarlist-container").html(this.clinicalListControl.render().el);
             },
 
             initMaps: function () {

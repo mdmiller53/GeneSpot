@@ -1,46 +1,41 @@
-<button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapsible" type="button">Gene Lists
-</button>
-<div id="genelist-collapsible" class="collapse">
-    <div class="well">
-        <div class="row">
-            <div class="span6">
-                <h5>Create List</h5>
+<div class="well">
+    <h4>Gene Lists</h4>
+    <div class="row">
+        <div class="span6">
+            <div class="input-append">
+                <input type="text" class="new-list-name" placeholder="New list name...">
+                <button class="btn add-new-list" type="button">+</button>
+            </div>
 
-                <div class="input-append">
-                    <input type="text" class="new-list-name" placeholder="New list name...">
-                    <button class="btn add-new-list" type="button">+</button>
+            <div class="span4">
+                <div class="alert alert-danger invalid-list-name hide">
+                    <strong>Error!</strong> Not a valid list name
                 </div>
-
-                <div class="span4">
-                    <div class="alert alert-danger invalid-list-name hide">
-                        <strong>Error!</strong> Not a valid list name
-                    </div>
-                    <div class="alert alert-danger duplicate-list-name hide">
-                        <strong>Error!</strong> List name already exists
-                    </div>
-                    <div class="alert alert-success list-added-success hide">
-                        <strong>Success!</strong> New list added
-                    </div>
+                <div class="alert alert-danger duplicate-list-name hide">
+                    <strong>Error!</strong> List name already exists
+                </div>
+                <div class="alert alert-success list-added-success hide">
+                    <strong>Success!</strong> New list added
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="span6">
-                <h5>Lists</h5>
-
-                <div class="tabs-left">
-                    <ul class="nav nav-tabs gene-lists">
-                        {{#each genelists}}
-                            <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a href="#tab-glists-glist-{{id}}" data-toggle="tab">{{label}}</a></li>
-                        {{/each}}
-                    </ul>
-                </div>
-
-                <div class="tab-content">
-                    <div class="alert alert-warning duplicate-gene-entered hide">
-                        <strong>Oops!</strong> Gene already in list
-                    </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs gene-lists">
                     {{#each genelists}}
+                        <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                                href="#tab-glists-glist-{{id}}" data-toggle="tab">{{label}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                <div class="alert alert-warning duplicate-gene-entered hide">
+                    <strong>Oops!</strong> Gene already in list
+                </div>
+                {{#each genelists}}
                     <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-glists-glist-{{id}}">
                         <input class="genes-typeahead" type="text" placeholder="Add a gene to {{label}}..."/>
                         <ul class="gene-selector nav nav-list"></ul>
@@ -49,8 +44,7 @@
                             <a href="#" class="list-remover" data-id="{{id}}" onclick="return false;">delete list</a><br/>
                         {{/unless}}
                     </div>
-                    {{/each}}
-                </div>
+                {{/each}}
             </div>
         </div>
     </div>

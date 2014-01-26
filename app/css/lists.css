@@ -1,3 +1,9 @@
+.list-containers {
+    position: fixed;
+    top:100px;
+    left:100px;
+}
+
 .gene-lists .active a {
     font-weight:bold;
 }

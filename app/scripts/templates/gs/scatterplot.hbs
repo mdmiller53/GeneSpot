@@ -91,17 +91,12 @@
                 <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-x" role="menu">
-                    {{#if genes}}
-                        <li class="nav-header">Genes</li>
-                        {{#each genes}}
-                            <li><a href="#" onclick="return false;" data-type="genes" data-id="{{.}}">{{.}}</a></li>
-                        {{/each}}
-                    {{/if}}
+                    {{#each genes}}
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                    {{/each}}
                     {{#if clinical_variables}}
-                        <li class="nav-header">Clinical Variables</li>
-                        {{#each clinical_variables}}
-                            <li><a href="#" onclick="return false;" data-type="clinical-variables" data-id="{{id}}">{{label}}</a></li>
-                        {{/each}}
+                        <li class="divider"></li>
+                        <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
                     {{/if}}
                 </ul>
             </div>
@@ -110,18 +105,12 @@
                 <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
                 <ul class="dropdown-menu genes-selector-y" role="menu">
-                    {{#if genes}}
-                        <li class="nav-header">Genes</li>
-                        {{#each genes}}
-                            <li><a href="#" onclick="return false;" data-type="genes" data-id="{{.}}">{{.}}</a></li>
-                        {{/each}}
-                    {{/if}}
+                    {{#each genes}}
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                    {{/each}}
                     {{#if clinical_variables}}
-                        <li class="nav-header">Clinical Variables</li>
-                        {{#each clinical_variables}}
-                            <li><a href="#" onclick="return false;" data-type="clinical-variables" data-id="{{id}}"
-                                   data-label="{{label}}">{{label}}</a></li>
-                        {{/each}}
+                        <li class="divider"></li>
+                        <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
                     {{/if}}
                 </ul>
             </div>

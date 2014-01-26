@@ -1,0 +1,40 @@
+<style>
+    .feature-defs li {
+        font-size: 10px;
+        line-height: 10px;
+    }
+
+    .feature-defs.tabs-left > .nav-tabs > li > a {
+        min-width: 0px;
+    }
+
+    .feature-defs .nav-tabs {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .feature-defs .tab-content {
+        margin-top: 10px;
+    }
+
+    .feature-defs .nav-tabs > li > a {
+        line-height: 10px;
+    }
+
+    .feature-defs .nav-list > li > a {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+    .feature-defs .tab-content ul {
+        max-height: 250px;
+    }
+</style>
+<div class="feature-defs tabbable tabs-left">
+    <ul class="nav nav-tabs">
+        <li><a class="brand" href="#" onclick="return false;"><strong>{{axis}}-axis</strong></a></li>
+    </ul>
+    <div class="tab-content">
+        <ul id="tab-pane-clinvars-{{uid}}" class="active tab-pane nav nav-list"></ul>
+    </div>
+</div>

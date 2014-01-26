@@ -55,6 +55,7 @@ define(["jquery", "underscore", "backbone",
 
                 this.$el.html(Tpl({
                     "genes": this.options.genes,
+                    "clinical_variables": this.options["clinical_variables"],
                     "tumor_types": this.selected_tumor_types,
                     "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes

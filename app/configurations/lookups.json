@@ -13,6 +13,9 @@
                 "NA": "Other"
             }
         },
+        "clinical_variables": {
+            "url": "svc/datastores/ds/ffn/clinical_variables"
+        },
         "chromosomes": {
             "url": "svc/data/lookups/chromosomes",
             "model": "models/annotations"

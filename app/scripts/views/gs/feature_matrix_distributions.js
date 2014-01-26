@@ -224,6 +224,7 @@ define(["jquery", "underscore", "backbone",
 
             draw_graph: function () {
                 console.log("fmx-dist.draw_graph:selected=" + JSON.stringify(this.selected_features));
+                this.$el.find(".alert").hide();
 
                 if (!this.selected_features["x"]) return;
                 if (!this.selected_features["y"]) return;
@@ -234,9 +235,9 @@ define(["jquery", "underscore", "backbone",
                 var data = this.aggregate_data(this.selected_tumor_types, X_feature.id, Y_feature.id);
                 if (_.isEmpty(data)) {
                     console.log("fmx-dist.draw_graph:no_data_found");
+                    WebApp.alert(this.$el.find(".no-data-found"), 3000);
 
                     // TODO: Figure out how to properly clear the graph
-                    this.carveVis.clear("data");
                     _.defer(this.init_graph);
 
                     return;

@@ -101,7 +101,8 @@ define(["jquery", "underscore", "backbone",
 
             getCurrentClinvarList: function() {
                 var currentListId = this.$el.find(".nav-tabs").find("li.active").data("id");
-                return this.itemizers[currentListId].model.get("clinical_variables");
+                var currentItemizer = this.itemizers[currentListId] || { "model": new Backbone.Model() };
+                return currentItemizer["model"].get("clinical_variables");
             }
         });
     });

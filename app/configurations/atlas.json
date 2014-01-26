@@ -26,7 +26,6 @@
                 "top": 10,
                 "left": 76
             },
-            "isOpen": true,
             "views": [
                 {
                     "view": "pivot_data_view",
@@ -70,7 +69,8 @@
                     "label": "Feature Selector",
                     "datamodel": "datamodel/feature_matrices",
                     "by_tumor_type": "tumor_type",
-                    "url_suffix": "/feature_matrix"
+                    "url_suffix": "/feature_matrix",
+                    "query_clinical_variables": true
                 }
             ]
         },

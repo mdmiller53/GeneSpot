@@ -69,7 +69,8 @@ This project adds the following files into the [configurations directory](https:
                     "label": "Feature Selector",
                     "datamodel": "datamodel/feature_matrices",
                     "by_tumor_type": "tumor_type",
-                    "url_suffix": "/feature_matrix"
+                    "url_suffix": "/feature_matrix",
+                    "query_clinical_variables": true
                 }
             ]
         }

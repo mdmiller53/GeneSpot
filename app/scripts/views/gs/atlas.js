@@ -218,22 +218,24 @@ define([
                 }, this);
             },
 
-            loadMapContents: function (contentContainer, view_options, query_options) {
+            loadMapContents: function (contentContainer) {
                 var $target = $(contentContainer);
                 var view_name = $target.data("view");
                 if (view_name) {
                     var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                     var geneList = this.genelistControl.getCurrentGeneList();
 
-                    var v_options = _.extend({ "genes": geneList, "cancers": tumor_type_list, "hideSelector": true }, view_options || {});
-                    var q_options = _.extend({ "gene": geneList, "cancer": tumor_type_list }, query_options || {});
+                    var v_options = { "genes": geneList, "cancers": tumor_type_list, "hideSelector": true };
+                    var queries = { "gene": geneList, "cancer": tumor_type_list };
 
-                    return this.loadView($target, view_name, v_options, q_options);
+                    var clinvarList = this.clinicalListControl.getCurrentClinvarList();
+                    if (!_.isEmpty(clinvarList)) v_options["clinical_variables"] = clinvarList;
+                    return this.loadView($target, view_name, v_options, queries, clinvarList);
                 }
                 return null;
             },
 
-            loadView: function (targetEl, view_name, options, query) {
+            loadView: function (targetEl, view_name, options, query, clinvarList) {
                 console.log("atlas:loadView:view=" + view_name);
                 var ViewClass = WebApp.Views[view_name];
                 if (ViewClass) {
@@ -245,15 +247,32 @@ define([
 
                     // 1. Lookup model specification(s) for datamodel(s)
                     var modelspecs = [];
+                    var cvars_modelspecs = [];
                     var appendModelSpecsFn = function(modelspec, datamodel_key) {
                         if (modelspec["by_tumor_type"] && options["cancers"]) {
                             _.each(options["cancers"], function(tumor_type) {
                                 var ms_tt = modelspec["by_tumor_type"][tumor_type];
                                 var dk_tt = { "datamodel_key": datamodel_key, "tumor_type": tumor_type };
-                                modelspecs.push(_.extend(dk_tt, ms_tt));
+                                modelspecs.push(_.extend(dk_tt, query_options, ms_tt));
+
+                                if (view_spec["query_clinical_variables"] && !_.isEmpty(clinvarList)) {
+                                    cvars_modelspecs.push(_.extend({
+                                            "query": { "id": _.pluck(clinvarList, "id") },
+                                            "datamodel_key": datamodel_key,
+                                            "tumor_type": tumor_type
+                                        }, ms_tt));
+                                }
                             });
                         } else if (modelspec["single"]) {
-                            modelspecs.push(_.extend({ "datamodel_key": datamodel_key }, modelspec["single"]));
+                            modelspecs.push(_.extend({ "datamodel_key": datamodel_key }, query_options, modelspec["single"]));
+
+                            if (view_spec["query_clinical_variables"] && !_.isEmpty(clinvarList)) {
+                                cvars_modelspecs.push(_.extend({
+                                    "datamodel_key": datamodel_key,
+                                    "clinical_variables": _.pluck(clinvarList, "id"),
+                                    "query": { "id": clinvarList }
+                                }, modelspec["single"]));
+                            }
                         }
                     };
 
@@ -266,10 +285,11 @@ define([
                     }
 
                     var model_bucket = {};
-                    var createViewFn = _.after(modelspecs.length, function () {
+                    var cvars_model_bucket = {};
+                    var createViewFn = _.after(modelspecs.length + cvars_modelspecs.length, function () {
                         // NOTE: May seem out of order, but is called after all modelspecs are turned to models
                         // 3. Create view and pass model_bucket
-                        var model_obj = { "models": model_bucket };
+                        var model_obj = { "models": model_bucket, "clinicalvars_models": cvars_model_bucket };
                         var model_arr = _.values(model_bucket);
                         if (model_arr.length === 1) {
                             if (view_spec["by_tumor_type"]) {
@@ -277,10 +297,24 @@ define([
                                 _.each(_.omit(_.first(model_arr), "by_tumor_type"), function(ttModel, tt) {
                                     by_tumor_type[tt] = ttModel;
                                 });
-                                model_obj = { "models": by_tumor_type };
+                                model_obj["models"] = by_tumor_type;
                                 model_arr = _.values(by_tumor_type);
                             } else {
-                                model_obj = { "model": _.first(model_arr) };
+                                model_obj["model"] = _.first(model_arr);
+                            }
+                        }
+
+                        var cvars_model_arr = _.values(cvars_model_bucket);
+                        if (cvars_model_arr.length === 1) {
+                            if (view_spec["by_tumor_type"]) {
+                                var by_tumor_type = {};
+                                _.each(_.omit(_.first(cvars_model_arr), "by_tumor_type"), function(ttModel, tt) {
+                                    by_tumor_type[tt] = ttModel;
+                                });
+                                model_obj["clinicalvars_models"] = by_tumor_type;
+                                cvars_model_arr = _.values(by_tumor_type);
+                            } else {
+                                model_obj["clinicalvars_model"] = _.first(cvars_model_arr);
                             }
                         }
 
@@ -288,22 +322,25 @@ define([
                         $(targetEl).html(view.render().el);
 
                         // 4. Fetch data and load models
-                        _.each(model_arr, function (model) {
+                        var fetchModel = function(model) {
                             _.defer(function () {
                                 model.fetch({
                                     "url": model.get("url"),
-                                    "data": query_options["query"],
+                                    "data": model.get("query"),
                                     "traditional": true,
                                     "success": function () {
                                         model.trigger("load");
                                     }
                                 });
                             });
-                        });
+                        }
+
+                        _.each(model_arr, fetchModel);
+                        _.each(cvars_model_arr, fetchModel);
                     });
 
                     // 2. Create model(s) from model specifications
-                    _.each(modelspecs, function (modelspec) {
+                    var createModelFromSpec = function(bucket, modelspec) {
                         var prepModelFn = function (Model) {
                             var model = new Model(modelspec);
                             if (view_spec["url_suffix"]) {
@@ -311,13 +348,12 @@ define([
                             }
 
                             if (modelspec["tumor_type"]) {
-                                var modelspec_group = model_bucket[modelspec["datamodel_key"]];
-                                if (!modelspec_group) modelspec_group = model_bucket[modelspec["datamodel_key"]] = {};
+                                var modelspec_group = bucket[modelspec["datamodel_key"]];
+                                if (!modelspec_group) modelspec_group = bucket[modelspec["datamodel_key"]] = {};
                                 modelspec_group[modelspec["tumor_type"]] = model;
                             } else {
-                                model_bucket[modelspec["datamodel_key"]] = model;
+                                bucket[modelspec["datamodel_key"]] = model;
                             }
-
                             createViewFn();
                         };
 
@@ -326,6 +362,13 @@ define([
                         } else {
                             prepModelFn(Backbone.Model);
                         }
+                    };
+
+                    _.each(modelspecs, function(mspec) {
+                        createModelFromSpec(model_bucket, mspec);
+                    });
+                    _.each(cvars_modelspecs, function(mspec) {
+                        createModelFromSpec(cvars_model_bucket, mspec);
                     });
 
                     // TODO : Specify download links

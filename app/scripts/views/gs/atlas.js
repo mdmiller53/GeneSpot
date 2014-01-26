@@ -11,9 +11,12 @@ define([
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2",
-    "views/genes/genelist_control"
+    "views/genes/genelist_control",
+    "views/clinvarlist/control"
 ],
-    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2, GenelistControl) {
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView,
+              SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
+              GenelistControl, ClinicalListControl) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -81,6 +84,7 @@ define([
                 WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initMaps);
                 this.options.model.on("load", this.initGenelistControl, this);
+                this.options.model.on("load", this.initClinicalListControl, this);
 
                 WebApp.Events.on("webapp:tumor-types:selector:change", _.debounce(this.reloadAllMaps, 1000), this);
 
@@ -108,6 +112,21 @@ define([
                 }, this);
 
                 this.$el.find(".genelist-container").html(this.genelistControl.render().el);
+            },
+
+            initClinicalListControl: function() {
+                this.clinicalListControl = new ClinicalListControl({});
+                this.clinicalListControl.on("updated", function (ev) {
+                    console.log("atlas:clinicalListControl:updated:" + JSON.stringify(ev));
+                    if (ev["reorder"]) {
+                        console.log("atlas:clinicalListControl:updated:reorder:ignore");
+                        return;
+                    }
+
+                    this.reloadAllMaps();
+                }, this);
+
+                this.$el.find(".clinvarlist-container").html(this.clinicalListControl.render().el);
             },
 
             initMaps: function () {

@@ -15,3 +15,21 @@
 .gene-selector .btn-group .btn-success {
     min-width: 80px;
 }
+
+.clinvar-lists .active a {
+    font-weight:bold;
+}
+
+.clinvar-selector {
+    max-width: 800px;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.clinvar-selector .btn-group {
+    margin-bottom: 4px;
+}
+
+.clinvar-selector .btn-group .btn-success {
+    min-width: 80px;
+}

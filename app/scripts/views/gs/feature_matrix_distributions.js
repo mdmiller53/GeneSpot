@@ -14,10 +14,10 @@ define(["jquery", "underscore", "backbone",
                 "click .tumor-type-selector-scatterplot button": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
-                        console.log("fmx-dist.carve.clear(\"highlight\")");
+                        console.log("fmx-dist.highlight:none");
                         this.carveVis.highlight(null).render();
                     } else {
-                        console.log("fmx-dist.carve.highlight:" + tumor_type);
+                        console.log("fmx-dist.highlight:" + tumor_type);
                         this.carveVis.highlight(tumor_type).render();
                     }
                 },
@@ -50,6 +50,10 @@ define(["jquery", "underscore", "backbone",
 
                 this.selected_tumor_types = WebApp.UserPreferences.get("selected_tumor_types");
 
+                this.init_sampleTypes();
+                this.init_selectedGenes();
+                _.defer(this.init_graph);
+
                 this.$el.html(Tpl({
                     "genes": this.options["genes"],
                     "clinical_variables": this.options["clinical_variables"],
@@ -57,10 +61,6 @@ define(["jquery", "underscore", "backbone",
                     "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes
                 }));
-
-                this.init_sampleTypes();
-                this.init_selectedGenes();
-                _.defer(this.init_graph);
 
                 var numberOfModels = _.keys(this.options["models"]).length +
                                      _.keys(this.options["clinicalvars_models"]).length;

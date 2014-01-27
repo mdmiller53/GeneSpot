@@ -285,6 +285,9 @@ define([
                         });
                     } else if (view_spec["datamodel"]) {
                         appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(view_spec["datamodel"]), "model");
+                    } else {
+                        var view = new ViewClass(_.extend({}, options, view_spec));
+                        $(targetEl).html(view.render().el);
                     }
 
                     var model_bucket = {};

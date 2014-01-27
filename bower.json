@@ -1,27 +1,27 @@
 {
-    "name": "WebAppTemplate",
-    "version": "0.0.0",
-    "dependencies": {
-        "requirejs": "~2.1.4",
-        "backbone": "~1.0.0",
-        "bootstrap": "http://getbootstrap.com/2.3.2/assets/bootstrap.zip",
-        "font-awesome": "~3.2.1",
-        "modernizr": "~2.6.2",
-        "require-handlebars-plugin": "git://github.com/SlexAxton/require-handlebars-plugin.git#~0.4.0",
-        "handlebars": "git://github.com/components/handlebars.js#~1.0.0",
-        "jquery": "~2.0.3",
-        "underscore": "~1.4.4",
-        "d3": "~3.2.8",
-        "jquery-ui": "~1.10.3",
-        "jquery-ui-bootstrap": "~0.2.5",
-        "visquick": "git://github.com/visquick/visquick",
-        "jsPlumb": "git://github.com/sporritt/jsPlumb.git#1.5.4",
-        "bootstrap-dropdown-checkbox": "git://github.com/cancerregulome/bootstrap-dropdown-checkbox",
-        "colorbrewer": "git://github.com/undashes/colorbrewer.git",
-        "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
-        "carve": "~0.0.7"
-    },
-    "resolutions": {
-        "d3": "~3.2.8"
-    }
+  "name": "WebAppTemplate",
+  "version": "0.0.0",
+  "dependencies": {
+    "requirejs": "~2.1.4",
+    "backbone": "~1.0.0",
+    "bootstrap": "http://getbootstrap.com/2.3.2/assets/bootstrap.zip",
+    "font-awesome": "~3.2.1",
+    "modernizr": "~2.6.2",
+    "require-handlebars-plugin": "git://github.com/SlexAxton/require-handlebars-plugin.git#~0.4.0",
+    "handlebars": "git://github.com/components/handlebars.js#~1.0.0",
+    "jquery": "~2.0.3",
+    "underscore": "~1.5.2",
+    "d3": "~3.2.8",
+    "jquery-ui": "~1.10.3",
+    "jquery-ui-bootstrap": "~0.2.5",
+    "visquick": "git://github.com/visquick/visquick",
+    "jsPlumb": "git://github.com/sporritt/jsPlumb.git#1.5.4",
+    "colorbrewer": "git://github.com/undashes/colorbrewer.git",
+    "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
+    "carve": "~0.0.7"
+  },
+  "resolutions": {
+    "d3": "~3.2.8",
+    "underscore": "~1.5.2"
+  }
 }

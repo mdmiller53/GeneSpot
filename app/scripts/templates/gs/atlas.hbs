@@ -25,10 +25,10 @@
             <button class="btn btn-success" data-toggle="collapse" data-target="#tumor-types-collapser" type="button">Tumor Types</button>
         </li>
         <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#genelist-container" type="button">Gene Lists</button>
+            <button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapser" type="button">Gene Lists</button>
         </li>
         <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#clinvarlist-container" type="button">Clinical Variables</button>
+            <button class="btn btn-success" data-toggle="collapse" data-target="#clinvarlist-collapser" type="button">Clinical Variables</button>
         </li>
     </ul>
 </div>
@@ -41,9 +41,19 @@
         </div>
     </div>
 
-    <div id="genelist-container" class="collapse"></div>
+    <div id="genelist-collapser" class="collapse">
+        <div class="well">
+            <button type="button" class="close" data-toggle="collapse" data-target="#genelist-collapser">&times;</button>
+            <div id="genelist-container"></div>
+        </div>
+    </div>
 
-    <div id="clinvarlist-container" class="collapse"></div>
+    <div id="clinvarlist-collapser" class="collapse">
+        <div class="well">
+            <button type="button" class="close" data-toggle="collapse" data-target="#clinvarlist-collapser">&times;</button>
+            <div id="clinvarlist-container"></div>
+        </div>
+    </div>
 </div>
 
 <div class="atlas-body">

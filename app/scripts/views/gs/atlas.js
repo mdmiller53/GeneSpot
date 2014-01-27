@@ -12,11 +12,12 @@ define([
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2",
     "views/genes/genelist_control",
-    "views/clinvarlist/control"
+    "views/clinvarlist/control",
+    "views/gs/tumor_types_control"
 ],
     function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView,
               SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
-              GenelistControl, ClinicalListControl) {
+              GenelistControl, ClinicalListControl, TumorTypesControl) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -85,8 +86,7 @@ define([
                 this.options.model.on("load", this.initMaps);
                 this.options.model.on("load", this.initGenelistControl, this);
                 this.options.model.on("load", this.initClinicalListControl, this);
-
-                WebApp.Events.on("webapp:tumor-types:selector:change", _.debounce(this.reloadAllMaps, 1000), this);
+                this.options.model.on("load", this.initTumorTypes, this);
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
@@ -127,6 +127,14 @@ define([
                 }, this);
 
                 this.$el.find("#clinvarlist-container").html(this.clinicalListControl.render().el);
+            },
+
+            initTumorTypes: function() {
+                this.tumorTypesControl = new TumorTypesControl({});
+
+                var reloadFn = _.debounce(this.reloadAllMaps, 1000);
+                this.tumorTypesControl.on("updated", reloadFn, this)
+                this.$el.find("#tumor-types-container").html(this.tumorTypesControl.render().el);
             },
 
             initMaps: function () {

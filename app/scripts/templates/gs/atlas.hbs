@@ -22,6 +22,9 @@
             <ul class="dropdown-menu maps-selector"></ul>
         </li>
         <li>
+            <button class="btn btn-success" data-toggle="collapse" data-target="#tumor-types-collapser" type="button">Tumor Types</button>
+        </li>
+        <li>
             <button class="btn btn-success" data-toggle="collapse" data-target="#genelist-container" type="button">Gene Lists</button>
         </li>
         <li>
@@ -31,6 +34,13 @@
 </div>
 
 <div class="list-containers">
+    <div id="tumor-types-collapser" class="collapse">
+        <div class="well">
+            <button type="button" class="close" data-toggle="collapse" data-target="#tumor-types-collapser">&times;</button>
+            <div id="tumor-types-container"></div>
+        </div>
+    </div>
+
     <div id="genelist-container" class="collapse"></div>
 
     <div id="clinvarlist-container" class="collapse"></div>

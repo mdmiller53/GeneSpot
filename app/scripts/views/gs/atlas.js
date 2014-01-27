@@ -2,8 +2,8 @@ define([
     "jquery", "underscore", "backbone",
     "hbs!templates/gs/atlas",
     "hbs!templates/gs/atlasmap",
-    "hbs!templates/line_item",
     "hbs!templates/open_link",
+    "hbs!templates/gs/maps_list_container",
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
@@ -15,8 +15,8 @@ define([
     "views/clinvarlist/control",
     "views/gs/tumor_types_control"
 ],
-    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, LineItemTpl, OpenLinkTpl, QuickTutorialView, MapTextView,
-              SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
+    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, OpenLinkTpl, MapsListContainerTpl,
+              QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
               GenelistControl, ClinicalListControl, TumorTypesControl) {
 
         return Backbone.View.extend({
@@ -56,7 +56,7 @@ define([
                 "click a.refresh-me": function (e) {
                     this.loadMapData($(e.target).parents(".atlas-map"));
                 },
-                "click a.open-map": function (e) {
+                "click .open-map": function (e) {
                     var mapId = $(e.target).data("id");
                     _.each(this.options.model.get("maps"), function (map) {
                         if (_.isEqual(map.id, mapId)) {
@@ -138,15 +138,13 @@ define([
             },
 
             initMaps: function () {
-                var maps = this.options.model.get("maps");
-                _.each(_.sortBy(maps, "label"), function (map) {
-                    if (!map.id) map.id = Math.round(Math.random() * 10000);
-                    var lit = { "a_class": "open-map", "id": map.id, "label": map.label };
-                    if (map.disabled) {
-                        lit = { "li_class": "disabled", "id": map.id, "label": map.label };
-                    }
-                    this.$el.find(".maps-selector").append(LineItemTpl(lit));
+                var maps = this.options["model"].get("maps");
+                _.each(maps, function (map) {
+                    if (!_.has(map, "id")) map["id"] = Math.round(Math.random() * 10000);
+                    if (map.isOpen) _.defer(this.appendAtlasMap, map);
                 }, this);
+
+                this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(maps, "label") }));
 
                 if (WebApp.Sessions.Active) {
                     var session_atlas = WebApp.Sessions.Active.get("atlas_maps");
@@ -167,9 +165,6 @@ define([
                         }
                     }
                 }
-                _.each(maps, function (map) {
-                    if (map.isOpen) this.appendAtlasMap(map);
-                }, this);
             },
 
             appendAtlasMap: function (map) {

@@ -16,10 +16,9 @@
         <li><a href="#" onclick="return false;" class="refresh-loaded" rel="toolbar" title="Refresh Map Data"> <i class="icon-refresh"/></i> </a></li>
     </ul>
 
-    <ul class="nav nav-pills maps-n-genes">
-        <li class="dropdown">
-            <button class="maps-btn dropdown-toggle btn btn-success" data-toggle="dropdown" type="button">Maps</button>
-            <ul class="dropdown-menu maps-selector"></ul>
+    <ul class="nav nav-pills list-controls">
+        <li>
+            <button class="btn btn-success maps-btn" data-toggle="collapse" data-target="#maps-collapser" type="button">Maps</button>
         </li>
         <li>
             <button class="btn btn-success" data-toggle="collapse" data-target="#tumor-types-collapser" type="button">Tumor Types</button>
@@ -34,6 +33,13 @@
 </div>
 
 <div class="list-containers">
+    <div id="maps-collapser" class="collapse in">
+        <div class="well">
+            <button type="button" class="close" data-toggle="collapse" data-target="#maps-collapser">&times;</button>
+            <div class="maps-list-container"></div>
+        </div>
+    </div>
+
     <div id="tumor-types-collapser" class="collapse">
         <div class="well">
             <button type="button" class="close" data-toggle="collapse" data-target="#tumor-types-collapser">&times;</button>

@@ -6,12 +6,6 @@ define(
 ) {
 
     return Backbone.Model.extend({
-        constructor: function(attributes, options) {
-            this.options = attributes;
-
-            Backbone.Model.apply(this, {});
-        },
-
         initialize: function (attributes, options) {
             this.loaded_data = {
                 mutations: {}
@@ -59,7 +53,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: this.options.mutsig_rankings_service,
+                url: this.get("mutsig_rankings_service"),
                 context: this,
                 dataType: 'json',
                 data: query
@@ -80,7 +74,7 @@ define(
 
             return $.ajax({
                 type: "GET",
-                url: this.options.feature_matrix_service + "/" + this.options.feature_matrix_collection,
+                url: this.get("feature_matrix_service") + "/" + this.get("feature_matrix_collection"),
                 context: this,
                 dataType: 'json',
                 data: query
@@ -106,7 +100,7 @@ define(
                 cancers = _.map(this.default_cancer_types, function(x) {return x.toLowerCase();});
             }
 
-            var service_uri = this.options.service;
+            var service_uri = this.get("service");
 
             var promises = [],
                 parsers = [];

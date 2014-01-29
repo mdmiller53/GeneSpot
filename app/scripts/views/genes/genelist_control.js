@@ -28,7 +28,7 @@ define(["jquery", "underscore", "backbone",
                     }
 
                     Backbone.sync("create", new Backbone.Model({ "label": newname, "genes": [] }), {
-                        "url": "svc/collections/genelists", "success": this.refreshGeneLists
+                        "url": "svc/collections/genelists", "success": this.refresh
                     });
 
                     WebApp.alert(this.$el.find(".list-added-success"));
@@ -40,28 +40,37 @@ define(["jquery", "underscore", "backbone",
                     var listid = $(e.target).data("id");
 
                     Backbone.sync("delete", new Backbone.Model({}), {
-                        "url": "svc/collections/genelists/" + listid, "success": this.refreshGeneLists
+                        "url": "svc/collections/genelists/" + listid, "success": this.refresh
                     });
                 }
             },
 
             initialize: function() {
-                _.bindAll(this, "loadGeneLists", "refreshGeneLists");
-                _.defer(this.refreshGeneLists);
+                _.bindAll(this, "load", "refresh", "ready");
+            },
 
+            render: function() {
+                this.genelists_collection.fetch({ "success": this.ready });
                 this.genelists_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
                     Backbone.sync("update", item, {
-                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refreshGeneLists
+                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refresh
                     });
                 });
+
+                return this;
             },
 
-            refreshGeneLists: function() {
-                this.genelists_collection.fetch({ "success": this.loadGeneLists });
+            ready: function() {
+                this.load();
+                this.trigger("ready");
             },
 
-            loadGeneLists: function() {
+            refresh: function() {
+                this.genelists_collection.fetch({ "success": this.load });
+            },
+
+            load: function() {
                 var genelists = _.map(this.genelists_collection["models"], function(gl_model) {
                     return { "id": gl_model.get("id"), "label": gl_model.get("label") };
                 });

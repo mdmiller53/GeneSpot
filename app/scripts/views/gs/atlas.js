@@ -71,15 +71,11 @@ define([
             initialize: function () {
                 _.bindAll(this, "appendAtlasMap", "reloadAllMaps", "loadMapData");
 
-                this.$el.html(AtlasTpl());
-                this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
-
-                WebApp.Sessions.Producers["atlas_maps"] = this;
                 this.options.model.on("load", this.initGenelistControl, this);
                 this.options.model.on("load", this.initClinicalListControl, this);
                 this.options.model.on("load", this.initTumorTypes, this);
-                this.options.model.on("load", this.initMaps, this);
-                // TODO : figure out race condition with genelistControl.getCurrentGeneList();
+
+                WebApp.Sessions.Producers["atlas_maps"] = this;
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
@@ -92,8 +88,15 @@ define([
                 console.log("atlas:registered views");
             },
 
+            render: function() {
+                this.$el.html(AtlasTpl());
+                this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
+                return this;
+            },
+
             initGenelistControl: function() {
                 this.genelistControl = new GenelistControl({ "default_genelist": this.options.model.get("default_genelist") });
+                this.genelistControl.on("ready", this.initMaps, this);
                 this.genelistControl.on("updated", function (ev) {
                     console.log("atlas:genelistControl:updated:" + JSON.stringify(ev));
                     if (ev["reorder"]) {

@@ -1,9 +1,8 @@
 define([
     "jquery", "underscore", "backbone",
     "hbs!templates/gs/atlas",
-    "hbs!templates/gs/atlasmap",
-    "hbs!templates/open_link",
     "hbs!templates/gs/maps_list_container",
+    "views/gs/atlas_map",
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
@@ -15,17 +14,17 @@ define([
     "views/clinvarlist/control",
     "views/gs/tumor_types_control"
 ],
-    function ($, _, Backbone, AtlasTpl, AtlasMapTpl, OpenLinkTpl, MapsListContainerTpl,
+    function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
               QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
               GenelistControl, ClinicalListControl, TumorTypesControl) {
 
         return Backbone.View.extend({
+            "atlasMapViews": [],
             "last-z-index": 10,
             "currentZoomLevel": 1.0,
             "lastPosition": {
                 "top": 0, "left": 0
             },
-            "view_specs_by_uid": {},
 
             events: {
                 "click a.refresh-loaded": "reloadAllMaps",
@@ -50,12 +49,6 @@ define([
                     }
                     li.toggleClass("active");
                 },
-                "click a.minimize-me": function (e) {
-                    this.closeMap($(e.target).parents(".atlas-map"));
-                },
-                "click a.refresh-me": function (e) {
-                    this.loadMapData($(e.target).parents(".atlas-map"));
-                },
                 "click .open-map": function (e) {
                     var mapId = $(e.target).data("id");
                     _.each(this.options.model.get("maps"), function (map) {
@@ -75,18 +68,18 @@ define([
                 }
             },
 
-            initialize: function (options) {
-                _.bindAll(this, "loadView", "initMaps", "appendAtlasMap", "loadMapData", "reloadAllMaps", "loadMapContents", "closeMap");
-                _.bindAll(this, "zoom", "nextZindex", "nextPosition", "currentState");
+            initialize: function () {
+                _.bindAll(this, "appendAtlasMap", "reloadAllMaps", "loadMapData");
 
                 this.$el.html(AtlasTpl());
                 this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
-                this.options.model.on("load", this.initMaps);
                 this.options.model.on("load", this.initGenelistControl, this);
                 this.options.model.on("load", this.initClinicalListControl, this);
                 this.options.model.on("load", this.initTumorTypes, this);
+                this.options.model.on("load", this.initMaps, this);
+                // TODO : figure out race condition with genelistControl.getCurrentGeneList();
 
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
@@ -133,7 +126,7 @@ define([
                 this.tumorTypesControl = new TumorTypesControl({});
 
                 var reloadFn = _.debounce(this.reloadAllMaps, 1000);
-                this.tumorTypesControl.on("updated", reloadFn, this)
+                this.tumorTypesControl.on("updated", reloadFn, this);
                 this.$el.find("#tumor-types-container").html(this.tumorTypesControl.render().el);
             },
 
@@ -168,82 +161,45 @@ define([
             },
 
             appendAtlasMap: function (map) {
-                map = _.clone(map);
-
-                var uid = Math.round(Math.random() * 10000);
-                _.each(map.views, function (view, idx) {
-                    if (!_.has(view, "view")) view["view"] = view["id"];
-
-                    if (idx == 0) view["li_class"] = "active";
-                    view["uid"] = ++uid;
-
-                    this.view_specs_by_uid[uid] = view;
+                var atlasMapView = new AtlasMapView(_.extend({
+                    "assignedPosition": map["position"] || this.nextPosition(),
+                    "assignedZindex": map["zindex"] || this.nextZindex()
+                }, map));
+                atlasMapView.on("refresh", function() {
+                    this.loadMapData(atlasMapView);
                 }, this);
+                if (map["isOpen"]) {
+                    this.$el.find(".atlas-zoom").append(atlasMapView.render().el);
+                }
 
-                map.assignedPosition = map.position || this.nextPosition();
-                map.assignedZindex = map.zindex || this.nextZindex();
-
-                this.$el.find(".atlas-zoom").append(AtlasMapTpl(map));
-                var $atlasMap = this.$el.find(".atlas-zoom").children().last();
-
-                $atlasMap.find(".info-me").popover({
-                    "title": "Description",
-                    "trigger": "hover",
-                    "content": map.description
-                });
-
-                var _this = this;
-                this.$el.find(".maps-btn").effect("transfer", {
-                    "to": $atlasMap,
-                    complete: function () {
-                        _this.loadMapData($atlasMap);
-                        $atlasMap.draggable({ "handle": ".icon-move", "scroll": true });
-                    }
-                }, 750);
+                this.atlasMapViews.push(atlasMapView);
+                this.loadMapData(atlasMapView);
             },
 
             reloadAllMaps: function() {
-                _.each(this.$el.find(".atlas-map"), this.loadMapData);
+                console.log("atlas:reloadAllMaps");
+                _.each(this.atlasMapViews, this.loadMapData, this);
             },
 
-            loadMapData: function (atlasMap) {
-                var UL = $(atlasMap).find(".download-links");
-                UL.empty();
-                _.each($(atlasMap).find(".map-contents"), function (mc) {
-                    _.defer(function (_this) {
-                        var downloadUrl = _this.loadMapContents(mc);
-                        if (downloadUrl) {
-                            _.defer(function () {
-                                UL.append(OpenLinkTpl({ "label": $(mc).data("label"), "url": downloadUrl }))
-                            });
-                        }
-                    }, this);
+            loadMapData: function (atlasMapView) {
+                var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
+                var geneList = this.genelistControl.getCurrentGeneList();
+                var clinvarList = this.clinicalListControl.getCurrentClinvarList() || [];
+
+                var v_options = { "genes": geneList, "cancers": tumor_type_list, "clinical_variables": clinvarList };
+                var queries = { "gene": geneList, "cancer": tumor_type_list };
+
+                _.each(atlasMapView["options"]["views"], function(view_spec) {
+                    this.loadView(view_spec, v_options, queries, clinvarList);
                 }, this);
-            },
-
-            loadMapContents: function (contentContainer) {
-                var $target = $(contentContainer);
-                var view_name = $target.data("view");
-                if (view_name) {
-                    var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
-                    var geneList = this.genelistControl.getCurrentGeneList();
-
-                    var v_options = { "genes": geneList, "cancers": tumor_type_list, "hideSelector": true };
-                    var queries = { "gene": geneList, "cancer": tumor_type_list };
-
-                    var clinvarList = this.clinicalListControl.getCurrentClinvarList();
-                    if (!_.isEmpty(clinvarList)) v_options["clinical_variables"] = clinvarList;
-                    return this.loadView($target, view_name, v_options, queries, clinvarList);
-                }
                 return null;
             },
 
-            loadView: function (targetEl, view_name, options, query, clinvarList) {
-                console.log("atlas:loadView:view=" + view_name);
-                var ViewClass = WebApp.Views[view_name];
+            loadView: function (view_spec, options, query, clinvarList) {
+                console.log("atlas:loadView:" + view_spec["view"]);
+                // TODO : Specify download links
+                var ViewClass = WebApp.Views[view_spec["view"]];
                 if (ViewClass) {
-                    var view_spec = this.view_specs_by_uid[$(targetEl).data("uid")];
-
                     var query_options = { "query": query };
                     if (view_spec["by_tumor_type"]) query_options = { "query": _.omit(query, "cancer") };
                     if (view_spec["query_all_genes"]) query_options = { "query": _.omit(query, "gene") };
@@ -287,7 +243,7 @@ define([
                         appendModelSpecsFn(WebApp.Datamodel.find_modelspecs(view_spec["datamodel"]), "model");
                     } else {
                         var view = new ViewClass(_.extend({}, options, view_spec));
-                        $(targetEl).html(view.render().el);
+                        $(view_spec["$targetEl"]).html(view.render().el);
                     }
 
                     var model_bucket = {};
@@ -313,19 +269,19 @@ define([
                         var cvars_model_arr = _.values(cvars_model_bucket);
                         if (cvars_model_arr.length === 1) {
                             if (view_spec["by_tumor_type"]) {
-                                var by_tumor_type = {};
+                                var cvars_by_tumor_type = {};
                                 _.each(_.omit(_.first(cvars_model_arr), "by_tumor_type"), function(ttModel, tt) {
-                                    by_tumor_type[tt] = ttModel;
+                                    cvars_by_tumor_type[tt] = ttModel;
                                 });
-                                model_obj["clinicalvars_models"] = by_tumor_type;
-                                cvars_model_arr = _.values(by_tumor_type);
+                                model_obj["clinicalvars_models"] = cvars_by_tumor_type;
+                                cvars_model_arr = _.values(cvars_by_tumor_type);
                             } else {
                                 model_obj["clinicalvars_model"] = _.first(cvars_model_arr);
                             }
                         }
 
                         var view = new ViewClass(_.extend({}, options, view_spec, model_obj));
-                        $(targetEl).html(view.render().el);
+                        $(view_spec["$targetEl"]).html(view.render().el);
 
                         // 4. Fetch data and load models
                         var fetchModel = function(model) {
@@ -339,7 +295,7 @@ define([
                                     }
                                 });
                             });
-                        }
+                        };
 
                         _.each(model_arr, fetchModel);
                         _.each(cvars_model_arr, fetchModel);
@@ -376,11 +332,7 @@ define([
                     _.each(cvars_modelspecs, function(mspec) {
                         createModelFromSpec(cvars_model_bucket, mspec);
                     });
-
-                    // TODO : Specify download links
-//                    if (map_optns["url"]) return map_optns["url"] + "?" + this.outputTsvQuery(query);
                 }
-                return null;
             },
 
             outputTsvQuery: function (query) {
@@ -396,15 +348,6 @@ define([
                 });
                 qsarray.push("output=tsv");
                 return qsarray.join("&");
-            },
-
-            closeMap: function (atlasMap) {
-                $(atlasMap).effect("transfer", {
-                    "to": this.$el.find(".maps-btn"),
-                    complete: function () {
-                        $(atlasMap).remove();
-                    }
-                }, 750);
             },
 
             zoom: function (zoomLevel) {

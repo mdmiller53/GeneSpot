@@ -6,12 +6,15 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map" ],
                     this.trigger("refresh");
                 },
                 "click .close": function() {
-                    this.$el.remove();
+                    this.$el.hide({ "always": this.closeOut });
                 },
                 "click a.download-link": function (e) {
-                    var $targetEl = $(e.target);
-                    console.log("download-link:" + JSON.stringify($targetEl.data()));
+                    console.log("download-link:" + JSON.stringify($(e.target).data()));
                 }
+            },
+
+            initialize: function() {
+                _.bindAll(this, "closeOut");
             },
 
             render: function () {
@@ -45,6 +48,10 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map" ],
                 }, this);
 
                 return this;
+            },
+
+            closeOut: function() {
+                this.$el.empty().remove();
             },
 
             outputTsvQuery: function (query) {

@@ -192,7 +192,7 @@ define([
                 var v_options = { "genes": geneList, "cancers": tumor_type_list, "clinical_variables": clinvarList };
                 var queries = { "gene": geneList, "cancer": tumor_type_list };
 
-                _.each(atlasMapView["options"]["views"], function(view_spec) {
+                _.each(atlasMapView["view_specs"], function(view_spec) {
                     this.loadView(view_spec, v_options, queries, clinvarList);
                 }, this);
                 return null;
@@ -285,6 +285,7 @@ define([
 
                         var view = new ViewClass(_.extend({}, options, view_spec, model_obj));
                         $(view_spec["$targetEl"]).html(view.render().el);
+                        view_spec.trigger("ready", view);
 
                         // 4. Fetch data and load models
                         var fetchModel = function(model) {
@@ -336,21 +337,6 @@ define([
                         createModelFromSpec(cvars_model_bucket, mspec);
                     });
                 }
-            },
-
-            outputTsvQuery: function (query) {
-                var qsarray = [];
-                _.each(query, function (values, key) {
-                    if (_.isArray(values)) {
-                        _.each(values, function (value) {
-                            qsarray.push(key + "=" + value);
-                        })
-                    } else {
-                        qsarray.push(key + "=" + values);
-                    }
-                });
-                qsarray.push("output=tsv");
-                return qsarray.join("&");
             },
 
             zoom: function (zoomLevel) {

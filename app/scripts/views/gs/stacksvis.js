@@ -1,21 +1,6 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "hbs!templates/gs/q_values_ampdel", "stacksvis", "colorbrewer"],
-    function ($, _, Backbone, StacksVisTpl, QValueTpl) {
+define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "hbs!templates/gs/q_values_ampdel", "stacksvis", "colorbrewer", "d3"],
+    function ($, _, Backbone, StacksVisTpl, QValueTpl, StacksVis) {
         return Backbone.View.extend({
-
-            "initialize": function (options) {
-                _.bindAll(this, "render_data_q_value", "render_data_copy_number", "getColumnModel");
-
-                this.options.models["copy_number"].on("load", this.render_data_copy_number);
-                this.options.models["q_value"].on("load", this.render_data_q_value);
-
-                this.$el.html(StacksVisTpl({
-                    "id": Math.floor(Math.random() * 1000),
-                    "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
-                    "genes": _.map(this.options["genes"], function(g) { return g.toUpperCase(); })
-                }));
-
-                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "right" });
-            },
 
             "events": {
                 "click .global-hider": function (e) {
@@ -26,12 +11,30 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }
             },
 
-            "render_data_q_value": function () {
+            "initialize": function (options) {
+                this.options["models"]["copy_number"].on("load", this.__render_copy_number, this);
+                this.options["models"]["q_value"].on("load", this.__render_q_value, this);
+            },
+
+            render: function () {
+                this.$el.html(StacksVisTpl({
+                    "id": Math.floor(Math.random() * 1000),
+                    "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
+                    "genes": _.map(this.options["genes"], function (g) {
+                        return g.toUpperCase();
+                    })
+                }));
+
+                this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "right" });
+                return this;
+            },
+
+            __render_q_value: function () {
                 if (!this.options.models["q_value"].get("items")) return;
 
                 var items_per_tumor_type_lower = _.groupBy(this.options.models["q_value"].get("items"), "cancer");
                 var items_per_tumor_type = {};
-                _.each(items_per_tumor_type_lower, function(items, lower) {
+                _.each(items_per_tumor_type_lower, function (items, lower) {
                     items_per_tumor_type[lower.toUpperCase()] = items;
                 });
 
@@ -43,7 +46,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
 
                         _.each(gene_items, function (gene_item) {
                             gene_item[gene_item["type"]] = true; // binarize for template use
-                        })
+                        });
 
                         var $qvalues = this.$el.find(".stats-" + tumor_type_obj.id.toUpperCase() + "-" + gene.toUpperCase()).show();
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
@@ -53,7 +56,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }, this);
             },
 
-            "render_data_copy_number": function () {
+            __render_copy_number: function () {
                 this.rowLabels = _.map(this.options.genes, function (g) {
                     return g.toLowerCase(); // TODO: not good
                 });
@@ -63,7 +66,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                     if (_.isEmpty(ttModel.COLUMNS)) return;
                     if (_.isEmpty(ttModel.DATA)) return;
 
-                    var columns_by_cluster = this.getColumnModel(ttModel);
+                    var columns_by_cluster = this.__column_model(ttModel);
                     var data = {};
                     var cbscale = colorbrewer.RdYlBu[5];
 
@@ -103,7 +106,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                         $statsEl.find(".stats-4").html(lookupPercentage("4"));
                     }, this);
 
-                    var vis = Stacksvis(this.$el, {
+                    var vis = new StacksVis(this.$el, {
                         "vertical_padding": 1,
                         "highlight_fill": colorbrewer.RdYlGn[3][2],
                         "columns_by_cluster": columns_by_cluster,
@@ -114,7 +117,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }, this);
             },
 
-            "getColumnModel": function (ttModel) {
+            __column_model: function (ttModel) {
                 var discretizeFn = function (val) {
                     if (_.isNumber(val)) {
                         if (val < -1.5) return 4;

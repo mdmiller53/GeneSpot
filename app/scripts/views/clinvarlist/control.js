@@ -27,7 +27,7 @@ define(["jquery", "underscore", "backbone",
                     }
 
                     Backbone.sync("create", new Backbone.Model({ "label": newname, "clinical_variables": [] }), {
-                        "url": "svc/collections/clinvarlist", "success": this.refreshClinvarLists
+                        "url": "svc/collections/clinvarlist", "success": this.__refresh
                     });
 
                     WebApp.alert(this.$el.find(".list-added-success"));
@@ -39,37 +39,37 @@ define(["jquery", "underscore", "backbone",
                     var listid = $(e.target).data("id");
 
                     Backbone.sync("delete", new Backbone.Model({}), {
-                        "url": "svc/collections/clinvarlist/" + listid, "success": this.refreshClinvarLists
+                        "url": "svc/collections/clinvarlist/" + listid, "success": this.__refresh
                     });
                 }
             },
 
             initialize: function() {
-                _.bindAll(this, "loadClinvarLists", "refreshClinvarLists");
-                _.defer(this.refreshClinvarLists);
+                _.bindAll(this, "__load", "__refresh");
+                _.defer(this.__refresh);
 
                 this.clinvarlist_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
                     Backbone.sync("update", item, {
-                        "url": "svc/collections/clinvarlist/" + item.get("id"), "success": this.refreshClinvarLists
+                        "url": "svc/collections/clinvarlist/" + item.get("id"), "success": this.__refresh, "async": true
                     });
                 });
             },
 
-            refreshClinvarLists: function() {
-                this.clinvarlist_collection.fetch({ "success": this.loadClinvarLists });
+            __refresh: function() {
+                this.clinvarlist_collection.fetch({ "success": this.__load });
             },
 
-            loadClinvarLists: function() {
+            __load: function() {
                 var clinvarlist = _.map(this.clinvarlist_collection["models"], function(gl_model) {
                     return { "id": gl_model.get("id"), "label": gl_model.get("label") };
                 });
 
                 this.$el.html(Tpl({ "clinvarlist": _.sortBy(clinvarlist, "sort") }));
-                _.each(this.clinvarlist_collection["models"], this.renderClinvarLists, this);
+                _.each(this.clinvarlist_collection["models"], this.__render, this);
             },
 
-            renderClinvarLists: function(gl_model) {
+            __render: function(gl_model) {
                 var $clinSelector = this.$el.find("#tab-clists-" + gl_model.get("id")).find(".clinvar-selector");
                 var itemizer = this.itemizers[gl_model.get("id")] = new Itemizer({"el": $clinSelector, "model": gl_model });
                 itemizer.render();

@@ -13,8 +13,10 @@ define([ "jquery", "underscore", "backbone", "views/gs/atlas_map_tab", "hbs!temp
 
             initialize: function() {
                 _.bindAll(this, "closeOut", "append_downloads");
+
+                var uid = Math.round(Math.random() * 10000);
                 this.view_specs = _.map(this.options["views"], function(view_spec) {
-                    return new ViewSpec(_.extend({ "parent_id": this.id }, view_spec));
+                    return new ViewSpec(_.extend({ "uid": uid++, "parent_id": this.id }, view_spec));
                 }, this);
             },
 

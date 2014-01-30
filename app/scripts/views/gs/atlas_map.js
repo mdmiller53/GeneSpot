@@ -1,4 +1,5 @@
-define([ "jquery", "underscore", "backbone", "views/gs/atlas_map_tab", "hbs!templates/gs/atlas_map", "hbs!templates/open_link" ],
+define([ "jquery", "underscore", "backbone",
+    "views/gs/atlas_map_tab", "hbs!templates/gs/atlas_map", "hbs!templates/open_link" ],
     function ($, _, Backbone, ViewSpec, Tpl, OpenLinkTpl) {
         return Backbone.View.extend({
             events: {
@@ -25,7 +26,7 @@ define([ "jquery", "underscore", "backbone", "views/gs/atlas_map_tab", "hbs!temp
                     "id": this.id,
                     "downloads": this.has_downloads(),
                     "views": this.view_specs
-                }), _.omit(this.options, "views")));
+                }, _.omit(this.options, "views"))));
 
                 this.$el.find(".info-me").popover({
                     "title": "Description",
@@ -39,6 +40,8 @@ define([ "jquery", "underscore", "backbone", "views/gs/atlas_map_tab", "hbs!temp
                         this.append_downloads(view_spec, v);
                     }, this);
                 }, this);
+
+                this.$el.draggable({ "scroll": true, "cancel": ".map-contents" });
 
                 return this;
             },

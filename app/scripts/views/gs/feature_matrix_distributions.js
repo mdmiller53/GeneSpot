@@ -14,64 +14,64 @@ define(["jquery", "underscore", "backbone",
                 "click .tumor-type-selector-scatterplot button": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
-                        console.log("fmx-dist.highlight:none");
+                        console.debug("fmx-dist.highlight:none");
                         this.carveVis.highlight(null).render();
                     } else {
-                        console.log("fmx-dist.highlight:" + tumor_type);
+                        console.debug("fmx-dist.highlight:" + tumor_type);
                         this.carveVis.highlight(tumor_type).render();
                     }
                 },
                 "click .sample-type-selector-scatterplot button": function (e) {
                     var sample_type = $(e.target).data("id");
                     if (sample_type === "all_sample_types") {
-                        console.log("fmx-dist.all_sample_types");
+                        console.debug("fmx-dist.all_sample_types");
                         this.selected_sample_type = null;
                     } else {
-                        console.log("fmx-dist.selected_sample_type:" + sample_type);
+                        console.debug("fmx-dist.selected_sample_type:" + sample_type);
                         this.selected_sample_type = sample_type;
                     }
-                    _.defer(this.draw_graph);
+                    _.defer(this.__draw);
                 },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
-                    console.log("fmx-dist.genes-x:" + $(e.target).data("id"));
+                    console.debug("fmx-dist.genes-x:" + $(e.target).data("id"));
                     this.selected_genes.x = $(e.target).data("id");
-                    this.render_featureLabelSelectors("x");
+                    this.__render_fLabel_selectors("x");
                 },
                 "click .dropdown-menu.genes-selector-y a": function (e) {
-                    console.log("fmx-dist.genes-y:" + $(e.target).data("id"));
+                    console.debug("fmx-dist.genes-y:" + $(e.target).data("id"));
                     this.selected_genes.y = $(e.target).data("id");
-                    this.render_featureLabelSelectors("y");
+                    this.__render_fLabel_selectors("y");
                 }
             },
 
             initialize: function () {
-                _.bindAll(this, "load_featureDefinitions_genes", "load_featureDefinitions_clinvars");
-                _.bindAll(this, "draw_graph", "init_graph");
+                _.bindAll(this, "__load_fdefs_genes", "__load_fdefs_clinvars");
+                _.bindAll(this, "__draw", "__init_graph");
 
                 this.selected_tumor_types = WebApp.UserPreferences.get("selected_tumor_types");
 
-                this.init_sampleTypes();
-                this.init_selectedGenes();
+                this.__init_sample_types();
+                this.__init_selected_genes();
 
                 var numberOfModels = _.keys(this.options["models"]).length +
                                      _.keys(this.options["clinicalvars_models"]).length;
-                var drawFn = _.after(numberOfModels, this.draw_graph);
+                var drawFn = _.after(numberOfModels, this.__draw);
                 _.each(this.options["models"], function (model, tumor_type) {
                     model.on("load", function () {
-                        _.defer(this.load_featureDefinitions_genes, tumor_type);
+                        _.defer(this.__load_fdefs_genes, tumor_type);
                         _.defer(drawFn);
                     }, this);
                 }, this);
                 _.each(this.options["clinicalvars_models"], function (model, tumor_type) {
                     model.on("load", function () {
-                        _.defer(this.load_featureDefinitions_clinvars, tumor_type);
+                        _.defer(this.__load_fdefs_clinvars, tumor_type);
                         _.defer(drawFn);
                     }, this);
                 }, this);
             },
 
             render: function() {
-                _.defer(this.init_graph);
+                _.defer(this.__init_graph);
 
                 this.$el.html(Tpl({
                     "genes": this.options["genes"],
@@ -84,7 +84,7 @@ define(["jquery", "underscore", "backbone",
                 return this;
             },
 
-            init_sampleTypes: function() {
+            __init_sample_types: function() {
                 var sample_type_models = WebApp.Lookups.get("sample_types") || {};
                 var models = _.values(sample_type_models) || [];
                 var firstModel = _.first(models) || new Backbone.Model();
@@ -93,7 +93,7 @@ define(["jquery", "underscore", "backbone",
                 });
             },
 
-            init_selectedGenes: function () {
+            __init_selected_genes: function () {
                 this.selected_genes = {
                     "x": _.first(this.options["genes"]),
                     "y": _.first(this.options["genes"])
@@ -101,8 +101,8 @@ define(["jquery", "underscore", "backbone",
                 if (this.options["genes"].length > 1) this.selected_genes["y"] = this.options["genes"][1];
             },
 
-            init_graph: function () {
-                console.log("fmx-dist.init_graph");
+            __init_graph: function () {
+                console.debug("fmx-dist.__init_graph");
                 var carvEl = this.$el.find(".scatterplot-container").empty();
                 var carvObj = carve({
                     radius: 20,
@@ -111,8 +111,8 @@ define(["jquery", "underscore", "backbone",
                 this.carveVis = carvObj(carvEl.selector);
             },
 
-            load_featureDefinitions_genes: function (tumor_type) {
-                console.log("fmx-dist.load_featureDefinitions_genes(" + tumor_type + ")");
+            __load_fdefs_genes: function (tumor_type) {
+                console.debug("fmx-dist.__load_fdefs_genes(" + tumor_type + ")");
 
                 var items_by_gene = _.groupBy(this.options["models"][tumor_type].get("items"), "gene");
                 _.each(items_by_gene, function (item_by_gene, gene) {
@@ -130,20 +130,20 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
 
-                this.aggregate_models(tumor_type, this.options["models"][tumor_type]);
-                this.render_featureLabelSelectors("x");
-                this.render_featureLabelSelectors("y");
+                this.__aggregate(tumor_type, this.options["models"][tumor_type]);
+                this.__render_fLabel_selectors("x");
+                this.__render_fLabel_selectors("y");
             },
 
-            load_featureDefinitions_clinvars: function (tumor_type) {
-                console.log("fmx-dist.load_featureDefinitions_clinvars(" + tumor_type + ")");
+            __load_fdefs_clinvars: function (tumor_type) {
+                console.debug("fmx-dist.__load_fdefs_clinvars(" + tumor_type + ")");
                 _.each(this.options["clinical_variables"], function(item) {
                     this.feature_definitions_by_id[item.id] = _.extend({}, item);
                 }, this);
-                this.aggregate_models(tumor_type, this.options["clinicalvars_models"][tumor_type]);
+                this.__aggregate(tumor_type, this.options["clinicalvars_models"][tumor_type]);
             },
 
-            aggregate_models: function(tumor_type, model) {
+            __aggregate: function(tumor_type, model) {
                 _.each(model.get("items"), function(item) {
                     var a_f_by_id = this.aggregate_features_by_id[item.id];
                     if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[item.id] = {};
@@ -152,16 +152,16 @@ define(["jquery", "underscore", "backbone",
                 }, this);
             },
 
-            render_featureLabelSelectors: function (axis) {
-                console.log("fmx-dist.render_featureLabelSelectors(" + axis + "):" + this.selected_genes[axis]);
+            __render_fLabel_selectors: function (axis) {
+                console.debug("fmx-dist.__render_fLabel_selectors(" + axis + "):" + this.selected_genes[axis]);
                 if (_.isEqual(this.selected_genes[axis], "clinical-variables")) {
-                    this.render_featureLabelSelectors_clinvars(axis);
+                    this.__render_fLabel_selectors_clinvars(axis);
                 } else {
-                    this.render_featureLabelSelectors_genes(axis);
+                    this.__render_fLabel_selectors_genes(axis);
                 }
             },
 
-            render_featureLabelSelectors_genes: function(axis) {
+            __render_fLabel_selectors_genes: function(axis) {
                 this.$el.find(".selected-gene-" + axis).html(this.selected_genes[axis]);
 
                 var fd_by_gene = this.feature_definitions[this.selected_genes[axis]];
@@ -193,11 +193,11 @@ define(["jquery", "underscore", "backbone",
                     $("#tab-" + firstFD.parents("ul").data("uid")).parents("li").addClass("active")
                 }
 
-                $feature_selector.find(".feature-selector-" + axis).click(this.feature_selector_handler(axis));
+                $feature_selector.find(".feature-selector-" + axis).click(this.__feature_selector_handler(axis));
             },
 
-            render_featureLabelSelectors_clinvars: function(axis) {
-                console.log("fmx-dist.render_featureLabelSelectors_clinvars(" + axis + "):" + this.selected_genes[axis]);
+            __render_fLabel_selectors_clinvars: function(axis) {
+                console.debug("fmx-dist.__render_fLabel_selectors_clinvars(" + axis + "):" + this.selected_genes[axis]);
 
                 this.$el.find(".selected-gene-" + axis).html("Clinical Variables");
 
@@ -209,21 +209,21 @@ define(["jquery", "underscore", "backbone",
                     $tabEl.append(LineItemTpl(_.extend({ "a_class": "feature-selector-" + axis }, clinical_variable)));
                 }, this);
 
-                $tabEl.find(".feature-selector-" + axis).click(this.feature_selector_handler(axis));
+                $tabEl.find(".feature-selector-" + axis).click(this.__feature_selector_handler(axis));
             },
 
-            feature_selector_handler: function(axis) {
+            __feature_selector_handler: function(axis) {
                 var _this = this;
                 return function(e) {
                     $(e.target).parents("ul").find(".active").removeClass("active");
                     $(e.target).parent().addClass("active");
                     _this.selected_features[axis] = $(e.target).data("id");
-                    _.defer(_this.draw_graph);
+                    _.defer(_this.__draw);
                 };
             },
 
-            draw_graph: function () {
-                console.log("fmx-dist.draw_graph:selected=" + JSON.stringify(this.selected_features));
+            __draw: function () {
+                console.debug("fmx-dist.__draw:selected=" + JSON.stringify(this.selected_features));
                 this.$el.find(".alert").hide();
 
                 if (!this.selected_features["x"]) return;
@@ -232,19 +232,19 @@ define(["jquery", "underscore", "backbone",
                 var X_feature = this.feature_definitions_by_id[this.selected_features["x"]];
                 var Y_feature = this.feature_definitions_by_id[this.selected_features["y"]];
 
-                var data = this.aggregate_data(this.selected_tumor_types, X_feature.id, Y_feature.id);
+                var data = this.__visdata(this.selected_tumor_types, X_feature.id, Y_feature.id);
                 if (_.isEmpty(data)) {
-                    console.log("fmx-dist.draw_graph:no_data_found");
+                    console.debug("fmx-dist.__draw:no_data_found");
                     WebApp.alert(this.$el.find(".no-data-found"), 3000);
 
                     // TODO: Figure out how to properly clear the graph
-                    _.defer(this.init_graph);
+                    _.defer(this.__init_graph);
 
                     return;
                 }
 
-                console.log("fmx-dist.draw_graph:data=" + data.length + ":" + JSON.stringify(_.first(data) || {}));
-                console.log("fmx-dist.draw_graph:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
+                console.debug("fmx-dist.__draw:data=" + data.length + ":" + JSON.stringify(_.first(data) || {}));
+                console.debug("fmx-dist.__draw:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
 
                 this.carveVis.colorBy({
                     label: "tumor_type",
@@ -257,7 +257,7 @@ define(["jquery", "underscore", "backbone",
                     .render();
             },
 
-            aggregate_data: function (tumor_types, X_feature_id, Y_feature_id) {
+            __visdata: function (tumor_types, X_feature_id, Y_feature_id) {
                 var sampleTypes = WebApp.Lookups.get("sample_types") || {};
                 var data = _.map(tumor_types, function (tumor_type) {
                     var stModel = sampleTypes[tumor_type.id] || new Backbone.Model();

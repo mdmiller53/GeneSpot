@@ -21,6 +21,7 @@ define(["jquery", "underscore", "backbone",
                 Active: null,
                 Producers: {}
             },
+            LocalSession: new Backbone.Model(), // TODO : Add Sync
             UserPreferences: new Backbone.Model()
         };
 
@@ -67,6 +68,8 @@ define(["jquery", "underscore", "backbone",
                     WebApp.Events.trigger("webapp:ready:sessions");
                 }
             });
+
+            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
         };
 
         WebApp.alert = function(alertEl, timeout) {

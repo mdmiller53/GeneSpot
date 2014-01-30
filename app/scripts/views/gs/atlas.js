@@ -12,11 +12,12 @@ define([
     "views/gs/seqpeek_view_v2",
     "views/genes/genelist_control",
     "views/clinvarlist/control",
-    "views/gs/tumor_types_control"
+    "views/gs/tumor_types_control",
+    "views/datamodel_collector/control"
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
               QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
-              GenelistControl, ClinicalListControl, TumorTypesControl) {
+              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl) {
 
         return Backbone.View.extend({
             "atlasMapViews": [],
@@ -52,6 +53,7 @@ define([
                 this.options.model.on("load", this.initGenelistControl, this);
                 this.options.model.on("load", this.initClinicalListControl, this);
                 this.options.model.on("load", this.initTumorTypes, this);
+                this.options.model.on("load", this.__init_datamodel_collector, this);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
 
@@ -108,6 +110,14 @@ define([
                 var reloadFn = _.debounce(this.reloadAllMaps, 1000);
                 this.tumorTypesControl.on("updated", reloadFn, this);
                 this.$el.find("#tumor-types-container").html(this.tumorTypesControl.render().el);
+            },
+
+            __init_datamodel_collector: function() {
+                this.datamodelCollectorControl = new DatamodelCollectorControl({});
+
+                var reloadFn = _.debounce(this.reloadAllMaps, 1000);
+                this.datamodelCollectorControl.on("updated", reloadFn, this);
+                this.$el.find(".datamodel-collector-container").html(this.datamodelCollectorControl.render().el);
             },
 
             initMaps: function () {

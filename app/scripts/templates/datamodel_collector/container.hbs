@@ -1,0 +1,98 @@
+<style>
+    .accordion-inner {
+        max-height: 300px;
+        overflow-y:scroll;
+    }
+</style>
+<h4>Data Model Collectors</h4>
+<div class="row">
+    <div class="span5">
+        <div class="accordion" id="accordion_container_datamodel">
+        {{#each datamodels}}
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_container_datamodel"
+                       href="#collapse_section_{{datamodel_key}}">
+                        <h4>{{label}}</h4>
+                    </a>
+                </div>
+
+                <div id="collapse_section_{{datamodel_key}}"
+                     class="accordion-body collapse {{#unless @index}}in{{/unless}}">
+                    <div class="accordion-inner">
+                        {{#unless by_tumor_type}}
+                            {{#each items}}
+                                <div class="row" data-id="{{item_key}}">
+                                    <div class="alert alert-info">
+                                        <h5>{{label}}</h5>
+                                        <small>{{description}}</small>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        {{/unless}}
+                        {{#if by_tumor_type}}
+                            {{#each by_tumor_type}}
+                                <h5>{{tumor_type}}</h5>
+                                {{#each items}}
+                                    <div class="row" data-id="{{item_key}}">
+                                        <div class="alert alert-info">
+                                            <h5>{{label}}</h5>
+                                            <small>{{description}}</small>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            {{/each}}
+                        {{/if}}
+
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <p class="empty">No data models found :(</p>
+        {{/each}}
+        </div>
+    </div>
+    <div class="offset1 span5">
+        <div class="row">
+            <h4>Collectors</h4>
+            <div class="input-append">
+                <input type="text" class="new-collector-name" placeholder="New collector name...">
+                <button class="btn create-collector" type="button">+</button>
+            </div>
+
+            <div class="span4">
+                <div class="alert alert-danger invalid-collector-name hide">
+                    <strong>Error!</strong> Not a valid Collector name
+                </div>
+                <div class="alert alert-danger existing-collector-name hide">
+                    <strong>Error!</strong> Collector name already exists
+                </div>
+                <div class="alert alert-danger something-went-wrong-pls-try-again hide">
+                    <strong>Error!</strong> Not sure, try again...
+                </div>
+                <div class="alert alert-success collector-added-success hide">
+                    <strong>Success!</strong> New Collector added
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs collectors-lists">
+                    {{#each collectors}}
+                        <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                                href="#tab-collectors-{{id}}" data-toggle="tab">{{label}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+            <div class="tab-content">
+                {{#each collectors}}
+                    <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-collectors-{{id}}">
+                        <ul class="collected-items nav nav-list"></ul>
+                        <hr/>
+                        <a href="#" class="remove-collector" data-id="{{id}}" onclick="return false;">delete Collector</a><br/>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>

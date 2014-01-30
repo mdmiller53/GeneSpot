@@ -14,6 +14,9 @@
 
     <ul class="nav nav-pills list-controls">
         <li>
+            <button class="btn btn-success" data-toggle="collapse" data-target="#datamodel-collapser" type="button">Data Model</button>
+        </li>
+        <li>
             <button class="btn btn-success maps-btn" data-toggle="collapse" data-target="#maps-collapser" type="button">Maps</button>
         </li>
         <li>
@@ -29,6 +32,13 @@
 </div>
 
 <div class="list-containers">
+    <div id="datamodel-collapser" class="collapse in">
+        <div class="well">
+            <button type="button" class="close" data-toggle="collapse" data-target="#datamodel-collapser">&times;</button>
+            <div class="datamodel-collector-container"></div>
+        </div>
+    </div>
+
     <div id="maps-collapser" class="collapse">
         <div class="well">
             <button type="button" class="close" data-toggle="collapse" data-target="#maps-collapser">&times;</button>

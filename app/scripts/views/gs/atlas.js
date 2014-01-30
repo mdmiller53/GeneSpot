@@ -27,15 +27,6 @@ define([
 
             events: {
                 "click a.refresh-loaded": "reloadAllMaps",
-                "click a.resize-item": function (e) {
-                    var li = $(e.target).parents("li");
-                    if (li.hasClass("active")) {
-                        this.$el.find(".atlas-map").resizable("destroy");
-                    } else {
-                        this.$el.find(".atlas-map").resizable({ "ghost": true});
-                    }
-                    li.toggleClass("active");
-                },
                 "click .open-map": function (e) {
                     var mapId = $(e.target).data("id");
                     _.each(this.options.model.get("maps"), function (map) {

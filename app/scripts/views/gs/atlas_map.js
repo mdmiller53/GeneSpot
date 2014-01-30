@@ -42,7 +42,7 @@ define([ "jquery", "underscore", "backbone",
                 }, this);
 
                 this.$el.draggable({ "scroll": true, "cancel": ".map-contents" });
-
+                this.$el.find(".atlas-map").resizable({ "grid": [ 20, 10 ] });
                 return this;
             },
 

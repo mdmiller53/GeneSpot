@@ -2,7 +2,7 @@ define(["jquery", "underscore", "backbone",
     "hbs!templates/gs/scatterplot", "hbs!templates/line_item",
     "hbs!templates/gs/scatterplot_feature_defs","hbs!templates/clinvarlist/scatterplot_feature_defs",
     "carve"],
-    function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl) {
+    function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, carve) {
         return Backbone.View.extend({
             selected_genes: {},
             selected_features: {},

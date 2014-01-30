@@ -180,6 +180,7 @@ define([
                 var queries = { "gene": geneList, "cancer": tumor_type_list };
 
                 _.each(atlasMapView["view_specs"], function(view_spec) {
+                    $(view_spec["$targetEl"]).empty();
                     this.loadView(view_spec, v_options, queries, clinvarList);
                 }, this);
                 return null;

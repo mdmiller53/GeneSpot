@@ -27,7 +27,7 @@ define(["jquery", "underscore", "backbone",
                     }
 
                     Backbone.sync("create", new Backbone.Model({ "label": newname, "clinical_variables": [] }), {
-                        "url": "svc/collections/clinvarlist", "success": this.__refresh
+                        "url": "svc/collections/clinvarlist", "success": this.render
                     });
 
                     WebApp.alert(this.$el.find(".list-added-success"));
@@ -39,25 +39,25 @@ define(["jquery", "underscore", "backbone",
                     var listid = $(e.target).data("id");
 
                     Backbone.sync("delete", new Backbone.Model({}), {
-                        "url": "svc/collections/clinvarlist/" + listid, "success": this.__refresh
+                        "url": "svc/collections/clinvarlist/" + listid, "success": this.render
                     });
                 }
             },
 
             initialize: function() {
-                _.bindAll(this, "__load", "__refresh");
-                _.defer(this.__refresh);
+                _.bindAll(this, "__load", "render");
 
                 this.clinvarlist_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
                     Backbone.sync("update", item, {
-                        "url": "svc/collections/clinvarlist/" + item.get("id"), "success": this.__refresh, "async": true
+                        "url": "svc/collections/clinvarlist/" + item.get("id"), "success": this.render
                     });
                 });
             },
 
-            __refresh: function() {
+            render: function() {
                 this.clinvarlist_collection.fetch({ "success": this.__load });
+                return this;
             },
 
             __load: function() {

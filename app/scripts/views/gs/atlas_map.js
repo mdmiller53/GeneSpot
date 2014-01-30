@@ -59,7 +59,6 @@ define([ "jquery", "underscore", "backbone",
                 }
 
                 if (view_spec["datamodels"] && v.options["models"]) {
-                    var models = v.options["models"];
                     _.each(v.options["models"], function(m, key) {
                         var url = this.outputTsvQueryUrl(m.get("url"), m.get("query"), view_spec["label"] + "_" + key);
                         $targetEl.append(OpenLinkTpl({ "label": view_spec["label"] + " (" + key + ")", "url": url }));
@@ -67,7 +66,6 @@ define([ "jquery", "underscore", "backbone",
                 }
 
                 if (view_spec["by_tumor_type"] && v.options["models"]) {
-                    var models = v.options["models"];
                     _.each(v.options["models"], function(m, key) {
                         var url = this.outputTsvQueryUrl(m.get("url"), m.get("query"), view_spec["label"] + "_" + key);
                         $targetEl.append(OpenLinkTpl({ "label": view_spec["label"] + " (" + key + ")", "url": url }));

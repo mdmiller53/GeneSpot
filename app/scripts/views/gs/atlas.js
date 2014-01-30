@@ -90,7 +90,6 @@ define([
 
             render: function() {
                 this.$el.html(AtlasTpl());
-                this.$el.find(".atlas-zoom").draggable({ "scroll": true, "cancel": "div.atlas-map" });
                 return this;
             },
 

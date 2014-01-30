@@ -11,7 +11,7 @@
                     "interpro": "datamodel/reference_data/interpro"
                 },
                 "Mutations_Per_Cancer_type": {
-                    "label": "Mutations_Per_Cancer_type",
+                    "label": "Mutations Per Cancer type",
                     "service": "svc/datastores/mutations/qed_lookups/mutations_pancan",
                     "protein_db": "svc/datastores/interpro/interpro/interpro",
                     "mutsig_rankings_service": "svc/datastores/mutations/qed_lookups/mutsig_rankings",
@@ -66,7 +66,7 @@
                     "tumor_type": "CESC",
                     "service": "datastores/ds/cesc-20131223",
                     "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "CESC dataset for 20131223"
+                    "label": "CESC dataset B for 20131223"
                 },
                 "COAD-20131223": {
                     "tumor_type": "COAD",

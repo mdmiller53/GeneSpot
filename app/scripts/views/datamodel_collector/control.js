@@ -20,6 +20,7 @@ define(["jquery", "underscore", "backbone",
                             return session_model.get("label");
                         }
                     }, this);
+                    if (found) return;
 
                     var promise = WebApp.LocalSession.get("collector").save(new Backbone.Model({ "label": newname, "collected": [] }) );
                     promise.always(this.render, this);
@@ -55,13 +56,15 @@ define(["jquery", "underscore", "backbone",
                         return {
                             "datamodel_key": datamodel_key,
                             "label": datamodel_group["label"],
-                            "by_tumor_type": by_tumor_type
+                            "by_tumor_type": by_tumor_type,
+                            "numberOfItems": tumorTypes.length
                         };
                     }
                     return {
                         "datamodel_key": datamodel_key,
                         "label": datamodel_group["label"],
-                        "items": _.sortBy(items, "datamodel")
+                        "items": _.sortBy(items, "datamodel"),
+                        "numberOfItems": items.length
                     };
                 }, this);
 

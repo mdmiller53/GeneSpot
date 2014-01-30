@@ -13,7 +13,7 @@
                 <div class="accordion-heading">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_container_datamodel"
                        href="#collapse_section_{{datamodel_key}}">
-                        <h4>{{label}}</h4>
+                        <h4>{{label}} <span class="badge pull-right">{{numberOfItems}}</span></h4>
                     </a>
                 </div>
 
@@ -38,6 +38,7 @@
                                         <div class="alert alert-info">
                                             <h5>{{label}}</h5>
                                             <small>{{description}}</small>
+                                            {{#if active}}<span class="badge pull-right">active</span>{{/if}}
                                         </div>
                                     </div>
                                 {{/each}}

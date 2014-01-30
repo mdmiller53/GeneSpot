@@ -10,7 +10,7 @@ define([
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2",
-    "views/genes/genelist_control",
+    "views/genes/control",
     "views/clinvarlist/control",
     "views/gs/tumor_types_control",
     "views/datamodel_collector/control"
@@ -173,8 +173,8 @@ define([
 
             loadMapData: function (atlasMapView) {
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
-                var geneList = this.genelistControl.getCurrentGeneList();
-                var clinvarList = this.clinicalListControl.getCurrentClinvarList() || [];
+                var geneList = this.genelistControl.get_current();
+                var clinvarList = this.clinicalListControl.get_current() || [];
 
                 var v_options = { "genes": geneList, "cancers": tumor_type_list, "clinical_variables": clinvarList };
                 var queries = { "gene": geneList, "cancer": tumor_type_list };
@@ -353,7 +353,7 @@ define([
 
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 return {
-                    "genes": this.genelistControl.getCurrentGeneList(),
+                    "genes": this.genelistControl.get_current(),
                     "tumor_types": tumor_type_list,
                     "maps": openMaps
                 }

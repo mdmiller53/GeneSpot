@@ -28,7 +28,7 @@ define(["jquery", "underscore", "backbone",
                     }
 
                     Backbone.sync("create", new Backbone.Model({ "label": newname, "genes": [] }), {
-                        "url": "svc/collections/genelists", "success": this.refresh
+                        "url": "svc/collections/genelists", "success": this.__refresh
                     });
 
                     WebApp.alert(this.$el.find(".list-added-success"));
@@ -40,37 +40,37 @@ define(["jquery", "underscore", "backbone",
                     var listid = $(e.target).data("id");
 
                     Backbone.sync("delete", new Backbone.Model({}), {
-                        "url": "svc/collections/genelists/" + listid, "success": this.refresh
+                        "url": "svc/collections/genelists/" + listid, "success": this.__refresh
                     });
                 }
             },
 
             initialize: function() {
-                _.bindAll(this, "load", "refresh", "ready");
+                _.bindAll(this, "__load", "__refresh", "__ready");
             },
 
             render: function() {
-                this.genelists_collection.fetch({ "success": this.ready });
+                this.genelists_collection.fetch({ "success": this.__ready });
                 this.genelists_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
                     Backbone.sync("update", item, {
-                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.refresh
+                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.__refresh
                     });
                 });
 
                 return this;
             },
 
-            ready: function() {
-                this.load();
+            __ready: function() {
+                this.__load();
                 this.trigger("ready");
             },
 
-            refresh: function() {
-                this.genelists_collection.fetch({ "success": this.load });
+            __refresh: function() {
+                this.genelists_collection.fetch({ "success": this.__load });
             },
 
-            load: function() {
+            __load: function() {
                 var genelists = _.map(this.genelists_collection["models"], function(gl_model) {
                     return { "id": gl_model.get("id"), "label": gl_model.get("label") };
                 });
@@ -85,11 +85,11 @@ define(["jquery", "underscore", "backbone",
                 genelists.push(default_gl);
 
                 this.$el.html(Tpl({ "genelists": _.sortBy(genelists, "sort") }));
-                this.renderGeneLists(new DefaultGenelistModel(default_gl));
-                _.each(this.genelists_collection["models"], this.renderGeneLists, this);
+                this.__render(new DefaultGenelistModel(default_gl));
+                _.each(this.genelists_collection["models"], this.__render, this);
             },
 
-            renderGeneLists: function(gl_model) {
+            __render: function(gl_model) {
                 var $geneSelector = this.$el.find("#tab-glists-glist-" + gl_model.get("id")).find(".gene-selector");
                 var itemizer = this.itemizers[gl_model.get("id")] = new Itemizer({"el": $geneSelector, "model": gl_model });
                 itemizer.render();
@@ -109,7 +109,7 @@ define(["jquery", "underscore", "backbone",
                 }, this);
             },
 
-            getCurrentGeneList: function() {
+            get_current: function() {
                 var currentGeneListId = this.$el.find(".nav-tabs").find("li.active").data("id");
                 return this.itemizers[currentGeneListId].model.get("genes");
             }

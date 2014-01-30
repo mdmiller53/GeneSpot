@@ -2,7 +2,7 @@ define([ "jquery", "underscore", "backbone" ],
     function ($, _, Backbone) {
         return Backbone.View.extend({
             initialize: function() {
-                _.bindAll(this, "render", "typed");
+                _.bindAll(this, "render", "__typed");
             },
 
             render: function() {
@@ -22,13 +22,13 @@ define([ "jquery", "underscore", "backbone" ],
                         }))));
                     },
 
-                    updater: this.typed
+                    updater: this.__typed
                 });
 
                 return this;
             },
 
-            typed: function(clin) {
+            __typed: function(clin) {
                 this.trigger("typed", _.first(this.clinical_variables_by_id[clin]));
                 return "";
             }

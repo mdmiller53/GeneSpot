@@ -92,7 +92,7 @@ define(["jquery", "underscore", "backbone",
                 }, this);
             },
 
-            getCurrentClinvarList: function() {
+            get_current: function() {
                 var currentListId = this.$el.find(".nav-tabs").find("li.active").data("id");
                 var currentItemizer = this.itemizers[currentListId] || { "model": new Backbone.Model() };
                 return currentItemizer["model"].get("clinical_variables");

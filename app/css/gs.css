@@ -15,14 +15,6 @@
     position: absolute;
 }
 
-.atlas-zoom {
-    padding: 5px;
-    width: 97%;
-    height: 97%;
-    z-index: -1;
-    position: absolute;
-}
-
 .atlas-navigator {
     float: left;
     left: 5px;

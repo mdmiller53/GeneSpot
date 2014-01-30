@@ -21,25 +21,12 @@ define([
         return Backbone.View.extend({
             "atlasMapViews": [],
             "last-z-index": 10,
-            "currentZoomLevel": 1.0,
             "lastPosition": {
                 "top": 0, "left": 0
             },
 
             events: {
                 "click a.refresh-loaded": "reloadAllMaps",
-                "click a.zoom-in": function () {
-                    this.currentZoomLevel = this.currentZoomLevel * 1.15;
-                    this.zoom(this.currentZoomLevel);
-                },
-                "click a.zoom-out": function () {
-                    this.currentZoomLevel = this.currentZoomLevel * 0.85;
-                    this.zoom(this.currentZoomLevel);
-                },
-                "click a.zoom-home": function () {
-                    this.currentZoomLevel = 1.0;
-                    this.zoom(this.currentZoomLevel);
-                },
                 "click a.resize-item": function (e) {
                     var li = $(e.target).parents("li");
                     if (li.hasClass("active")) {
@@ -171,7 +158,7 @@ define([
                     this.loadMapData(atlasMapView);
                 }, this);
                 if (map["isOpen"]) {
-                    this.$el.find(".atlas-zoom").append(atlasMapView.render().el);
+                    this.$el.find(".atlas-canvas").append(atlasMapView.render().el);
                 }
 
                 this.atlasMapViews.push(atlasMapView);
@@ -336,18 +323,6 @@ define([
                         createModelFromSpec(cvars_model_bucket, mspec);
                     });
                 }
-            },
-
-            zoom: function (zoomLevel) {
-                this.$el.find(".atlas-zoom").zoomTo({
-                    "duration": 1000,
-                    "scalemode": "both",
-                    "easing": "ease",
-                    "nativeanimation": true,
-                    "root": this.$el.find(".atlas-canvas"),
-                    "closeclick": false,
-                    "targetsize": zoomLevel
-                });
             },
 
             nextZindex: function () {

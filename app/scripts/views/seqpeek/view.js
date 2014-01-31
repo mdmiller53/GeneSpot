@@ -1,9 +1,9 @@
 define   ([
     'backbone',
     'views/gs/gene_region_utils',
-    'views/gs/region_seqpeek',
-    'hbs!templates/gs/mutations_map',
-    'hbs!templates/gs/mutations_map_table',
+    'views/seqpeek/vis',
+    'hbs!templates/seqpeek/mutations_map',
+    'hbs!templates/seqpeek/mutations_map_table',
     'hbs!templates/line_item',
     'vq'
 ],

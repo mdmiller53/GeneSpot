@@ -4,7 +4,7 @@ define   (
     'vq',
     'underscore',
 
-    'views/gs/seqpeek_scaling'
+    'views/seqpeek/scaling_functions'
 ],
 function(
     d3,

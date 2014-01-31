@@ -1,5 +1,5 @@
 <div class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><h4>{{selected_gene}} <b class="caret"></b></h4></a>
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><h4><span class="selected-gene">{{selected_gene}}</span> <b class="caret"></b></h4></a>
     <ul class="dropdown-menu seqpeek-gene-selector">
         {{#each genes}}
             <li><a href="#" onclick="return false;" data-id="{{.}}" title="{{.}}">{{.}}</a></li>

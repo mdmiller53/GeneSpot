@@ -1,144 +1,131 @@
-define(
-[
-    'backbone'
-], function (
-    Backbone
-) {
+define(["jquery", "underscore", "backbone"],
+    function ($, _, Backbone) {
+        return Backbone.Model.extend({
+            "loaded_data": {
+                "mutations": {},
+                "mutsig": {},
+                "features": {}
+            },
 
-    return Backbone.Model.extend({
-        initialize: function (attributes, options) {
-            this.loaded_data = {
-                mutations: {}
-            };
+            initialize: function () {
+                _.bindAll(this, "__parse_mutations", "__parse_mutsig", "__parse_featurematrix");
+            },
 
-            _.bindAll(this, "parseSingleCancerMutations", "parseMutsig", "parseFeatures");
-        },
+            fetch: function (options) {
+                console.debug("mutations_map.fetch:" + JSON.stringify(options["data"] || {}));
 
-        parseSingleCancerMutations: function(cancer, result) {
-            var items = result[0].items;
-            if (items.length > 0) {
-                this.loaded_data.mutations[cancer.toLowerCase()] = items;
-            }
-        },
+                var genes;
+                var tumor_types;
 
-        parseMutsig: function(cancer_list, result) {
-            var items = result[0].items;
-
-            this.loaded_data.mutsig = _.reduce(items, function(memo, rank_data) {
-                memo[rank_data.cancer] = rank_data;
-                return memo;
-            }, {});
-        },
-
-        parseFeatures: function(cancer_list, result) {
-            var items = result[0].items;
-            this.loaded_data.features = _.reduce(items, function(memo, feature) {
-                if (!_.has(memo, feature.cancer)) {
-                    memo[feature.cancer] = [];
+                if (_.has(options, "data")) {
+                    genes = options["data"]["gene"];
+                    tumor_types = options["data"]["cancer"];
                 }
-                memo[feature.cancer].push(feature);
-                return memo;
-            }, {});
-        },
-
-        getMutSigRankingsDeferred: function(gene_list, cancer_list) {
-            var query = [];
-
-            _.each(gene_list, function(v) {
-                query.push({name: "gene", value: v});
-            });
-            _.each(cancer_list, function(v) {
-                query.push({name: "cancer", value: v});
-            });
-
-            return $.ajax({
-                type: "GET",
-                url: this.get("mutsig_rankings_service"),
-                context: this,
-                dataType: 'json',
-                data: query
-            });
-        },
-
-        getFeatureMatrixDeferred: function(gene_list, cancer_list) {
-            var query = [];
-
-            _.each(gene_list, function(v) {
-                query.push({name: "gene", value: v});
-            });
-            _.each(cancer_list, function(v) {
-                query.push({name: "cancer", value: v});
-            });
-            query.push({name: 'source', value: 'gnab'});
-            query.push({name: 'modifier', value: 'y_n_somatic'});
-
-            return $.ajax({
-                type: "GET",
-                url: this.get("feature_matrix_service") + "/" + this.get("feature_matrix_collection"),
-                context: this,
-                dataType: 'json',
-                data: query
-            });
-        },
-
-        fetch: function (param_options) {
-            var that = this;
-
-            var gene,
-                cancers;
-
-            if (_.has(param_options, "data")) {
-                gene = param_options.data.gene;
-                if (_.isArray(param_options.data.gene)) {
-                    gene = param_options.data.gene[0];
+                else {
+                    genes = [this.default_gene.toLowerCase()];
+                    tumor_types = _.map(this.default_cancer_types, function (x) {
+                        return x.toLowerCase();
+                    });
                 }
 
-                cancers = param_options.data.cancer;
-            }
-            else {
-                gene = this.default_gene.toLowerCase();
-                cancers = _.map(this.default_cancer_types, function(x) {return x.toLowerCase();});
-            }
+                var promises = [
+                    this.__fetch_mutations(genes, tumor_types),
+                    this.__fetch_mutsig(genes, tumor_types),
+                    this.__fetch_featurematrix(genes, tumor_types)
+                ];
 
-            var service_uri = this.get("service");
+                var parsers = [
+                    _.partial(this.__parse_mutations),
+                    _.partial(this.__parse_mutsig),
+                    _.partial(this.__parse_featurematrix)
+                ];
 
-            var promises = [],
-                parsers = [];
+                var that = this;
+                $.when.apply($, promises).done(function () {
+                    _.each(arguments, function (argument, idx) {
+                        parsers[idx](argument);
+                    });
+                    that.set(that.loaded_data);
+                });
+            },
 
-            // Deferreds and parsers for mutations data per tumor type
-            _.each(cancers, function(tumor_type) {
-                promises.push(
-                    $.ajax({
-                        type: "GET",
-                        url: service_uri,
-                        traditional: true,
-                        data: {
-                            "cancer": tumor_type,
-                            "gene": gene
+            __fetch_mutations: function (genes, tumor_types) {
+                console.debug("mutations_map.__fetch_mutations");
+                return $.ajax({
+                    "url": this.get("service"),
+                    "traditional": true,
+                    "data": {
+                        "cancer": tumor_types,
+                        "gene": genes
+                    }
+                });
+            },
+
+            __fetch_mutsig: function (genes, tumor_types) {
+                console.debug("mutations_map.__fetch_mutsig");
+                return $.ajax({
+                    "url": this.get("mutsig_rankings_service"),
+                    "dataType": "json",
+                    "traditional": true,
+                    "data": {
+                        "cancer": tumor_types,
+                        "gene": genes
+                    }
+                });
+            },
+
+            __fetch_featurematrix: function (genes, tumor_types) {
+                console.debug("mutations_map.__fetch_featurematrix");
+                return $.ajax({
+                    "url": this.get("feature_matrix_service") + "/" + this.get("feature_matrix_collection"),
+                    "dataType": "json",
+                    "traditional": true,
+                    "data": {
+                        "cancer": tumor_types,
+                        "gene": genes,
+                        "source": "gnab",
+                        "modifier": "y_n_somatic"
+                    }
+                });
+            },
+
+            __parse_mutations: function (result) {
+                console.debug("mutations_map.__parse_mutations");
+                var json = _.first(result);
+                if (_.has(json, "items")) {
+                    _.each(_.groupBy(json["items"], "cancer"), function (items, tumor_type) {
+                        this.loaded_data["mutations"][tumor_type.toLowerCase()] = items;
+                    }, this);
+                }
+            },
+
+            __parse_mutsig: function (result) {
+                console.debug("mutations_map.__parse_mutsig");
+                var json = _.first(result);
+                if (_.has(json, "items")) {
+                    this.loaded_data["mutsig"] = _.reduce(json["items"], function (memo, feature) {
+                        if (!_.has(memo, feature.cancer)) {
+                            memo[feature.cancer] = [];
                         }
-                    })
-                );
-
-                parsers.push(_.partial(that.parseSingleCancerMutations, tumor_type));
-            });
-
-            // Deferred and parser for MutSig data per tumor type
-            promises.push(that.getMutSigRankingsDeferred([gene], cancers));
-            parsers.push(_.partial(that.parseMutsig, cancers));
-
-            // Deferred and parser for feature matrix data
-            promises.push(that.getFeatureMatrixDeferred([gene], cancers));
-            parsers.push(_.partial(that.parseFeatures, cancers));
-
-            $.when.apply($, promises).done(function() {
-                for (var i = 0; i < arguments.length; i++) {
-                    parsers[i](arguments[i]);
+                        memo[feature.cancer].push(feature);
+                        return memo;
+                    }, {});
                 }
+            },
 
-                that.set(that.loaded_data);
-            });
-        }
+            __parse_featurematrix: function (result) {
+                console.debug("mutations_map.__parse_featurematrix");
+
+                var json = _.first(result);
+                if (_.has(json, "items")) {
+                    this.loaded_data["features"] = _.reduce(json["items"], function (memo, feature) {
+                        if (!_.has(memo, feature.cancer)) {
+                            memo[feature.cancer] = [];
+                        }
+                        memo[feature.cancer].push(feature);
+                        return memo;
+                    }, {});
+                }
+            }
+        });
     });
-
-// end define
-});

@@ -3,10 +3,9 @@ define([
     "views/gs/gene_region_utils",
     "views/seqpeek/vis",
     "hbs!templates/seqpeek/mutations_map",
-    "hbs!templates/seqpeek/mutations_map_table",
-    "hbs!templates/line_item"
+    "hbs!templates/seqpeek/mutations_map_table"
 ],
-    function ($, _, Backbone, vq, GeneRegionUtils, SeqPeekFactory, MutationsMapTpl, MutationsMapTableTpl, LineItemTpl) {
+    function ($, _, Backbone, vq, GeneRegionUtils, SeqPeekFactory, MutationsMapTpl, MutationsMapTableTpl) {
 
         return Backbone.View.extend({
             genes: [],
@@ -15,81 +14,64 @@ define([
 
             events: {
                 "click .seqpeek-gene-selector li a": function(e) {
-                    _.defer(this.render);
-
-                    this.current_gene = $(e.target).data("id");
-                    console.debug("seqpeek/gene-selector:" + this.current_gene + " [" + this.cancers + "]");
-
-                    this.model.fetch({
-                        data: {
-                            gene: this.current_gene,
-                            cancer: this.cancers
-                        }
-                    });
+                    console.debug("seqpeek/gene-selector:" + $(e.target).data("id"));
+                    this.selected_gene = $(e.target).data("id");
+                    this.$el.find(".selected-gene").html(this.selected_gene);
+                    this.__render();
                 }
             },
 
             initialize: function () {
-                _.bindAll(this, "render");
-
                 this.model = this.options["model"];
                 this.cancers = this.options["cancers"];
                 this.genes = this.options["genes"];
 
                 if (this.genes !== undefined && _.isArray(this.genes)) {
                     if (this.genes.length > 0) {
-                        this.current_gene = this.genes[0];
+                        this.selected_gene = this.genes[0];
                     }
                     else {
                         this.genes = [this.options["default_gene"]];
-                        this.current_gene = this.genes[0];
+                        this.selected_gene = this.genes[0];
                     }
                 }
                 else if (this.genes !== undefined && _.isString(this.genes)) {
-                    this.current_gene = this.genes;
+                    this.selected_gene = this.genes;
                 }
                 else {
                     this.genes = [this.options["default_gene"]];
-                    this.current_gene = this.genes[0];
+                    this.selected_gene = this.genes[0];
                 }
 
                 if (!_.isEmpty(this.genes)) {
-                    this.current_gene = this.genes[0];
+                    this.selected_gene = this.genes[0];
                 }
 
-                this.model.on("change", function() {
-                    this.__init_table();
-                    this.__init_tracks();
-                }, this);
+                this.model.on("change", this.__render, this);
             },
 
             render: function() {
                 console.debug("seqpeek/view.render");
 
                 this.$el.html(MutationsMapTpl({
-                    "selected_gene": this.current_gene,
-                    "genes": _.without(this.genes, this.current_gene)
+                    "selected_gene": this.selected_gene,
+                    "genes": this.genes
                 }));
 
                 return this;
             },
 
-            __init_table: function () {
-                console.debug("seqpeek/view.__init_table");
+            __render: function () {
+                console.debug("seqpeek/view.__render");
 
-                var $table_el = this.$el.find(".mutations_map_table");
+                var mutations = this.__filter_data("mutations");
+                var features = this.__filter_data("features");
+                var mutsig_ranks = this.__filter_data("mutsig");
 
-                var mutations = this.model.get("mutations");
-
-                var features = this.model.get("features");
-                    var formatter = function (value) {
-                        return parseInt(value) + " %";
-                    };
-                    var template_data = {
-                        items: []
-                    };
-
-                _.each(this.model.get("mutsig"), function (mutsig_data, tumor_type) {
+                var formatter = function (value) {
+                    return parseInt(value) + "%";
+                };
+                var data_items = _.map(mutsig_ranks, function (mutsig_data, tumor_type) {
                     var statistics = {
                         samples: {
                             numberOf: 0,
@@ -104,48 +86,33 @@ define([
                     }
 
                     if (_.has(features, tumor_type)) {
-                        var values = features[tumor_type][0].values;
+                        var first_feature = _.first(features[tumor_type]);
+                        if (first_feature && _.has(first_feature, "values")) {
+                            var grouped = _.groupBy(first_feature.values, function (v) {
+                                return v;
+                            });
 
-                        var grouped = _.groupBy(values, function (v) {
-                            return v;
-                        });
-
-                        statistics.samples.totals = _.extend({
-                            percentOf: formatter(100 * statistics.samples.numberOf / grouped["1"].length)
-                        }, grouped);
-
+                            statistics.samples.totals = _.extend({
+                                percentOf: formatter(100 * statistics.samples.numberOf / grouped["1"].length)
+                            }, grouped);
+                        }
                     }
 
-                    template_data.items.push({
+                    return {
                         tumor_type_label: tumor_type.toUpperCase(),
                         tumor_type: tumor_type,
-                        mutsig_rank: mutsig_data.rank,
+                        mutsig_rank: _.first(mutsig_data).rank,
                         statistics: statistics
-                    });
+                    };
                 });
 
-                $table_el.html(MutationsMapTableTpl(template_data));
-            },
-
-            __init_tracks: function () {
-                console.debug("seqpeek/view.__init_tracks");
+                this.$el.find(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
 
                 var $table_el = this.$el.find(".mutations_map_table");
-                var mutations = this.model.get("mutations");
-
-                var region_data = [
-                    {
-                        type: "exon",
-                        start: 0,
-                        end: 1000
-                    }
-                ];
-
-                _.each(this.model.get("mutsig"), function (mutsig_data, tumor_type) {
-                    if (_.has(mutations, tumor_type)) {
-                        var seqpeek_el = $table_el.find("#seqpeek-row-" + tumor_type);
-                        this.__render_track(mutations[tumor_type], region_data, seqpeek_el[0]);
-                    }
+                var region_data = [ { "type": "exon", "start": 0, "end": 1000 } ];
+                _.each(mutations, function (mutation_data, tumor_type) {
+                    var seqpeek_el = _.first($table_el.find("#seqpeek-row-" + tumor_type));
+                    this.__render_track(mutation_data, region_data, seqpeek_el);
                 }, this);
             },
 
@@ -238,9 +205,13 @@ define([
                     }
                 };
 
-                var vis = SeqPeekFactory.create(element);
-                vis.draw(data, options);
-                console.debug("seqpeek/view.__render_track:vis:ready");
+                try {
+                    var vis = SeqPeekFactory.create(element);
+                    vis.draw(data, options);
+                    console.debug("seqpeek/view.__render_track:vis:ready");
+                } catch (e) {
+                    console.error("seqpeek/view.__render_track:vis:" + e);
+                }
             },
 
             __process_track: function (param_variants, region_data) {
@@ -303,6 +274,26 @@ define([
                     },
                     region_data: seqpeek_regions
                 };
+            },
+
+            __filter_data: function(model_id) {
+                console.debug("seqpeek/view.__filter_data:" + model_id + "," + this.selected_gene);
+
+                var data_by_tumor_type = this.model.get(model_id);
+                var lowercase_gene = this.selected_gene.toLowerCase();
+                var filtered = {};
+                _.each(data_by_tumor_type, function(data, tumor_type) {
+                    if (_.isArray(data)) {
+                        filtered[tumor_type] = _.filter(data, function(item) {
+                            return (_.has(item, "gene") && _.isEqual(item["gene"], lowercase_gene));
+                        }, this);
+                    } else {
+                        if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
+                            filtered[tumor_type] = data;
+                        }
+                    }
+                });
+                return filtered;
             }
         });
     });

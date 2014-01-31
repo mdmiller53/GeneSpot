@@ -58,6 +58,12 @@ define([
                     "genes": this.genes
                 }));
 
+                this.$el.find(".mutations_map_table").html(MutationsMapTableTpl({
+                    "items": _.map(this.cancers, function (tumor_type) {
+                        return { "tumor_type_label": tumor_type };
+                    })
+                }));
+
                 return this;
             },
 

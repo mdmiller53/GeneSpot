@@ -1,6 +1,6 @@
 define(["jquery", "underscore", "backbone",
     "views/genes/itemizer", "views/genes/typeahead",
-    "hbs!templates/genes/genelist_container",
+    "hbs!templates/genes/container",
     "models/genes/default_genelist"],
     function ($, _, Backbone, Itemizer, TypeAhead, Tpl, DefaultGenelistModel) {
         return Backbone.View.extend({

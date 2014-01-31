@@ -1,4 +1,4 @@
-define([ "jquery", "underscore", "backbone", "hbs!templates/genes/gene_item" ],
+define([ "jquery", "underscore", "backbone", "hbs!templates/genes/item" ],
     function ($, _, Backbone, GeneItemTpl) {
         return Backbone.View.extend({
             events: {

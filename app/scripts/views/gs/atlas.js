@@ -6,7 +6,6 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/gs/seqpeek_view",
-    "views/gs/mutsig_grid_view",
     "views/gs/stacksvis",
     "views/gs/feature_matrix_distributions",
     "views/gs/seqpeek_view_v2",
@@ -16,7 +15,7 @@ define([
     "views/datamodel_collector/control"
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
-              QuickTutorialView, MapTextView, SeqPeekView, MutsigGridView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
+              QuickTutorialView, MapTextView, SeqPeekView, StacksVisView, FeatureMatrixDistributionsView, SeqPeekViewV2,
               GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl) {
 
         return Backbone.View.extend({
@@ -60,7 +59,6 @@ define([
                 WebApp.Views["atlas_quick_tutorial"] = QuickTutorialView;
                 WebApp.Views["atlas_maptext"] = MapTextView;
                 WebApp.Views["seqpeek"] = SeqPeekView;
-                WebApp.Views["mutsig_grid"] = MutsigGridView;
                 WebApp.Views["stacksvis"] = StacksVisView;
                 WebApp.Views["feature_matrix_distributions"] = FeatureMatrixDistributionsView;
                 WebApp.Views["seqpeekv2"] = SeqPeekViewV2;

@@ -29,7 +29,26 @@
 <body>
     <div>
         <div class="navbar navbar-fixed-top" id="navigation-container"></div>
-        <div class="container-fluid outer-container" id="mainDiv"></div>
+        <div class="container-fluid outer-container" id="mainDiv">
+            <div class="well" style="width: 40%">
+                <div>
+                    <img src="img/isblogo.png" class="imgbrand" alt="ISB"> <b>Loading GeneSpot</b>
+                </div>
+                <hr/>
+                <div class="progress progress-striped active">
+                    <div id="progressbar" class="bar" style="width: 0%;"></div>
+                </div>
+                <script type="text/javascript">
+                    var progress = 0;
+                    var increment = function () {
+                        progress += 10;
+                        document.getElementById("progressbar").style.width = progress + "%";
+                        if (progress < 100) setTimeout(increment, 300);
+                    };
+                    increment();
+                </script>
+            </div>
+        </div>
     </div>
 
     <div id="modal-container" class="modal hide fade" visibility="hidden"></div>

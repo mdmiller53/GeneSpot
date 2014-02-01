@@ -103,14 +103,20 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "v
 
             atlas: function () {
                 var model = new Backbone.Model();
-
                 var view = new AtlasView({ "model": model });
-                this.$el.html(view.render().el);
 
-                model.fetch({
-                    "url": "configurations/atlas.json",
-                    "success": function () {
-                        model.trigger("load");
+                var _this = this;
+                this.$el.fadeOut({
+                    "always": function() {
+                        model.fetch({
+                            "url": "configurations/atlas.json",
+                            "success": function () {
+                                _this.$el.html(view.render().el);
+                                model.trigger("load");
+
+                                _this.$el.fadeIn();
+                            }
+                        });
                     }
                 });
 

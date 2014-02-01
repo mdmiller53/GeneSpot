@@ -25,7 +25,7 @@ define([
             },
 
             events: {
-                "click a.refresh-loaded": "reloadAllMaps",
+                "click .refresh-loaded": "reloadAllMaps",
                 "click .open-map": function (e) {
                     this.$el.find(".list-container.collapse.in").collapse("hide");
 

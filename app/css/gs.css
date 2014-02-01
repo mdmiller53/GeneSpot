@@ -15,18 +15,6 @@
     position: absolute;
 }
 
-.atlas-navigator {
-    float: left;
-    left: 5px;
-    top: 200px;
-    position: fixed;
-    border: 1px solid #87cefa;
-    border-radius: 15px;
-    background: #ffffff;
-    height: 150px;
-    padding-top: 15px;
-}
-
 .atlas-map {
     position: absolute;
     z-index: 10;
@@ -114,12 +102,17 @@
 .list-controls {
     position: fixed;
     top:44px;
-    left:100px;
+    left:10;
     z-index: 1;
 }
 
 .list-controls li {
     padding-right: 10px;
+}
+
+.list-controls li .btn-group {
+    padding-top: 5px;
+    padding-right: 20px;
 }
 
 .genelist-members {

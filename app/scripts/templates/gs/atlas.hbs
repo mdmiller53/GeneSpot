@@ -8,11 +8,13 @@
     }
 </style>
 <div>
-    <ul class="atlas-navigator nav nav-list">
-        <li><a href="#" onclick="return false;" class="refresh-loaded" rel="toolbar" title="Refresh Map Data"> <i class="icon-refresh"/></i> </a></li>
-    </ul>
-
     <ul class="nav nav-pills list-controls">
+        <li>
+            <div class="btn-group">
+                <button class="btn btn-mini refresh-loaded" type="button"><i class="icon-refresh"></i></button>
+                <button class="btn btn-mini refresh-loaded" type="button">Refresh Maps</button>
+            </div>
+        </li>
         <li>
             <button class="btn btn-success" data-toggle="collapse" data-target="#datamodel-collapser" type="button">Data Model</button>
         </li>

@@ -41,6 +41,10 @@ define(["jquery", "underscore", "backbone",
                     Backbone.sync("delete", new Backbone.Model({}), {
                         "url": "svc/collections/clinvarlist/" + listid, "success": this.render
                     });
+                },
+
+                "click .list-refresh": function() {
+                    _.defer(this.render);
                 }
             },
 

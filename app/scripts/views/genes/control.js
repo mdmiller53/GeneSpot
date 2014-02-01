@@ -42,6 +42,10 @@ define(["jquery", "underscore", "backbone",
                     Backbone.sync("delete", new Backbone.Model({}), {
                         "url": "svc/collections/genelists/" + listid, "success": this.__refresh
                     });
+                },
+
+                "click .list-refresh": function() {
+                    _.defer(this.__refresh);
                 }
             },
 

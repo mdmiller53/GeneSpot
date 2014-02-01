@@ -1,5 +1,7 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler", "hbs!templates/gs/q_values_ampdel", "stacksvis", "colorbrewer", "d3"],
-    function ($, _, Backbone, StacksVisTpl, QValueTpl, StacksVis) {
+define(["jquery", "underscore", "backbone", "stacksvis",
+    "hbs!templates/stacksvis/container", "hbs!templates/gs/q_values_ampdel",
+    "colorbrewer", "d3"],
+    function ($, _, Backbone, StacksVis, Tpl, QValueTpl) {
         return Backbone.View.extend({
 
             "events": {
@@ -11,13 +13,13 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/stacksvis_simpler"
                 }
             },
 
-            "initialize": function (options) {
+            "initialize": function () {
                 this.options["models"]["copy_number"].on("load", this.__render_copy_number, this);
                 this.options["models"]["q_value"].on("load", this.__render_q_value, this);
             },
 
             render: function () {
-                this.$el.html(StacksVisTpl({
+                this.$el.html(Tpl({
                     "id": Math.floor(Math.random() * 1000),
                     "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
                     "genes": _.map(this.options["genes"], function (g) {

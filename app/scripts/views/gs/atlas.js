@@ -5,7 +5,7 @@ define([
     "views/gs/atlas_map",
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
-    "views/gs/stacksvis",
+    "views/stacksvis/view",
     "views/gs/feature_matrix_distributions",
     "views/seqpeek/view",
     "views/genes/control",

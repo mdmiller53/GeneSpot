@@ -1,6 +1,6 @@
 define(["jquery", "underscore", "backbone",
-    "hbs!templates/gs/scatterplot", "hbs!templates/line_item",
-    "hbs!templates/gs/scatterplot_feature_defs","hbs!templates/clinvarlist/scatterplot_feature_defs",
+    "hbs!templates/fmx_distributions/container", "hbs!templates/line_item",
+    "hbs!templates/fmx_distributions/feature_defs","hbs!templates/clinvarlist/feature_defs",
     "carve"],
     function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, carve) {
         return Backbone.View.extend({
@@ -11,7 +11,7 @@ define(["jquery", "underscore", "backbone",
             aggregate_features_by_id: {},
 
             events: {
-                "click .tumor-type-selector-scatterplot button": function (e) {
+                "click .fmx-dist-tumor-type-selector button": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
                         console.debug("fmx-dist.highlight:none");
@@ -21,7 +21,7 @@ define(["jquery", "underscore", "backbone",
                         this.carveVis.highlight(tumor_type).render();
                     }
                 },
-                "click .sample-type-selector-scatterplot button": function (e) {
+                "click .fmx-dist-sample-type-selector button": function (e) {
                     var sample_type = $(e.target).data("id");
                     if (sample_type === "all_sample_types") {
                         console.debug("fmx-dist.all_sample_types");
@@ -103,7 +103,7 @@ define(["jquery", "underscore", "backbone",
 
             __init_graph: function () {
                 console.debug("fmx-dist.__init_graph");
-                var carvEl = this.$el.find(".scatterplot-container").empty();
+                var carvEl = this.$el.find(".fmx-dist-container").empty();
                 var carvObj = carve({
                     radius: 20,
                     margin: { top: 15, bottom: 20, left: 15, right: 50 }

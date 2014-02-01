@@ -51,23 +51,23 @@
         border-right-style: solid;
     }
 
-    .tumor-type-selector-scatterplot {
+    .fmx-dist-tumor-type-selector {
         margin-top: 0px;
         margin-bottom: 10px;
     }
 
-    .tumor-type-selector-scatterplot .btn {
+    .fmx-dist-tumor-type-selector .btn {
         border-bottom-width: 4px;
     }
 
-    .sample-type-selector-scatterplot .btn {
+    .fmx-dist-sample-type-selector .btn {
         border-bottom-width: 4px;
     }
 </style>
 
 <div class="container">
     <div class="row">
-        <div class="span3 tumor-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
+        <div class="span3 fmx-dist-tumor-type-selector btn-group" data-toggle="buttons-radio">
             <button class="btn btn-small active" data-toggle="button" data-id="all_tumor_types">All</button>
             {{#each tumor_types}}
             <button class="btn btn-small" data-toggle="button" data-id="{{id}}" style="border-bottom-color: {{color}};">{{id}}</button>
@@ -76,7 +76,7 @@
     </div>
     {{#if sample_types}}
         <div class="row">
-            <div class="span3 sample-type-selector-scatterplot btn-group" data-toggle="buttons-radio">
+            <div class="span3 fmx-dist-sample-type-selector btn-group" data-toggle="buttons-radio">
                 <button class="btn btn-small active" data-toggle="button" data-id="all_sample_types">All Tissue Types</button>
                 {{#each sample_types}}
                 <button class="btn btn-small" data-toggle="button" data-id="{{key}}">{{label}}</button>
@@ -120,7 +120,7 @@
             <div class="alert alert-warning no-data-found hide">
                 <strong>Warning!</strong> No data found for selected features
             </div>
-            <div class="scatterplot-container well"></div>
+            <div class="fmx-dist-container well"></div>
             <div class="download-container well"></div>
         </div>
     </div>

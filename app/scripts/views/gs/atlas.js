@@ -6,7 +6,7 @@ define([
     "views/gs/atlas_quick_tutorial",
     "views/gs/atlas_maptext_view",
     "views/stacksvis/view",
-    "views/gs/feature_matrix_distributions",
+    "views/fmx_distributions/view",
     "views/seqpeek/view",
     "views/genes/control",
     "views/clinvarlist/control",

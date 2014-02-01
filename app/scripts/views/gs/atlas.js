@@ -27,7 +27,7 @@ define([
             events: {
                 "click a.refresh-loaded": "reloadAllMaps",
                 "click .open-map": function (e) {
-                    this.$el.find("#maps-collapser").collapse("hide");
+                    this.$el.find(".collapse.in").collapse("hide");
 
                     var mapId = $(e.target).data("id");
                     _.each(this.options.model.get("maps"), function (map) {
@@ -38,11 +38,7 @@ define([
                     }, this);
                 },
                 "click div.atlas-map": function (e) {
-                    this.$el.find("#maps-collapser").collapse("hide");
-                    this.$el.find("#datamodel-collapser").collapse("hide");
-                    this.$el.find("#tumor-types-collapser").collapse("hide");
-                    this.$el.find("#genelist-collapser").collapse("hide");
-                    this.$el.find("#clinvarlist-collapser").collapse("hide");
+                    this.$el.find(".collapse.in").collapse("hide");
 
                     var $target = $(e.target);
                     if (!$target.hasClass("atlas-map")) {

@@ -41,7 +41,10 @@
                     <ul class="gene-selector nav nav-list"></ul>
                     {{#unless isDefault}}
                         <hr/>
-                        <a href="#" class="list-remover" data-id="{{id}}" onclick="return false;">delete list</a><br/>
+                        <div class="btn-group">
+                            <button class="btn btn-small list-remover" data-id="{{id}}" type="button"><i class="icon-trash"></i></button>
+                            <button class="btn btn-small list-remover" data-id="{{id}}" type="button">Delete list '{{label}}'</button>
+                        </div>
                     {{/unless}}
                 </div>
             {{/each}}

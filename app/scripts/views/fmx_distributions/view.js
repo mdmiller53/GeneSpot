@@ -11,7 +11,7 @@ define(["jquery", "underscore", "backbone",
             aggregate_features_by_id: {},
 
             events: {
-                "click .fmx-dist-tumor-type-selector button": function (e) {
+                "click .dropdown-menu.fmx-dist-tumor-types-selector a": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
                         console.debug("fmx-dist.highlight:none");
@@ -20,8 +20,11 @@ define(["jquery", "underscore", "backbone",
                         console.debug("fmx-dist.highlight:" + tumor_type);
                         this.carveVis.highlight(tumor_type).render();
                     }
+
+                    this.$el.find(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
                 },
-                "click .fmx-dist-sample-type-selector button": function (e) {
+                "click .dropdown-menu.fmx-dist-sample-types-selector a": function (e) {
                     var sample_type = $(e.target).data("id");
                     if (sample_type === "all_sample_types") {
                         console.debug("fmx-dist.all_sample_types");
@@ -31,6 +34,9 @@ define(["jquery", "underscore", "backbone",
                         this.selected_sample_type = sample_type;
                     }
                     _.defer(this.__draw);
+
+                    this.$el.find(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
                 },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.debug("fmx-dist.genes-x:" + $(e.target).data("id"));

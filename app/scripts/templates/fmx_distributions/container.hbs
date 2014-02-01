@@ -45,83 +45,87 @@
         height: 405px;
     }
 
-    .gene-feature-selectors {
+    .filter-elements {
         border-right-color: lightgray;
         border-right-width: 2px;
         border-right-style: solid;
     }
-
-    .fmx-dist-tumor-type-selector {
-        margin-top: 0px;
-        margin-bottom: 10px;
-    }
-
-    .fmx-dist-tumor-type-selector .btn {
-        border-bottom-width: 4px;
-    }
-
-    .fmx-dist-sample-type-selector .btn {
-        border-bottom-width: 4px;
-    }
 </style>
 
 <div class="container">
-    <div class="row">
-        <div class="span3 fmx-dist-tumor-type-selector btn-group" data-toggle="buttons-radio">
-            <button class="btn btn-small active" data-toggle="button" data-id="all_tumor_types">All</button>
-            {{#each tumor_types}}
-            <button class="btn btn-small" data-toggle="button" data-id="{{id}}" style="border-bottom-color: {{color}};">{{id}}</button>
-            {{/each}}
+    <div class="span3">
+        <div class="row filter-elements">
+            <div class="dropdown">
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="selected-tumor-type">Tumor Types</span> <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu fmx-dist-tumor-types-selector" role="menu">
+                    <li class="active"><a href="#" onclick="return false;" data-id="all_tumor_types"><span class="badge">&nbsp;</span>&nbsp;All</a></li>
+                    <li class="divider"></li>
+                    {{#each tumor_types}}
+                    <li>
+                        <a href="#" onclick="return false;" data-id="{{id}}">
+                        <span class="badge" style="background-color: {{color}}">&nbsp;</span>&nbsp;{{id}}
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        {{#if sample_types}}
+            <hr/>
+            <div class="dropdown">
+                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="selected-sample-type">Sample Types</span> <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu fmx-dist-sample-types-selector" role="menu">
+                    <li class="active"><a href="#" onclick="return false;" data-id="all_sample_types">All</a></li>
+                    <li class="divider"></li>
+                    {{#each sample_types}}
+                    <li>
+                        <a href="#" onclick="return false;" data-id="{{key}}">{{label}}</a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        {{/if}}
+            <hr/>
+            <div class="span3 gene-feature-selectors">
+                <div class="dropdown">
+                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu genes-selector-x" role="menu">
+                        {{#each genes}}
+                        <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                        {{/each}}
+                        {{#if clinical_variables}}
+                            <li class="divider"></li>
+                            <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
+                        {{/if}}
+                    </ul>
+                </div>
+                <div class="feature-selector-x">Loading features...</div>
+                <div class="dropdown">
+                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu genes-selector-y" role="menu">
+                        {{#each genes}}
+                        <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+                        {{/each}}
+                        {{#if clinical_variables}}
+                            <li class="divider"></li>
+                            <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
+                        {{/if}}
+                    </ul>
+                </div>
+                <div class="feature-selector-y">Loading features...</div>
+            </div>
         </div>
     </div>
-    {{#if sample_types}}
-        <div class="row">
-            <div class="span3 fmx-dist-sample-type-selector btn-group" data-toggle="buttons-radio">
-                <button class="btn btn-small active" data-toggle="button" data-id="all_sample_types">All Tissue Types</button>
-                {{#each sample_types}}
-                <button class="btn btn-small" data-toggle="button" data-id="{{key}}">{{label}}</button>
-                {{/each}}
-            </div>
+    <div class="span8">
+        <div class="alert alert-warning no-data-found hide">
+            <strong>Warning!</strong> No data found for selected features
         </div>
-    {{/if}}
-    <hr/>
-    <div class="row">
-        <div class="span3 gene-feature-selectors">
-            <div class="dropdown">
-                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                    <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
-                <ul class="dropdown-menu genes-selector-x" role="menu">
-                    {{#each genes}}
-                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
-                    {{/each}}
-                    {{#if clinical_variables}}
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
-                    {{/if}}
-                </ul>
-            </div>
-            <div class="feature-selector-x">Loading features...</div>
-            <div class="dropdown">
-                <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                    <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
-                <ul class="dropdown-menu genes-selector-y" role="menu">
-                    {{#each genes}}
-                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
-                    {{/each}}
-                    {{#if clinical_variables}}
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
-                    {{/if}}
-                </ul>
-            </div>
-            <div class="feature-selector-y">Loading features...</div>
-        </div>
-        <div class="span8">
-            <div class="alert alert-warning no-data-found hide">
-                <strong>Warning!</strong> No data found for selected features
-            </div>
-            <div class="fmx-dist-container well"></div>
-            <div class="download-container well"></div>
-        </div>
+        <div class="fmx-dist-container well"></div>
+        <div class="download-container well"></div>
     </div>
 </div>

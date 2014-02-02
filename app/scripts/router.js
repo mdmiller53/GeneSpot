@@ -2,7 +2,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "v
     function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView) {
 
         return Backbone.Router.extend({
-            targetEl: "#mainDiv",
+            targetEl: "#main-container",
             navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",

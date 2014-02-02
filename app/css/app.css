@@ -1,5 +1,12 @@
-body {
-	padding-top: 43px;
+.loading-container {
+    width: 300px;
+    top: 30px;
+    left: 30px;
+    position: fixed;
+}
+
+.navbar-static-top .container {
+    margin-right: 0;
 }
 
 .imgbrand {
@@ -9,6 +16,8 @@ body {
 }
 .navbar .brand {
 	padding: 3px 20px 2px;
+    font-size: 18px;
+    white-space: nowrap;
 }
 
 .graph-container, .filter-container{

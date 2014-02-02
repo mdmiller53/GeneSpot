@@ -27,27 +27,53 @@
     <!-- endbuild -->
 </head>
 <body>
-    <div>
-        <div class="navbar navbar-fixed-top" id="navigation-container"></div>
-        <div class="container-fluid outer-container" id="mainDiv">
-            <div class="well" style="width: 40%">
-                <div>
-                    <img src="img/isblogo.png" class="imgbrand" alt="ISB"> <b>Loading GeneSpot</b>
-                </div>
-                <hr/>
-                <div class="progress progress-striped active">
-                    <div id="progressbar" class="bar" style="width: 0%;"></div>
-                </div>
-                <script type="text/javascript">
-                    var progress = 0;
-                    var increment = function () {
-                        progress += 10;
+    <div id="navigation-container"></div>
+    <div id="main-container">
+        <div class="well loading-container">
+            <div>
+                <img src="img/isblogo.png" class="imgbrand" alt="ISB"> <b>Loading GeneSpot</b>
+            </div>
+            <hr/>
+            <div class="progress progress-striped active">
+                <div id="progressbar" class="bar" style="width: 0%;"></div>
+            </div>
+            <hr/>
+            <h5>Browser Display Dimensions</h5>
+            <table class="table table-condensed table-bordered table-striped">
+                <tr>
+                    <td>width</td><td id="dims-width"></td>
+                </tr>
+                <tr>
+                    <td>height</td><td id="dims-height"></td>
+                </tr>
+            </table>
+
+            <script type="text/javascript">
+                var displayDims = function() {
+                    try {
+                        if (!document.documentElement) return;
+
+                        document.getElementById("dims-height").innerHTML = document.documentElement.clientHeight;
+                        document.getElementById("dims-width").innerHTML = document.documentElement.clientWidth;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                };
+
+                var progress = 0;
+                var increment = function () {
+                    progress += 10;
+                    try {
                         document.getElementById("progressbar").style.width = progress + "%";
                         if (progress < 100) setTimeout(increment, 300);
-                    };
-                    increment();
-                </script>
-            </div>
+                    } catch (e) {
+                        console.error(e);
+                    }
+                };
+
+                displayDims();
+                increment();
+            </script>
         </div>
     </div>
 

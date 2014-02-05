@@ -2,19 +2,17 @@
 {{#each maps}}
     {{#unless disabled}}
         <div class="alert alert-info">
-            <h4>{{label}}</h4>
+            <h5>{{label}}</h5>
             <p>{{description}}</p>
             <p><button type="button" data-id="{{id}}" class="btn btn-info btn-small open-map">open</button></p>
         </div>
     {{/unless}}
     {{#if disabled}}
         <div class="alert alert-danger">
-            <h4>{{label}}</h4>
+            <h5>{{label}}</h5>
             <p>{{description}}</p>
             <p>This map is not currently available</p>
-            <p>
-                <a href="#" onclick="return false;" class="btn btn-small btn-danger disabled" title="not available">open</a>
-            </p>
+            <p><button type="button" class="btn btn-small btn-danger disabled" title="not available">open</button></p>
         </div>
     {{/if}}
 {{/each}}

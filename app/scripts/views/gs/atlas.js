@@ -26,6 +26,9 @@ define([
 
             events: {
                 "click .refresh-loaded": "reloadAllMaps",
+                "click .list-controls li a": function(e) {
+                    this.$el.find(".list-container.collapse.in").collapse("hide");
+                },
                 "click .open-map": function (e) {
                     this.$el.find(".list-container.collapse.in").collapse("hide");
 
@@ -86,7 +89,7 @@ define([
                     this.reloadAllMaps();
                 }, this);
 
-                this.$el.find("#genelist-container").html(this.genelistControl.render().el);
+                this.$el.find(".genelist-container").html(this.genelistControl.render().el);
             },
 
             initClinicalListControl: function() {
@@ -101,7 +104,7 @@ define([
                     this.reloadAllMaps();
                 }, this);
 
-                this.$el.find("#clinvarlist-container").html(this.clinicalListControl.render().el);
+                this.$el.find(".clinvarlist-container").html(this.clinicalListControl.render().el);
             },
 
             initTumorTypes: function() {
@@ -109,7 +112,7 @@ define([
 
                 var reloadFn = _.debounce(this.reloadAllMaps, 1000);
                 this.tumorTypesControl.on("updated", reloadFn, this);
-                this.$el.find("#tumor-types-container").html(this.tumorTypesControl.render().el);
+                this.$el.find(".tumor-types-container").html(this.tumorTypesControl.render().el);
             },
 
             __init_datamodel_collector: function() {

@@ -5,6 +5,10 @@
     position: fixed;
 }
 
+.navbar-static-top {
+    position: fixed;
+}
+
 .navbar-static-top .container {
     margin-right: 0;
 }
@@ -28,7 +32,7 @@
 	height:800px;
 }
 
-.filter-container .parcoords{ 
+.filter-container .parcoords{
 	height:300px;
 }
 

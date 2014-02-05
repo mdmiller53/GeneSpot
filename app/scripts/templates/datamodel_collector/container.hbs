@@ -1,19 +1,13 @@
-<style>
-    .accordion-inner {
-        max-height: 300px;
-        overflow-y:scroll;
-    }
-</style>
 <h4>Data Model</h4>
 <div class="row">
-    <div class="span5">
+    <div class="span7">
         <div class="accordion" id="accordion_container_datamodel">
         {{#each datamodels}}
             <div class="accordion-group">
                 <div class="accordion-heading">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_container_datamodel"
                        href="#collapse_section_{{datamodel_key}}">
-                        <h4>{{label}} <span class="badge pull-right">{{numberOfItems}}</span></h4>
+                        <h5>{{label}} <span class="badge pull-right">{{numberOfItems}}</span></h5>
                     </a>
                 </div>
 
@@ -24,7 +18,7 @@
                             {{#each items}}
                                 <div class="row" data-id="{{item_key}}">
                                     <div class="alert alert-info">
-                                        <h5>{{label}}</h5>
+                                        <h6>{{label}}</h6>
                                         <small>{{description}}</small>
                                     </div>
                                 </div>
@@ -36,7 +30,7 @@
                                 {{#each items}}
                                     <div class="row" data-id="{{item_key}}">
                                         <div class="alert alert-info">
-                                            <h5>{{label}}</h5>
+                                            <h6>{{label}}</h6>
                                             <small>{{description}}</small>
                                             {{#if active}}<span class="badge pull-right">active</span>{{/if}}
                                         </div>
@@ -53,15 +47,15 @@
         {{/each}}
         </div>
     </div>
-    <div class="offset1 span5 hide">
+    <div class="offset1 hide">
         <div class="row">
-            <h4>Collectors</h4>
+            <h5>Collectors</h5>
             <div class="input-append">
                 <input type="text" class="new-collector-name" placeholder="New collector name...">
                 <button class="btn create-collector" type="button">+</button>
             </div>
 
-            <div class="span4">
+            <div>
                 <div class="alert alert-danger invalid-collector-name hide">
                     <strong>Error!</strong> Not a valid Collector name
                 </div>

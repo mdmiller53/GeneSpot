@@ -7,66 +7,45 @@
         background-size: initial;
     }
 </style>
-<div>
-    <ul class="nav nav-pills list-controls">
-        <li>
-            <div class="btn-group">
-                <button class="btn btn-mini refresh-loaded" type="button"><i class="icon-refresh"></i></button>
-                <button class="btn btn-mini refresh-loaded" type="button">Refresh Maps</button>
-            </div>
-        </li>
-        <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#datamodel-collapser" type="button">Data Model</button>
-        </li>
-        <li>
-            <button class="btn btn-success maps-btn" data-toggle="collapse" data-target="#maps-collapser" type="button">Maps</button>
-        </li>
-        <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#tumor-types-collapser" type="button">Tumor Types</button>
-        </li>
-        <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#genelist-collapser" type="button">Gene Lists</button>
-        </li>
-        <li>
-            <button class="btn btn-success" data-toggle="collapse" data-target="#clinvarlist-collapser" type="button">Clinical Variables</button>
-        </li>
-    </ul>
-</div>
+<ul class="list-controls nav nav-list">
+    <li>
+        <div class="btn-group">
+            <button class="btn btn-mini refresh-loaded" type="button"><i class="icon-refresh"></i></button>
+            <button class="btn btn-mini refresh-loaded" type="button">Refresh Maps</button>
+        </div>
+    </li>
+    <li>
+        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#datamodel-collapser"><h5>Data Model</h5></a>
+    </li>
+    <li>
+        <a href="#" onclick="return false;" class="maps-btn" data-toggle="collapse" data-target="#maps-collapser"><h5>Maps</h5></a>
+    </li>
+    <li>
+        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#tumor-types-collapser"><h5>Tumor Types</h5></a>
+    </li>
+    <li>
+        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser"><h5>Gene Lists</h5></a>
+    </li>
+    <li>
+        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#clinvarlist-collapser"><h5>Clinical Variables</h5></a>
+    </li>
+</ul>
 
 <div class="list-containers">
     <div id="datamodel-collapser" class="list-container collapse">
-        <div class="well">
-            <button type="button" class="close" data-toggle="collapse" data-target="#datamodel-collapser">&times;</button>
-            <div class="datamodel-collector-container"></div>
-        </div>
+        <div class="datamodel-collector-container"></div>
     </div>
-
     <div id="maps-collapser" class="list-container collapse">
-        <div class="well">
-            <button type="button" class="close" data-toggle="collapse" data-target="#maps-collapser">&times;</button>
-            <div class="maps-list-container"></div>
-        </div>
+        <div class="maps-list-container"></div>
     </div>
-
     <div id="tumor-types-collapser" class="list-container collapse">
-        <div class="well">
-            <button type="button" class="close" data-toggle="collapse" data-target="#tumor-types-collapser">&times;</button>
-            <div id="tumor-types-container"></div>
-        </div>
+        <div class="tumor-types-container"></div>
     </div>
-
     <div id="genelist-collapser" class="list-container collapse">
-        <div class="well">
-            <button type="button" class="close" data-toggle="collapse" data-target="#genelist-collapser">&times;</button>
-            <div id="genelist-container"></div>
-        </div>
+        <div class="genelist-container"></div>
     </div>
-
     <div id="clinvarlist-collapser" class="list-container collapse">
-        <div class="well">
-            <button type="button" class="close" data-toggle="collapse" data-target="#clinvarlist-collapser">&times;</button>
-            <div id="clinvarlist-container"></div>
-        </div>
+        <div class="clinvarlist-container"></div>
     </div>
 </div>
 

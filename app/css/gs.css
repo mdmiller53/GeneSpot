@@ -99,22 +99,6 @@
     border: 1px dotted black;
 }
 
-.list-controls {
-    position: fixed;
-    top:44px;
-    left:10;
-    z-index: 1;
-}
-
-.list-controls li {
-    padding-right: 10px;
-}
-
-.list-controls li .btn-group {
-    padding-top: 5px;
-    padding-right: 20px;
-}
-
 .genelist-members {
     overflow-y: auto;
     height: 100px;

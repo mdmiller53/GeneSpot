@@ -1,8 +1,9 @@
 define(["jquery", "underscore", "backbone",
     "hbs!templates/fmx_distributions/container", "hbs!templates/line_item",
     "hbs!templates/fmx_distributions/feature_defs","hbs!templates/clinvarlist/feature_defs",
+    "hbs!templates/fmx_distributions/legend_item",
     "carve", "colorbrewer"],
-    function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, carve) {
+    function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, LegendTpl, carve) {
         return Backbone.View.extend({
             selected_genes: {},
             selected_features: {},
@@ -292,7 +293,11 @@ define(["jquery", "underscore", "backbone",
                 if (_.isEqual(this.selected_color_by, "sample_type") || _.has(this.feature_definitions_by_id, this.selected_color_by)) {
                     color_by_label = this.selected_color_by;
                     color_by_list = _.unique(_.pluck(data, this.selected_color_by));
-                    color_by_colors = colorbrewer.RdYlBu[3];
+                    if (color_by_list.length > 11) {
+                        color_by_colors = null;
+                    } else {
+                        color_by_colors = colorbrewer.RdYlBu[color_by_list.length];
+                    }
                 }
 
                 this.carveVis.colorBy({
@@ -304,6 +309,29 @@ define(["jquery", "underscore", "backbone",
                     .id("sample")
                     .data(data)
                     .render();
+
+                this.__legend();
+            },
+
+            __legend: function() {
+                this.$el.find(".legend-dropup").empty();
+                var colorBy = this.carveVis.colorBy();
+                var color_by_list = colorBy["list"];
+                var color_by_colors = colorBy["colors"];
+
+                if (_.isArray(color_by_list) && _.isArray(color_by_colors)) {
+                    if (_.isEqual(color_by_list.length, color_by_colors.length)) {
+                        _.each(color_by_list, function (color_by, idx) {
+                            this.$el.find(".legend-dropup").append(LegendTpl({
+                                "label": color_by,
+                                "color": color_by_colors[idx]
+                            }));
+                        }, this);
+                        return;
+                    }
+                }
+
+                this.$el.find(".legend-dropup").append(LegendTpl({ "label": "unable to display legend" }));
             },
 
             __visdata: function (tumor_types, X_feature_id, Y_feature_id) {

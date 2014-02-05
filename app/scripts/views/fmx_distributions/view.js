@@ -23,10 +23,11 @@ define(["jquery", "underscore", "backbone",
                         console.debug("fmx-dist.selected_tumor_type:" + tumor_type);
                         this.selected_tumor_type = tumor_type;
                     }
-                    _.defer(this.__draw);
 
                     this.$el.find(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
+
+                    _.defer(this.__draw);
                 },
                 "click .dropdown-menu.fmx-dist-sample-types-selector a": function (e) {
                     var sample_type = $(e.target).data("id");
@@ -37,10 +38,11 @@ define(["jquery", "underscore", "backbone",
                         console.debug("fmx-dist.selected_sample_type:" + sample_type);
                         this.selected_sample_type = sample_type;
                     }
-                    _.defer(this.__draw);
 
                     this.$el.find(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
+
+                    _.defer(this.__draw);
                 },
                 "click .dropdown-menu.fmx-dist-color-by-selector a": function(e) {
                     var color_by = $(e.target).data("id");
@@ -48,10 +50,10 @@ define(["jquery", "underscore", "backbone",
                     this.selected_color_by = color_by;
                     if (color_by === "tumor_type") this.selected_color_by = null;
 
-                    _.defer(this.__draw);
-
                     this.$el.find(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
+
+                    _.defer(this.__draw);
                 },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.debug("fmx-dist.genes-x:" + $(e.target).data("id"));

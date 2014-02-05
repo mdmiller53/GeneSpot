@@ -58,7 +58,7 @@ define(["jquery", "underscore", "backbone",
 
                     _.defer(this.__draw);
                 },
-                "click .legend-dropup a": function (e) {
+                "click .legend-items a": function (e) {
                     var LI = $(e.target).parent("li");
                     if (LI.hasClass("active")) {
                         console.debug("fmx-dist.highlight:all");
@@ -68,7 +68,7 @@ define(["jquery", "underscore", "backbone",
                         var selected_item = $(e.target).data("id");
                         if (selected_item) {
                             console.debug("fmx-dist.highlight:" + selected_item);
-                            this.$el.find(".legend-dropup").find(".active").removeClass("active");
+                            this.$el.find(".legend-items").find(".active").removeClass("active");
                             LI.addClass("active");
                             this.carveVis.highlight(selected_item).render();
                         }
@@ -332,7 +332,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __legend: function() {
-                this.$el.find(".legend-dropup").empty();
+                this.$el.find(".legend-items").empty();
                 var colorBy = this.carveVis.colorBy();
                 var color_by_list = colorBy["list"];
                 var color_by_colors = colorBy["colors"];
@@ -340,17 +340,14 @@ define(["jquery", "underscore", "backbone",
                 if (_.isArray(color_by_list) && _.isArray(color_by_colors)) {
                     if (_.isEqual(color_by_list.length, color_by_colors.length)) {
                         _.each(color_by_list, function (color_by, idx) {
-                            this.$el.find(".legend-dropup").append(LegendTpl({
+                            this.$el.find(".legend-items").append(LegendTpl({
                                 "id": color_by,
                                 "label": color_by,
                                 "color": color_by_colors[idx]
                             }));
                         }, this);
-                        return;
                     }
                 }
-
-                this.$el.find(".legend-dropup").append(LegendTpl({ "label": "unable to display legend" }));
             },
 
             __visdata: function (tumor_types, X_feature_id, Y_feature_id) {

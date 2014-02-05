@@ -1,4 +1,4 @@
-<div class="container fmx_distributions_container">
+<div class="fmx_distributions_container">
     <div class="span3">
         <div class="row filter-elements">
             <div class="dropdown">
@@ -9,11 +9,7 @@
                     <li class="active"><a href="#" onclick="return false;" data-id="all_tumor_types"><span class="badge">&nbsp;</span>&nbsp;All</a></li>
                     <li class="divider"></li>
                     {{#each tumor_types}}
-                    <li>
-                        <a href="#" onclick="return false;" data-id="{{id}}">
-                        <span class="badge" style="background-color: {{color}}">&nbsp;</span>&nbsp;{{id}}
-                        </a>
-                    </li>
+                    <li><a href="#" onclick="return false;" data-id="{{id}}">{{id}}</a></li>
                     {{/each}}
                 </ul>
             </div>
@@ -85,14 +81,15 @@
             </div>
         </div>
     </div>
-    <div class="span8">
+    <div class="span9 vis-container">
         <div class="alert alert-warning no-data-found hide">
             <strong>Warning!</strong> No data found for selected features
         </div>
-        <div class="fmx-dist-container well"></div>
-        <div class="dropup pull-right">
-            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Legend <b class="caret"/></a>
-            <ul class="dropdown-menu pull-right legend-dropup"></ul>
+        <div class="row">
+            <div class="span8 fmx-dist-container"></div>
+            <div class="span1 fmx-dist-legend">
+                <ul class="nav nav-list legend-items"></ul>
+            </div>
         </div>
         <div class="download-container well"></div>
     </div>

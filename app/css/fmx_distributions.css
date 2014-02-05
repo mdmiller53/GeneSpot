@@ -1,12 +1,18 @@
 .fmx_distributions_container .data_point {
-    stroke-width: 0px;
+    stroke-width: 2px;
     shape-rendering: crispEdges;
 }
 
-.fmx_distributions_container .axis path, .axis line {
-    fill: none;
+.fmx_distributions_container .axis path {
+    fill: lightgrey;
+    fill-opacity: 60%;
     stroke: #000;
     stroke-width: 2.0px;
+    shape-rendering: crispEdges;
+}
+
+.fmx_distributions_container .axis line {
+    stroke-width: 1px;
     shape-rendering: crispEdges;
 }
 
@@ -48,4 +54,47 @@
     border-right-color: lightgray;
     border-right-width: 2px;
     border-right-style: solid;
+}
+
+.fmx_distributions_container .vis-container {
+    padding: 0;
+}
+
+.fmx_distributions_container .fmx-dist-container {
+    border-right-color: lightgray;
+    border-right-width: 2px;
+    border-right-style: solid;
+    padding: 0;
+    margin: 0;
+    width: 600px;
+}
+
+.fmx_distributions_container .fmx-dist-legend {
+    margin-left: 0;
+    width: 100px;
+}
+
+.fmx_distributions_container .legend-items {
+    padding: 0;
+    margin-right: -20px;
+}
+
+.fmx_distributions_container .legend-items li {
+    font-size: smaller;
+    padding-left: 5px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.fmx_distributions_container .legend-items .badge {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+.fmx_distributions_container .feature-selector-x {
+    overflow-x: hidden;
+}
+
+.fmx_distributions_container .feature-selector-y {
+    overflow-x: hidden;
 }

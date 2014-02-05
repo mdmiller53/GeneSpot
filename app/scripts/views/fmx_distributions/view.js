@@ -11,6 +11,7 @@ define(["jquery", "underscore", "backbone",
             feature_definitions: {},
             feature_definitions_by_id: {},
             aggregate_features_by_id: {},
+            sample_types_by_sample: {},
 
             events: {
                 "click .dropdown-menu.fmx-dist-tumor-types-selector a": function (e) {
@@ -164,12 +165,22 @@ define(["jquery", "underscore", "backbone",
             },
 
             __aggregate: function(tumor_type, model) {
+                console.debug("fmx-dist.__aggregate(" + tumor_type + ")");
                 _.each(model.get("items"), function(item) {
                     var a_f_by_id = this.aggregate_features_by_id[item.id];
                     if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[item.id] = {};
                     a_f_by_id[tumor_type] = item;
                     this.feature_definitions_by_id[item.id] = _.omit(item, "values");
                 }, this);
+
+                var sampleTypes = WebApp.Lookups.get("sample_types");
+                if (sampleTypes && _.has(sampleTypes, tumor_type)) {
+                    _.each(sampleTypes[tumor_type].get("by_sample_type"), function(samples, sample_type) {
+                        _.each(samples, function(sample) {
+                            this.sample_types_by_sample[sample] = sample_type;
+                        }, this);
+                    }, this);
+                }
             },
 
             __render_fLabel_selectors: function (axis) {
@@ -294,18 +305,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __visdata: function (tumor_types, X_feature_id, Y_feature_id) {
-                var sampleTypes = WebApp.Lookups.get("sample_types") || {};
                 var data = _.map(tumor_types, function (tumor_type) {
-                    var stModel = sampleTypes[tumor_type.id] || new Backbone.Model();
-                    var by_sample_type = stModel.get("by_sample_type") || {};
-                    var select_samples = by_sample_type[this.selected_sample_type];
-                    var sample_types_by_sample = {};
-                    _.each(by_sample_type, function(samples, sample_type) {
-                        _.each(samples, function(sample) {
-                            sample_types_by_sample[sample] = sample_type;
-                        })
-                    });
-
                     var X_feature_by_tumor_type = this.aggregate_features_by_id[X_feature_id] || {};
                     var X_feature = X_feature_by_tumor_type[tumor_type.id] || {};
 
@@ -320,10 +320,11 @@ define(["jquery", "underscore", "backbone",
                     return _.map(X_feature["values"], function (X_value, X_key) {
                         if (X_value === "NA") return null;
 
+                        var sample_type = this.sample_types_by_sample[X_key];
+                        if (this.selected_sample_type && !_.isEqual(sample_type, this.selected_sample_type)) return null;
+
                         var Y_value = Y_feature["values"][X_key];
                         if (Y_value === "NA") return null;
-
-                        if (this.selected_sample_type && _.indexOf(select_samples, X_key) < 0) return null;
 
                         if (_.isNumber(X_value)) X_value = parseFloat(X_value);
                         if (_.isNumber(Y_value)) Y_value = parseFloat(Y_value);
@@ -333,7 +334,7 @@ define(["jquery", "underscore", "backbone",
                             "sample": X_key,
                             "x": X_value,
                             "y": Y_value,
-                            "sample_type": sample_types_by_sample[X_key]
+                            "sample_type": sample_type
                         };
 
                         if (this.selected_color_by && _.has(Cby_feature, "values")) {

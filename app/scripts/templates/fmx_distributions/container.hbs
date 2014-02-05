@@ -34,7 +34,6 @@
                 </ul>
             </div>
         {{/if}}
-        {{#if clinical_variables}}
             <hr/>
             <div class="dropdown">
                 <a class="btn btn-small dropdown-toggle fmx-dist-color-by" data-toggle="dropdown" href="#">
@@ -42,13 +41,17 @@
                 </a>
                 <ul class="dropdown-menu fmx-dist-color-by-selector" role="menu">
                     <li class="active"><a href="#" onclick="return false;" data-id="tumor_type">Tumor Type</a></li>
-                    <li class="nav-header">Clinical Variables</li>
-                    {{#each clinical_variables}}
-                    <li><a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a></li>
-                    {{/each}}
+                    {{#if sample_types}}
+                        <li><a href="#" onclick="return false;" data-id="sample_type">Sample Type</a></li>
+                    {{/if}}
+                    {{#if clinical_variables}}
+                        <li class="nav-header">Clinical Variables</li>
+                        {{#each clinical_variables}}
+                        <li><a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a></li>
+                        {{/each}}
+                    {{/if}}
                 </ul>
             </div>
-        {{/if}}
             <hr/>
             <div class="span3 gene-feature-selectors">
                 <div class="dropdown">

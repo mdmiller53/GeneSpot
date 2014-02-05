@@ -276,8 +276,7 @@ define(["jquery", "underscore", "backbone",
                 var color_by_list = _.pluck(this.selected_tumor_types, "id");
                 var color_by_colors = _.pluck(this.selected_tumor_types, "color");
 
-                var color_by_feature = this.feature_definitions_by_id[this.selected_color_by];
-                if (color_by_feature && _.has(color_by_feature, "label")) {
+                if (_.isEqual(this.selected_color_by, "sample_type") || _.has(this.feature_definitions_by_id, this.selected_color_by)) {
                     color_by_label = this.selected_color_by;
                     color_by_list = _.unique(_.pluck(data, this.selected_color_by));
                     color_by_colors = colorbrewer.RdYlBu[3];
@@ -300,6 +299,12 @@ define(["jquery", "underscore", "backbone",
                     var stModel = sampleTypes[tumor_type.id] || new Backbone.Model();
                     var by_sample_type = stModel.get("by_sample_type") || {};
                     var select_samples = by_sample_type[this.selected_sample_type];
+                    var sample_types_by_sample = {};
+                    _.each(by_sample_type, function(samples, sample_type) {
+                        _.each(samples, function(sample) {
+                            sample_types_by_sample[sample] = sample_type;
+                        })
+                    });
 
                     var X_feature_by_tumor_type = this.aggregate_features_by_id[X_feature_id] || {};
                     var X_feature = X_feature_by_tumor_type[tumor_type.id] || {};
@@ -327,7 +332,8 @@ define(["jquery", "underscore", "backbone",
                             "tumor_type": tumor_type.id,
                             "sample": X_key,
                             "x": X_value,
-                            "y": Y_value
+                            "y": Y_value,
+                            "sample_type": sample_types_by_sample[X_key]
                         };
 
                         if (this.selected_color_by && _.has(Cby_feature, "values")) {

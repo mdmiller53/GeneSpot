@@ -1,11 +1,13 @@
 define(["jquery", "underscore", "backbone",
     "hbs!templates/fmx_distributions/container", "hbs!templates/line_item",
     "hbs!templates/fmx_distributions/feature_defs","hbs!templates/clinvarlist/feature_defs",
-    "carve"],
+    "carve", "colorbrewer"],
     function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, carve) {
         return Backbone.View.extend({
             selected_genes: {},
             selected_features: {},
+            selected_tumor_type: null,
+            selected_color_by: null,
             feature_definitions: {},
             feature_definitions_by_id: {},
             aggregate_features_by_id: {},
@@ -14,12 +16,13 @@ define(["jquery", "underscore", "backbone",
                 "click .dropdown-menu.fmx-dist-tumor-types-selector a": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
-                        console.debug("fmx-dist.highlight:none");
-                        this.carveVis.highlight(null).render();
+                        console.debug("fmx-dist.selected_tumor_type:all");
+                        this.selected_tumor_type = null;
                     } else {
-                        console.debug("fmx-dist.highlight:" + tumor_type);
-                        this.carveVis.highlight(tumor_type).render();
+                        console.debug("fmx-dist.selected_tumor_type:" + tumor_type);
+                        this.selected_tumor_type = tumor_type;
                     }
+                    _.defer(this.__draw);
 
                     this.$el.find(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
@@ -36,6 +39,17 @@ define(["jquery", "underscore", "backbone",
                     _.defer(this.__draw);
 
                     this.$el.find(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
+                },
+                "click .dropdown-menu.fmx-dist-color-by-selector a": function(e) {
+                    var color_by = $(e.target).data("id");
+                    console.debug("fmx-dist.selected_color_by:" + color_by);
+                    this.selected_color_by = color_by;
+                    if (color_by === "tumor_type") this.selected_color_by = null;
+
+                    _.defer(this.__draw);
+
+                    this.$el.find(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
                 },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
@@ -238,7 +252,13 @@ define(["jquery", "underscore", "backbone",
                 var X_feature = this.feature_definitions_by_id[this.selected_features["x"]];
                 var Y_feature = this.feature_definitions_by_id[this.selected_features["y"]];
 
-                var data = this.__visdata(this.selected_tumor_types, X_feature.id, Y_feature.id);
+                var data = null;
+                if (this.selected_tumor_type) {
+                    var selected_tt = _.findWhere(this.selected_tumor_types, { "id": this.selected_tumor_type });
+                    data = this.__visdata([selected_tt], X_feature.id, Y_feature.id);
+                } else {
+                    data = this.__visdata(this.selected_tumor_types, X_feature.id, Y_feature.id);
+                }
                 if (_.isEmpty(data)) {
                     console.debug("fmx-dist.__draw:no_data_found");
                     WebApp.alert(this.$el.find(".no-data-found"), 3000);
@@ -252,10 +272,21 @@ define(["jquery", "underscore", "backbone",
                 console.debug("fmx-dist.__draw:data=" + data.length + ":" + JSON.stringify(_.first(data) || {}));
                 console.debug("fmx-dist.__draw:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
 
+                var color_by_label = "tumor_type";
+                var color_by_list = _.pluck(this.selected_tumor_types, "id");
+                var color_by_colors = _.pluck(this.selected_tumor_types, "color");
+
+                var color_by_feature = this.feature_definitions_by_id[this.selected_color_by];
+                if (color_by_feature && _.has(color_by_feature, "label")) {
+                    color_by_label = this.selected_color_by;
+                    color_by_list = _.unique(_.pluck(data, this.selected_color_by));
+                    color_by_colors = colorbrewer.RdYlBu[3];
+                }
+
                 this.carveVis.colorBy({
-                    label: "tumor_type",
-                    list: _.pluck(this.selected_tumor_types, "id"),
-                    colors: _.pluck(this.selected_tumor_types, "color")
+                    label: color_by_label,
+                    list: color_by_list,
+                    colors: color_by_colors
                 }).axisLabel({ x: X_feature.label, y: Y_feature.label })
                     .axisKey({ x: "x", y: "y" })
                     .id("sample")
@@ -276,6 +307,9 @@ define(["jquery", "underscore", "backbone",
                     var Y_feature_by_tumor_type = this.aggregate_features_by_id[Y_feature_id] || {};
                     var Y_feature = Y_feature_by_tumor_type[tumor_type.id] || {};
 
+                    var Cby_feature_by_tumor_type = this.aggregate_features_by_id[this.selected_color_by] || {};
+                    var Cby_feature = Cby_feature_by_tumor_type[tumor_type.id] || {};
+
                     if (!_.has(X_feature, "values") || !_.has(Y_feature, "values")) return null;
 
                     return _.map(X_feature["values"], function (X_value, X_key) {
@@ -289,12 +323,21 @@ define(["jquery", "underscore", "backbone",
                         if (_.isNumber(X_value)) X_value = parseFloat(X_value);
                         if (_.isNumber(Y_value)) Y_value = parseFloat(Y_value);
 
-                        return {
+                        var datapoint = {
                             "tumor_type": tumor_type.id,
                             "sample": X_key,
                             "x": X_value,
                             "y": Y_value
                         };
+
+                        if (this.selected_color_by && _.has(Cby_feature, "values")) {
+                            var Cby_value = Cby_feature["values"][X_key];
+                            if (Cby_value) {
+                                datapoint[this.selected_color_by] = Cby_value;
+                            }
+                        }
+
+                        return datapoint;
                     }, this);
                 }, this);
                 return _.compact(_.flatten(data));

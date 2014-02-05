@@ -54,7 +54,25 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
+                    this.carveVis.highlight(null);
+
                     _.defer(this.__draw);
+                },
+                "click .legend-dropup a": function (e) {
+                    var LI = $(e.target).parent("li");
+                    if (LI.hasClass("active")) {
+                        console.debug("fmx-dist.highlight:all");
+                        LI.removeClass("active");
+                        this.carveVis.highlight(null).render();
+                    } else {
+                        var selected_item = $(e.target).data("id");
+                        if (selected_item) {
+                            console.debug("fmx-dist.highlight:" + selected_item);
+                            this.$el.find(".legend-dropup").find(".active").removeClass("active");
+                            LI.addClass("active");
+                            this.carveVis.highlight(selected_item).render();
+                        }
+                    }
                 },
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.debug("fmx-dist.genes-x:" + $(e.target).data("id"));
@@ -323,6 +341,7 @@ define(["jquery", "underscore", "backbone",
                     if (_.isEqual(color_by_list.length, color_by_colors.length)) {
                         _.each(color_by_list, function (color_by, idx) {
                             this.$el.find(".legend-dropup").append(LegendTpl({
+                                "id": color_by,
                                 "label": color_by,
                                 "color": color_by_colors[idx]
                             }));

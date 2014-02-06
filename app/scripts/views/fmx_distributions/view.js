@@ -28,6 +28,7 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
+                    this.__reset_highlight();
                     _.defer(this.__draw);
                 },
                 "click .dropdown-menu.fmx-dist-sample-types-selector a": function (e) {
@@ -43,6 +44,7 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
+                    this.__reset_highlight();
                     _.defer(this.__draw);
                 },
                 "click .dropdown-menu.fmx-dist-color-by-selector a": function(e) {
@@ -54,8 +56,7 @@ define(["jquery", "underscore", "backbone",
                     this.$el.find(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
-                    this.carveVis.highlight(null);
-
+                    this.__reset_highlight();
                     _.defer(this.__draw);
                 },
                 "click .legend-items a": function (e) {
@@ -77,11 +78,13 @@ define(["jquery", "underscore", "backbone",
                 "click .dropdown-menu.genes-selector-x a": function (e) {
                     console.debug("fmx-dist.genes-x:" + $(e.target).data("id"));
                     this.selected_genes.x = $(e.target).data("id");
+                    this.__reset_highlight();
                     this.__render_fLabel_selectors("x");
                 },
                 "click .dropdown-menu.genes-selector-y a": function (e) {
                     console.debug("fmx-dist.genes-y:" + $(e.target).data("id"));
                     this.selected_genes.y = $(e.target).data("id");
+                    this.__reset_highlight();
                     this.__render_fLabel_selectors("y");
                 }
             },
@@ -267,6 +270,7 @@ define(["jquery", "underscore", "backbone",
             __feature_selector_handler: function(axis) {
                 var _this = this;
                 return function(e) {
+                    _this.__reset_highlight();
                     $(e.target).parents("ul").find(".active").removeClass("active");
                     $(e.target).parent().addClass("active");
                     _this.selected_features[axis] = $(e.target).data("id");
@@ -394,6 +398,10 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
                 return _.compact(_.flatten(data));
+            },
+
+            __reset_highlight: function() {
+                if (this.carveVis) this.carveVis.highlight(null);
             }
         });
     });

@@ -30,29 +30,11 @@
                 </ul>
             </div>
         {{/if}}
-            <br/>
-            <div class="dropdown">
-                <a class="btn btn-small dropdown-toggle fmx-dist-color-by" data-toggle="dropdown" href="#">
-                    <i class="icon-tint"></i> Color By <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu fmx-dist-color-by-selector" role="menu">
-                    <li class="active"><a href="#" onclick="return false;" data-id="tumor_type">Tumor Type</a></li>
-                    {{#if sample_types}}
-                        <li><a href="#" onclick="return false;" data-id="sample_type">Sample Type</a></li>
-                    {{/if}}
-                    {{#if clinical_variables}}
-                        <li class="nav-header">Clinical Variables</li>
-                        {{#each clinical_variables}}
-                        <li><a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a></li>
-                        {{/each}}
-                    {{/if}}
-                </ul>
-            </div>
             <hr/>
             <div class="span3 gene-feature-selectors">
                 <div class="dropdown">
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                        <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
+                        <i class="icon-list"></i> <span class="selected-gene-x">{{selected_genes.x}}</span> <b class="caret"></b></a>
                     <ul class="dropdown-menu genes-selector-x" role="menu">
                         {{#each genes}}
                         <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
@@ -66,7 +48,7 @@
                 <div class="feature-selector-x">Loading features...</div>
                 <div class="dropdown">
                     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                        <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
+                        <i class="icon-list"></i> <span class="selected-gene-y">{{selected_genes.y}}</span> <b class="caret"></b></a>
                     <ul class="dropdown-menu genes-selector-y" role="menu">
                         {{#each genes}}
                         <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
@@ -88,6 +70,24 @@
         <div class="row">
             <div class="span8 fmx-dist-container"></div>
             <div class="span1 fmx-dist-legend">
+                <div class="dropdown">
+                    <a class="btn btn-small dropdown-toggle fmx-dist-color-by" data-toggle="dropdown" href="#">
+                        <i class="icon-tint"></i> Color By <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu fmx-dist-color-by-selector" role="menu">
+                        <li class="active"><a href="#" onclick="return false;" data-id="tumor_type">Tumor Type</a></li>
+                        {{#if sample_types}}
+                            <li><a href="#" onclick="return false;" data-id="sample_type">Sample Type</a></li>
+                        {{/if}}
+                        {{#if clinical_variables}}
+                            <li class="nav-header">Clinical Variables</li>
+                            {{#each clinical_variables}}
+                            <li><a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a></li>
+                            {{/each}}
+                        {{/if}}
+                    </ul>
+                </div>
+                <hr/>
                 <ul class="nav nav-list legend-items"></ul>
             </div>
         </div>

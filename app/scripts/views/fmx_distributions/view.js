@@ -326,7 +326,7 @@ define(["jquery", "underscore", "backbone",
                     label: color_by_label,
                     list: color_by_list,
                     colors: color_by_colors
-                }).axisLabel({ x: X_feature.label, y: Y_feature.label })
+                }).axisLabel({ x: this.__extract_label(X_feature), y: this.__extract_label(Y_feature) })
                     .axisKey({ x: "x", y: "y" })
                     .id("sample")
                     .data(data)
@@ -398,6 +398,11 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
                 return _.compact(_.flatten(data));
+            },
+
+            __extract_label: function(feature) {
+                if (_.isEqual(feature.source, "CLIN")) return feature.label;
+                return feature.label + " : " + feature.source + " (" + feature.modifier + ")";
             },
 
             __reset_highlight: function() {

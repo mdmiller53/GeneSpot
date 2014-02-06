@@ -318,7 +318,12 @@ define(["jquery", "underscore", "backbone",
                     if (color_by_list.length > 11) {
                         color_by_colors = null;
                     } else {
-                        color_by_colors = colorbrewer.RdYlBu[color_by_list.length];
+                        var numberOfColors = color_by_list.length;
+                        if (numberOfColors < 3) {
+                            color_by_colors = _.first(colorbrewer.RdYlBu[3], numberOfColors);
+                        } else {
+                            color_by_colors = colorbrewer.RdYlBu[numberOfColors];
+                        }
                     }
                 }
 

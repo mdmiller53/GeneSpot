@@ -1,5 +1,6 @@
-define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "views/gs/atlas"],
-    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView) {
+define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
+    "views/gs/atlas", "models/gs/atlas_map_factory"],
+    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, AtlasMapFactory) {
 
         return Backbone.Router.extend({
             targetEl: "#main-container",
@@ -102,7 +103,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view", "v
             },
 
             atlas: function () {
-                var model = new Backbone.Model();
+                var model = new AtlasMapFactory();
                 var view = new AtlasView({ "model": model });
 
                 var _this = this;

@@ -11,6 +11,7 @@ define([
             genes: [],
             cancers: [],
             selected_cancers: [],
+            model: {},
 
             events: {
                 "click .seqpeek-gene-selector li a": function(e) {
@@ -22,7 +23,9 @@ define([
             },
 
             initialize: function () {
-                this.model = this.options["model"];
+//                _.bindAll(this, "__render_features");
+
+                this.model = this.options["models"];
                 this.cancers = this.options["cancers"];
                 this.genes = this.options["genes"];
 
@@ -47,7 +50,12 @@ define([
                     this.selected_gene = this.genes[0];
                 }
 
-                this.model.on("change", this.__render, this);
+                this.model["mutations_map"].on("change", this.__render, this);
+                _.each(this.model["features"], function(m, key) {
+                    m.on("load", function() {
+                        this.__render_features(key);
+                    }, this);
+                }, this);
             },
 
             render: function() {
@@ -70,9 +78,9 @@ define([
             __render: function () {
                 console.debug("seqpeek/view.__render");
 
-                var mutations = this.__filter_data("mutations");
-                var features = this.__filter_data("features");
-                var mutsig_ranks = this.__filter_data("mutsig");
+                var mutations = this.__filter_data(this.model["mutations_map"], "mutations");
+                var features = this.__filter_data(this.model["features"]);
+                var mutsig_ranks = this.__filter_data(this.model["mutations_map"], "mutsig");
 
                 var formatter = function (value) {
                     return parseInt(value) + "%";
@@ -120,6 +128,17 @@ define([
                     var seqpeek_el = _.first($table_el.find("#seqpeek-row-" + tumor_type));
                     this.__render_track(mutation_data, region_data, seqpeek_el);
                 }, this);
+            },
+
+            __render_features: function(tumor_type) {
+                console.debug("seqpeek/view.__render_features:" + tumor_type + "," + this.selected_gene);
+
+                var tt_model = this.model["features"][tumor_type];
+                if (tt_model) {
+                    var features = _.where(tt_model.get("items"), { "gene": this.selected_gene });
+                    console.debug("seqpeek/view.__render_features:" + tumor_type + "," + this.selected_gene + ":" + features.length);
+                }
+
             },
 
             __render_track: function (all_variants, region_data, element) {
@@ -282,10 +301,10 @@ define([
                 };
             },
 
-            __filter_data: function(model_id) {
+            __filter_data: function(model, model_id) {
                 console.debug("seqpeek/view.__filter_data:" + model_id + "," + this.selected_gene);
 
-                var data_by_tumor_type = this.model.get(model_id);
+                var data_by_tumor_type = (model_id) ? model.get(model_id) : model;
                 var lowercase_gene = this.selected_gene.toLowerCase();
                 var filtered = {};
                 _.each(data_by_tumor_type, function(data, tumor_type) {

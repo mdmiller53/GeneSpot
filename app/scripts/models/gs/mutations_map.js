@@ -30,14 +30,12 @@ define(["jquery", "underscore", "backbone"],
 
                 var promises = [
                     this.__fetch_mutations(genes, tumor_types),
-                    this.__fetch_mutsig(genes, tumor_types),
-                    this.__fetch_featurematrix(genes, tumor_types)
+                    this.__fetch_mutsig(genes, tumor_types)
                 ];
 
                 var parsers = [
                     _.partial(this.__parse_mutations),
-                    _.partial(this.__parse_mutsig),
-                    _.partial(this.__parse_featurematrix)
+                    _.partial(this.__parse_mutsig)
                 ];
 
                 var that = this;

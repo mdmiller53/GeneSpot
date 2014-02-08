@@ -5,15 +5,25 @@
             "id": "seqpeekv2",
             "label": "Mutations Per Cancer Type",
             "position": {
-                "top": 170,
-                "left": 70
+                "top": 10,
+                "left": 150
             },
+            "isOpen": true,
             "views": [
                 {
                     "view": "seqpeekv2",
                     "label": "SeqPeek",
                     "datamodels": {
-                        "mutations_map": "datamodel/mutations/Mutations_Per_Cancer_type"
+                        "mutations_map": "datamodel/mutations/Mutations_Per_Cancer_type",
+                        "mutsig": "datamodel/mutations/mutsig_rankings",
+                        "features": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/feature_matrix",
+                            "base_query": {
+                                "source": "gnab",
+                                "modifier": "y_n_somatic"
+                            }
+                        }
                     }
                 }
             ]
@@ -35,8 +45,10 @@
                         "groupBy": "rank"
                     },
                     "label": "Top 20",
-                    "datamodel": "datamodel/mutations/mutsig_top20",
-                    "query_all_genes": true
+                    "datamodel": {
+                        "uri": "datamodel/mutations/mutsig_top20",
+                        "query_all_genes": true
+                    }
                 }
             ]
         },
@@ -62,15 +74,21 @@
                 "top": 20,
                 "left": 200
             },
-            "isOpen": true,
             "views": [
                 {
                     "view": "feature_matrix_distributions",
                     "label": "Feature Selector",
-                    "datamodel": "datamodel/feature_matrices",
-                    "by_tumor_type": "tumor_type",
-                    "url_suffix": "/feature_matrix",
-                    "query_clinical_variables": true
+                    "datamodels": {
+                        "gene_features": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/feature_matrix"
+                        },
+                        "clinical_features": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/feature_matrix",
+                            "query_clinical_variables": true
+                        }
+                    }
                 }
             ]
         },

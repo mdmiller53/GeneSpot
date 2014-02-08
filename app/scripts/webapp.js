@@ -77,7 +77,7 @@ define(["jquery", "underscore", "backbone",
             _.delay(function() {
                 $(alertEl).hide({ "effect": "fade" });
             }, timeout || 2000);
-        },
+        };
 
         _.bindAll(WebApp, "initialize");
 

@@ -151,7 +151,9 @@ define([
             },
 
             __reload_map_views: function (atlasMapView) {
-                console.debug("atlas.__reload_map_views");
+                if (!atlasMapView.options["isOpen"]) return;
+
+                console.debug("atlas.__reload_map_views:" + atlasMapView.id);
 
                 var gene_list = this.genelistControl.get_current();
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");

@@ -48,6 +48,7 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
 
             __close: function() {
                 this.$el.empty().remove();
+                this.options.isOpen = false;
             },
 
             __append_downloads: function(v) {

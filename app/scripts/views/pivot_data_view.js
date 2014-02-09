@@ -24,7 +24,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/data_grid"],
                     item["cell_value"] = item[this.dimensions["values"]];
                     item["cell_cls"] = this.styles["plain"];
                     if (item["cell_value"]) {
-                        _.each(this.genes, function (g) {
+                        _.each(this.options["genes"], function (g) {
                             if (_.isEqual(g.toLowerCase(), item["cell_value"].toLowerCase())) {
                                 item["cell_cls"] = this.styles["highlight"];
                             }

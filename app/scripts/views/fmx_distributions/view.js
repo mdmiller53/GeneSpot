@@ -109,6 +109,7 @@ define(["jquery", "underscore", "backbone",
                 _.each(this.options["tumor_types"], this.__aggregate_sample_types, this);
 
                 this.$el.html(Tpl({
+                    "id": this.id,
                     "genes": this.options["genes"],
                     "clinical_variables": this.options["clinical_variables"],
                     "tumor_types": this.options["tumor_types"],
@@ -166,7 +167,7 @@ define(["jquery", "underscore", "backbone",
                     radius: 20,
                     margin: { top: 15, bottom: 20, left: 15, right: 50 }
                 });
-                this.carveVis = carvObj(carvEl.selector);
+                this.carveVis = carvObj("#" + this.id + "_vis");
             },
 
             __load_fdefs_genes: function (tumor_type) {

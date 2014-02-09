@@ -1,85 +1,84 @@
-define([ "jquery", "underscore", "backbone",
-    "views/gs/atlas_map_tab", "hbs!templates/gs/atlas_map", "hbs!templates/open_link" ],
-    function ($, _, Backbone, ViewSpec, Tpl, OpenLinkTpl) {
+define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!templates/open_link" ],
+    function ($, _, Backbone, Tpl, OpenLinkTpl) {
         return Backbone.View.extend({
             events: {
                 "click a.refresh-me": function () {
-                    this.$el.find(".download-link").remove();
-                    this.trigger("refresh");
+                    this.$(".download-link").remove();
+                    this.trigger("refresh", this);
                 },
                 "click .close": function() {
-                    this.$el.hide({ "always": this.closeOut });
+                    this.$el.hide({ "always": this.__close });
                 }
             },
 
             initialize: function() {
-                _.bindAll(this, "closeOut", "append_downloads");
+                _.bindAll(this, "__close");
 
-                var uid = Math.round(Math.random() * 10000);
-                this.view_specs = _.map(this.options["views"], function(view_spec) {
-                    return new ViewSpec(_.extend({ "uid": uid++, "parent_id": this.id }, view_spec));
-                }, this);
+                this.id = "atlas_map_" + Math.round(Math.random() * 10000);
+                this.views = this.options["views"];
             },
 
             render: function () {
-                this.$el.html(Tpl(_.extend({
-                    "id": this.id,
-                    "downloads": this.has_downloads(),
-                    "views": this.view_specs
-                }, _.omit(this.options, "views"))));
+                var has_downloads = _.find(this.views, function(v) {
+                    return v.options && (v.options["datamodel"] || v.options["datamodels"]);
+                });
 
-                this.$el.find(".info-me").popover({
+                this.$el.html(Tpl(_.extend({ "id": this.id, "downloads": has_downloads }, this.options, {
+                    "views": _.map(this.views, function(view) {
+                        return { "uid": view.id, "label": view.options["label"] };
+                    })
+                })));
+
+                this.$(".info-me").popover({
                     "title": "Description",
                     "trigger": "hover",
                     "content": this.options["description"]
                 });
 
-                _.each(this.view_specs, function (view_spec) {
-                    view_spec["$targetEl"] = this.$el.find("#tab_" + view_spec["uid"]);
-                    view_spec.on("ready", function(v) {
-                        this.append_downloads(view_spec, v);
-                    }, this);
+                _.each(this.views, this.__append_downloads, this);
+                _.each(this.views, function (view) {
+                    this.$("#tab_" + view.id).html(view.render().el);
                 }, this);
 
                 this.$el.draggable({ "scroll": true, "cancel": ".map-contents" });
-                this.$el.find(".atlas-map").resizable({ "grid": [ 20, 10 ] });
+                this.$(".atlas-map").resizable({ "grid": [ 20, 10 ] });
                 return this;
             },
 
-            closeOut: function() {
+            __close: function() {
                 this.$el.empty().remove();
             },
 
-            append_downloads: function(view_spec, v) {
-                var $targetEl = this.$el.find(".download-links");
-                if (view_spec["datamodel"] && v["model"]) {
-                    var m = v["model"];
-                    var url = this.outputTsvQueryUrl(m.get("url"), m.get("query"), view_spec["label"]);
-                    $targetEl.append(OpenLinkTpl({ "label": view_spec["label"], "url": url, "li_class": "download-link" }));
+            __append_downloads: function(v) {
+                var $targetEl = this.$(".download-links");
+                if (_.has(v.options, "model")) {
+                    var label = v.options["label"];
+                    var m = v.options["model"];
+                    var url = this.__tsv_query_url(m["url"], m["query"], label);
+                    $targetEl.append(OpenLinkTpl({ "label": label, "url": url, "li_class": "download-link" }));
                 }
 
-                if (view_spec["datamodels"] && v.options["models"]) {
+                if (_.has(v.options, "models")) {
                     _.each(v.options["models"], function(m, key) {
-                        var url = this.outputTsvQueryUrl(m.get("url"), m.get("query"), view_spec["label"] + "_" + key);
-                        $targetEl.append(OpenLinkTpl({ "label": view_spec["label"] + " (" + key + ")", "url": url }));
-                    }, this);
-                }
-
-                if (view_spec["by_tumor_type"] && v.options["models"]) {
-                    _.each(v.options["models"], function(m, key) {
-                        var url = this.outputTsvQueryUrl(m.get("url"), m.get("query"), view_spec["label"] + "_" + key);
-                        $targetEl.append(OpenLinkTpl({ "label": view_spec["label"] + " (" + key + ")", "url": url }));
+                        if (m["by_tumor_type"]) {
+                            _.each(m, function(mm, tumor_type) {
+                                if (_.isEqual(tumor_type, "by_tumor_type")) return;
+                                var filelabel = v.options["label"] + "_" + tumor_type + "_" + key;
+                                var linklabel = v.options["label"] + " (" + key + "): " + tumor_type;
+                                var url = this.__tsv_query_url(mm["url"], mm["query"], filelabel);
+                                $targetEl.append(OpenLinkTpl({ "label": linklabel, "url": url }));
+                            }, this);
+                        } else {
+                            var filelabel = v.options["label"] + "_" + key;
+                            var linklabel = v.options["label"] + " (" + key + ")";
+                            var url = this.__tsv_query_url(m["url"], m["query"], filelabel);
+                            $targetEl.append(OpenLinkTpl({ "label": linklabel, "url": url }));
+                        }
                     }, this);
                 }
             },
 
-            has_downloads: function() {
-                return _.find(this.view_specs, function(view_spec) {
-                    return view_spec["datamodel"] || view_spec["datamodels"];
-                });
-            },
-
-            outputTsvQueryUrl: function(url, query, label) {
+            __tsv_query_url: function(url, query, label) {
                 var qsarray = [];
                 _.each(query, function (values, key) {
                     if (_.isArray(values)) {

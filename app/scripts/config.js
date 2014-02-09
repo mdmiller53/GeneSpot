@@ -67,7 +67,14 @@ require(
         "models/gs/by_tumor_type",
         "models/gs/mutations_interpro",
         "models/gs/mutations_map",
-        "models/gs/sample_types"
+        "models/gs/sample_types",
+
+        "views/gs/atlas_quick_tutorial",
+        "views/gs/atlas_maptext_view",
+        "views/stacksvis/view",
+        "views/fmx_distributions/view",
+        "views/seqpeek/view",
+        "views/pubcrawl/view"
     ],
     function () {
         console.log("making modules available for dynamic loading");

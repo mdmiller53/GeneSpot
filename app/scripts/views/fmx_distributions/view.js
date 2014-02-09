@@ -12,7 +12,7 @@ define(["jquery", "underscore", "backbone",
             feature_definitions: {},
             feature_definitions_by_id: {},
             aggregate_features_by_id: {},
-            sample_types_by_sample: {},
+            sample_types_lookup: {},
 
             events: {
                 "click .dropdown-menu.fmx-dist-tumor-types-selector a": function (e) {
@@ -90,6 +90,8 @@ define(["jquery", "underscore", "backbone",
             },
 
             initialize: function () {
+                console.debug("fmx-dist.initialize");
+
                 _.bindAll(this, "__load_fdefs_genes", "__load_fdefs_clinvars");
                 _.bindAll(this, "__draw", "__init_graph");
 
@@ -117,9 +119,12 @@ define(["jquery", "underscore", "backbone",
             },
 
             render: function() {
+                console.debug("fmx-dist.render");
+
                 _.defer(this.__init_graph);
 
                 this.__init_selected_genes();
+                _.each(this.options["tumor_types"], this.__aggregate_sample_types, this);
 
                 this.$el.html(Tpl({
                     "genes": this.options["genes"],
@@ -133,6 +138,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __init_sample_types: function() {
+                console.debug("fmx-dist.__init_sample_types");
                 var sample_type_models = WebApp.Lookups.get("sample_types") || {};
                 var models = _.values(sample_type_models) || [];
                 var firstModel = _.first(models) || new Backbone.Model();
@@ -142,6 +148,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __init_selected_genes: function () {
+                console.debug("fmx-dist.__init_selected_genes");
                 this.selected_genes = {
                     "x": _.first(this.options["genes"]),
                     "y": _.first(this.options["genes"])
@@ -199,12 +206,18 @@ define(["jquery", "underscore", "backbone",
                     a_f_by_id[tumor_type] = item;
                     this.feature_definitions_by_id[item.id] = _.omit(item, "values");
                 }, this);
+            },
+
+            __aggregate_sample_types: function(tumor_type) {
+                if (this.sample_types_lookup[tumor_type]) return;
 
                 var sampleTypes = WebApp.Lookups.get("sample_types");
                 if (sampleTypes && _.has(sampleTypes, tumor_type)) {
+                    console.debug("fmx-dist.__aggregate_sample_types(" + tumor_type + ")");
+                    this.sample_types_lookup[tumor_type] = {};
                     _.each(sampleTypes[tumor_type].get("by_sample_type"), function(samples, sample_type) {
                         _.each(samples, function(sample) {
-                            this.sample_types_by_sample[sample] = sample_type;
+                            this.sample_types_lookup[tumor_type][sample] = sample_type;
                         }, this);
                     }, this);
                 }
@@ -367,6 +380,8 @@ define(["jquery", "underscore", "backbone",
 
             __visdata: function (tumor_types, X_feature_id, Y_feature_id) {
                 var data = _.map(tumor_types, function (tumor_type) {
+                    var stl = this.sample_types_lookup[tumor_type] || {};
+
                     var X_feature_by_tumor_type = this.aggregate_features_by_id[X_feature_id] || {};
                     var X_feature = X_feature_by_tumor_type[tumor_type] || {};
 
@@ -381,7 +396,7 @@ define(["jquery", "underscore", "backbone",
                     return _.map(X_feature["values"], function (X_value, X_key) {
                         if (X_value === "NA") return null;
 
-                        var sample_type = this.sample_types_by_sample[X_key];
+                        var sample_type = stl[X_key];
                         if (this.selected_sample_type && !_.isEqual(sample_type, this.selected_sample_type)) return null;
 
                         var Y_value = Y_feature["values"][X_key];

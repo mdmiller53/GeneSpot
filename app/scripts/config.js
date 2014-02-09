@@ -65,8 +65,6 @@ require(
         "models/annotations",
         "models/feature_matrix",
         "models/gs/by_tumor_type",
-        "models/gs/mutations_interpro",
-        "models/gs/mutations_map",
         "models/gs/sample_types",
 
         "views/gs/atlas_quick_tutorial",

@@ -2,19 +2,18 @@
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "maps": [
         {
-            "id": "seqpeekv2",
-            "label": "Mutations Per Cancer Type",
+            "id": "mutations_per_tumor_type",
+            "label": "Mutations per Tumor Type",
             "position": {
                 "top": 10,
                 "left": 150
             },
-            "isOpen": true,
             "views": [
                 {
-                    "view": "seqpeekv2",
+                    "view": "views/seqpeek/view",
                     "label": "SeqPeek",
                     "datamodels": {
-                        "mutations_map": "datamodel/mutations/Mutations_Per_Cancer_type",
+                        "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
                         "mutsig": "datamodel/mutations/mutsig_rankings",
                         "features": {
                             "uri": "datamodel/feature_matrices",
@@ -38,7 +37,7 @@
             },
             "views": [
                 {
-                    "view": "pivot_data_view",
+                    "view": "views/pivot_data_view",
                     "dimensions": {
                         "pivot": "cancer",
                         "values": "gene",
@@ -61,7 +60,7 @@
             "disabled": true,
             "views": [
                 {
-                    "view": "pubcrawl_network",
+                    "view": "views/pubcrawl/view",
                     "label": "Network",
                     "source": "pubcrawl/search/graph"
                 }
@@ -74,9 +73,10 @@
                 "top": 20,
                 "left": 200
             },
+            "isOpen": true,
             "views": [
                 {
-                    "view": "feature_matrix_distributions",
+                    "view": "views/fmx_distributions/view",
                     "label": "Feature Selector",
                     "datamodels": {
                         "gene_features": {
@@ -101,7 +101,7 @@
             },
             "views": [
                 {
-                    "view": "stacksvis",
+                    "view": "views/stacksvis/view",
                     "label": "Distributions",
                     "datamodels": {
                         "copy_number": "datamodel/copy_number/copy_number_gistic2",
@@ -120,13 +120,13 @@
             },
             "views": [
                 {
-                    "view": "atlas_quick_tutorial",
+                    "view": "views/gs/atlas_quick_tutorial",
                     "label": "Quick Guide"
                 },
                 {
-                    "view": "atlas_maptext",
+                    "view": "views/gs/atlas_maptext_view",
                     "label": "Overview",
-                    "text": "This tool provides a way to view TCGA data from a gene-centric point-of-view. It includes a number of interactive visualizations, and allows the user to save their current exploration. This application also enables the user to select specific cancers and genes of interest, and load data that is generated from a variety of TCGA analysis.",
+                    "text": "This tool provides a way to view TCGA data from a gene-centric point-of-view. It includes a number of interactive visualizations, and allows the user to save their current exploration. This application also enables the user to select specific tumor types and genes of interest, and load data that is generated from a variety of TCGA analysis.",
                     "links": [
                         {
                             "label": "TCGA Home",
@@ -143,7 +143,7 @@
                     ]
                 },
                 {
-                    "view": "atlas_maptext",
+                    "view": "views/gs/atlas_maptext_view",
                     "label": "Software Releases",
                     "text": "The GeneSpot team follows Agile software practices. Our primary goal is to prioritize new features and bug fixes and rapidly deploy them to users. We welcome you to visit our development sandbox to preview and test new and experimental features.",
                     "links": [

@@ -93,21 +93,22 @@ define(["jquery", "underscore", "backbone",
                 _.bindAll(this, "__load_fdefs_genes", "__load_fdefs_clinvars");
                 _.bindAll(this, "__draw", "__init_graph");
 
-                this.selected_tumor_types = WebApp.UserPreferences.get("selected_tumor_types");
+                this.model = this.options["models"];
 
                 this.__init_sample_types();
-                this.__init_selected_genes();
 
-                var numberOfModels = _.keys(this.options["models"]).length +
-                                     _.keys(this.options["clinicalvars_models"]).length;
-                var drawFn = _.after(numberOfModels, this.__draw);
-                _.each(this.options["models"], function (model, tumor_type) {
+                var drawFn = _.after(this.options["all_models"].length, this.__draw);
+                _.each(this.model["gene_features"], function (model, tumor_type) {
+                    if (_.isEqual(tumor_type, "by_tumor_type")) return;
+
                     model.on("load", function () {
                         _.defer(this.__load_fdefs_genes, tumor_type);
                         _.defer(drawFn);
                     }, this);
                 }, this);
-                _.each(this.options["clinicalvars_models"], function (model, tumor_type) {
+                _.each(this.model["clinical_features"], function (model, tumor_type) {
+                    if (_.isEqual(tumor_type, "by_tumor_type")) return;
+
                     model.on("load", function () {
                         _.defer(this.__load_fdefs_clinvars, tumor_type);
                         _.defer(drawFn);
@@ -118,10 +119,12 @@ define(["jquery", "underscore", "backbone",
             render: function() {
                 _.defer(this.__init_graph);
 
+                this.__init_selected_genes();
+
                 this.$el.html(Tpl({
                     "genes": this.options["genes"],
                     "clinical_variables": this.options["clinical_variables"],
-                    "tumor_types": this.selected_tumor_types,
+                    "tumor_types": this.options["tumor_types"],
                     "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes
                 }));
@@ -159,7 +162,7 @@ define(["jquery", "underscore", "backbone",
             __load_fdefs_genes: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_genes(" + tumor_type + ")");
 
-                var items_by_gene = _.groupBy(this.options["models"][tumor_type].get("items"), "gene");
+                var items_by_gene = _.groupBy(this.model["gene_features"][tumor_type].get("items"), "gene");
                 _.each(items_by_gene, function (item_by_gene, gene) {
                     var fd_by_gene = this.feature_definitions[gene];
                     if (_.isUndefined(fd_by_gene)) fd_by_gene = this.feature_definitions[gene] = {};
@@ -175,7 +178,7 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
 
-                this.__aggregate(tumor_type, this.options["models"][tumor_type]);
+                this.__aggregate(tumor_type, this.model["gene_features"][tumor_type]);
                 this.__render_fLabel_selectors("x");
                 this.__render_fLabel_selectors("y");
             },
@@ -185,7 +188,7 @@ define(["jquery", "underscore", "backbone",
                 _.each(this.options["clinical_variables"], function(item) {
                     this.feature_definitions_by_id[item.id] = _.extend({}, item);
                 }, this);
-                this.__aggregate(tumor_type, this.options["clinicalvars_models"][tumor_type]);
+                this.__aggregate(tumor_type, this.model["clinical_features"][tumor_type]);
             },
 
             __aggregate: function(tumor_type, model) {
@@ -290,10 +293,9 @@ define(["jquery", "underscore", "backbone",
 
                 var data = null;
                 if (this.selected_tumor_type) {
-                    var selected_tt = _.findWhere(this.selected_tumor_types, { "id": this.selected_tumor_type });
-                    data = this.__visdata([selected_tt], X_feature.id, Y_feature.id);
+                    data = this.__visdata([this.selected_tumor_type], X_feature.id, Y_feature.id);
                 } else {
-                    data = this.__visdata(this.selected_tumor_types, X_feature.id, Y_feature.id);
+                    data = this.__visdata(this.options["tumor_types"], X_feature.id, Y_feature.id);
                 }
                 if (_.isEmpty(data)) {
                     console.debug("fmx-dist.__draw:no_data_found");
@@ -309,8 +311,12 @@ define(["jquery", "underscore", "backbone",
                 console.debug("fmx-dist.__draw:data=" + JSON.stringify(_.countBy(data, "tumor_type")));
 
                 var color_by_label = "tumor_type";
-                var color_by_list = _.pluck(this.selected_tumor_types, "id");
-                var color_by_colors = _.pluck(this.selected_tumor_types, "color");
+                var color_by_list = this.options["tumor_types"];
+                var tumor_types_by_id = _.indexBy(WebApp.Lookups.get("tumor_types").get("items"), "id");
+                var color_by_colors = _.map(this.options["tumor_types"], function(tumor_type) {
+                    if (tumor_types_by_id[tumor_type]) return tumor_types_by_id[tumor_type]["color"] || "red";
+                    return "red";
+                }, this);
 
                 if (_.isEqual(this.selected_color_by, "sample_type") || _.has(this.feature_definitions_by_id, this.selected_color_by)) {
                     color_by_label = this.selected_color_by;
@@ -362,13 +368,13 @@ define(["jquery", "underscore", "backbone",
             __visdata: function (tumor_types, X_feature_id, Y_feature_id) {
                 var data = _.map(tumor_types, function (tumor_type) {
                     var X_feature_by_tumor_type = this.aggregate_features_by_id[X_feature_id] || {};
-                    var X_feature = X_feature_by_tumor_type[tumor_type.id] || {};
+                    var X_feature = X_feature_by_tumor_type[tumor_type] || {};
 
                     var Y_feature_by_tumor_type = this.aggregate_features_by_id[Y_feature_id] || {};
-                    var Y_feature = Y_feature_by_tumor_type[tumor_type.id] || {};
+                    var Y_feature = Y_feature_by_tumor_type[tumor_type] || {};
 
                     var Cby_feature_by_tumor_type = this.aggregate_features_by_id[this.selected_color_by] || {};
-                    var Cby_feature = Cby_feature_by_tumor_type[tumor_type.id] || {};
+                    var Cby_feature = Cby_feature_by_tumor_type[tumor_type] || {};
 
                     if (!_.has(X_feature, "values") || !_.has(Y_feature, "values")) return null;
 
@@ -385,7 +391,7 @@ define(["jquery", "underscore", "backbone",
                         if (_.isNumber(Y_value)) Y_value = parseFloat(Y_value);
 
                         var datapoint = {
-                            "tumor_type": tumor_type.id,
+                            "tumor_type": tumor_type,
                             "sample": X_key,
                             "x": X_value,
                             "y": Y_value,

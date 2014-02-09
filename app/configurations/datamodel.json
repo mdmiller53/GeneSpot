@@ -3,30 +3,14 @@
         "mutations": {
             "label": "Mutations",
             "catalog": {
-                "Protein_Mutations_Per_Cancer_Type": {
-                    "service": "datastores/mutations/interpro/mutations",
-                    "label": "Protein Mutations Per Cancer Type",
-                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
-                    "model": "models/gs/mutations_interpro",
-                    "interpro": "datamodel/reference_data/interpro"
-                },
-                "Mutations_Per_Cancer_type": {
-                    "label": "Mutations Per Cancer type",
-                    "service": "svc/datastores/mutations/qed_lookups/mutations_pancan",
-                    "protein_db": "svc/datastores/interpro/interpro/interpro",
-                    "mutsig_rankings_service": "svc/datastores/mutations/qed_lookups/mutsig_rankings",
-                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose",
-                    "model": "models/gs/mutations_map",
-                    "feature_matrix_service": "svc/datastores/mutations/qed_lookups",
-                    "feature_matrix_collection": "fmx_newMerge_05nov",
-                    "lookups": ["genes", "cancers"],
-                    "view_options": {
-                        "default_cancer_types": ["UCEC", "BRCA", "GBM"]
-                    }
+                "Mutations_Per_Tumor_Type": {
+                    "label": "Mutations per Tumor Type",
+                    "service": "datastores/mutations/qed_lookups/mutations_pancan",
+                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose"
                 },
                 "mutsig_rankings": {
                     "label": "MutSig Rankings",
-                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_pancan",
+                    "service": "datastores/mutations/qed_lookups/mutsig_rankings",
                     "description": "This dataset was prepared from TCGA MutSig 2.0 data produced by Firehose"
                 },
                 "mutsig_top20": {

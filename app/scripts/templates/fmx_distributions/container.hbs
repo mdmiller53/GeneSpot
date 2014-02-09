@@ -9,7 +9,7 @@
                     <li class="active"><a href="#" onclick="return false;" data-id="all_tumor_types">All</a></li>
                     <li class="divider"></li>
                     {{#each tumor_types}}
-                    <li><a href="#" onclick="return false;" data-id="{{id}}">{{id}}</a></li>
+                    <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
                     {{/each}}
                 </ul>
             </div>

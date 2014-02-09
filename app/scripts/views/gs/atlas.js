@@ -125,7 +125,6 @@ define([
                 var views = _.map(map_template.get("view_templates"), function(view_template) {
                     return view_template.spin({
                         "genes": gene_list,
-                        "cancers": tumor_type_list,
                         "tumor_types": tumor_type_list,
                         "clinical_variables": clinvar_list
                     });
@@ -158,12 +157,11 @@ define([
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 var clinvar_list = this.clinicalListControl.get_current() || [];
 
-                atlasMapView.render(); // TODO: Set element on atlasMapView
+                atlasMapView.render();
 
                 _.each(atlasMapView["views"], function(view) {
                     view.options = _.extend(view.options, {
                         "genes": gene_list,
-                        "cancers": tumor_type_list,
                         "tumor_types": tumor_type_list,
                         "clinical_variables": clinvar_list
                     });

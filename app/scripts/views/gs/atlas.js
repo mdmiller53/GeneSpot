@@ -157,14 +157,17 @@ define([
                 var tumor_type_list = _.pluck(WebApp.UserPreferences.get("selected_tumor_types"), "id");
                 var clinvar_list = this.clinicalListControl.get_current() || [];
 
-                atlasMapView.render();
-
                 _.each(atlasMapView["views"], function(view) {
                     view.options = _.extend(view.options, {
                         "genes": gene_list,
                         "tumor_types": tumor_type_list,
                         "clinical_variables": clinvar_list
                     });
+                }, this);
+
+                atlasMapView.render();
+
+                _.each(atlasMapView["views"], function(view) {
                     this.__load_model_data(view, gene_list, tumor_type_list, clinvar_list);
                 }, this);
             },
@@ -177,7 +180,10 @@ define([
                     var data = model["base_query"] || {};
                     if (!model["tumor_type"]) data["cancer"] = tumor_type_list;
 
-                    if (model["query_clinical_variables"] && !_.isEmpty(clinvar_list)) {
+                    if (model["query_clinical_variables"]) {
+                        if (_.isEmpty(clinvar_list)) {
+                            return;
+                        }
                         data["id"] = _.pluck(clinvar_list, "id");
                     } else if (!model["query_all_genes"]) {
                         data["gene"] = gene_list;

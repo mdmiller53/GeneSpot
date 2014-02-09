@@ -25,7 +25,7 @@ define(["jquery", "underscore", "backbone",
                         this.selected_tumor_type = tumor_type;
                     }
 
-                    this.$el.find(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
@@ -41,7 +41,7 @@ define(["jquery", "underscore", "backbone",
                         this.selected_sample_type = sample_type;
                     }
 
-                    this.$el.find(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
@@ -53,7 +53,7 @@ define(["jquery", "underscore", "backbone",
                     this.selected_color_by = color_by;
                     if (color_by === "tumor_type") this.selected_color_by = null;
 
-                    this.$el.find(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
@@ -69,7 +69,7 @@ define(["jquery", "underscore", "backbone",
                         var selected_item = $(e.target).data("id");
                         if (selected_item) {
                             console.debug("fmx-dist.highlight:" + selected_item);
-                            this.$el.find(".legend-items").find(".active").removeClass("active");
+                            this.$(".legend-items").find(".active").removeClass("active");
                             LI.addClass("active");
                             this.carveVis.highlight(selected_item).render();
                         }
@@ -98,24 +98,6 @@ define(["jquery", "underscore", "backbone",
                 this.model = this.options["models"];
 
                 this.__init_sample_types();
-
-                var drawFn = _.after(this.options["all_models"].length, this.__draw);
-                _.each(this.model["gene_features"], function (model, tumor_type) {
-                    if (_.isEqual(tumor_type, "by_tumor_type")) return;
-
-                    model.on("load", function () {
-                        _.defer(this.__load_fdefs_genes, tumor_type);
-                        _.defer(drawFn);
-                    }, this);
-                }, this);
-                _.each(this.model["clinical_features"], function (model, tumor_type) {
-                    if (_.isEqual(tumor_type, "by_tumor_type")) return;
-
-                    model.on("load", function () {
-                        _.defer(this.__load_fdefs_clinvars, tumor_type);
-                        _.defer(drawFn);
-                    }, this);
-                }, this);
             },
 
             render: function() {
@@ -134,6 +116,27 @@ define(["jquery", "underscore", "backbone",
                     "selected_genes": this.selected_genes
                 }));
 
+                this.__draw = _.after(this.options["all_models"].length, this.__draw);
+                _.each(this.options["all_models"], function (model) {
+                    if (model["query_clinical_variables"]) {
+                        if (_.isEmpty(this.options["clinical_variables"])) {
+                            _.defer(this.__draw);
+                            return;
+                        }
+
+                        model.on("load", function () {
+                            _.defer(this.__load_fdefs_clinvars, model.tumor_type);
+                            _.defer(this.__draw);
+                            model.off("load");
+                        }, this);
+                    } else {
+                        model.on("load", function () {
+                            _.defer(this.__load_fdefs_genes, model.tumor_type);
+                            _.defer(this.__draw);
+                            model.off("load");
+                        }, this);
+                    }
+                }, this);
                 return this;
             },
 
@@ -158,7 +161,7 @@ define(["jquery", "underscore", "backbone",
 
             __init_graph: function () {
                 console.debug("fmx-dist.__init_graph");
-                var carvEl = this.$el.find(".fmx-dist-container").empty();
+                var carvEl = this.$(".fmx-dist-container").empty();
                 var carvObj = carve({
                     radius: 20,
                     margin: { top: 15, bottom: 20, left: 15, right: 50 }
@@ -233,11 +236,11 @@ define(["jquery", "underscore", "backbone",
             },
 
             __render_fLabel_selectors_genes: function(axis) {
-                this.$el.find(".selected-gene-" + axis).html(this.selected_genes[axis]);
+                this.$(".selected-gene-" + axis).html(this.selected_genes[axis]);
 
                 var fd_by_gene = this.feature_definitions[this.selected_genes[axis]];
 
-                var $feature_selector = this.$el.find(".feature-selector-" + axis).empty();
+                var $feature_selector = this.$(".feature-selector-" + axis).empty();
 
                 var uid = Math.round(Math.random() * 10000);
                 var fdefs_uid_by_source = {};
@@ -270,10 +273,10 @@ define(["jquery", "underscore", "backbone",
             __render_fLabel_selectors_clinvars: function(axis) {
                 console.debug("fmx-dist.__render_fLabel_selectors_clinvars(" + axis + "):" + this.selected_genes[axis]);
 
-                this.$el.find(".selected-gene-" + axis).html("Clinical Variables");
+                this.$(".selected-gene-" + axis).html("Clinical Variables");
 
                 var uid = Math.round(Math.random() * 10000);
-                this.$el.find(".feature-selector-" + axis).html(ClinVarFeatureDefsTpl({"axis":axis, "uid": uid}));
+                this.$(".feature-selector-" + axis).html(ClinVarFeatureDefsTpl({"axis":axis, "uid": uid}));
 
                 var $tabEl = $("#tab-pane-clinvars-" + uid);
                 _.each(this.options["clinical_variables"], function(clinical_variable) {
@@ -296,7 +299,7 @@ define(["jquery", "underscore", "backbone",
 
             __draw: function () {
                 console.debug("fmx-dist.__draw:selected=" + JSON.stringify(this.selected_features));
-                this.$el.find(".alert").hide();
+                this.$(".alert").hide();
 
                 if (!this.selected_features["x"]) return;
                 if (!this.selected_features["y"]) return;
@@ -312,7 +315,7 @@ define(["jquery", "underscore", "backbone",
                 }
                 if (_.isEmpty(data)) {
                     console.debug("fmx-dist.__draw:no_data_found");
-                    WebApp.alert(this.$el.find(".no-data-found"), 3000);
+                    WebApp.alert(this.$(".no-data-found"), 3000);
 
                     // TODO: Figure out how to properly clear the graph
                     _.defer(this.__init_graph);
@@ -360,7 +363,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __legend: function() {
-                this.$el.find(".legend-items").empty();
+                this.$(".legend-items").empty();
                 var colorBy = this.carveVis.colorBy();
                 var color_by_list = colorBy["list"];
                 var color_by_colors = colorBy["colors"];
@@ -368,7 +371,7 @@ define(["jquery", "underscore", "backbone",
                 if (_.isArray(color_by_list) && _.isArray(color_by_colors)) {
                     if (_.isEqual(color_by_list.length, color_by_colors.length)) {
                         _.each(color_by_list, function (color_by, idx) {
-                            this.$el.find(".legend-items").append(LegendTpl({
+                            this.$(".legend-items").append(LegendTpl({
                                 "id": color_by,
                                 "label": color_by,
                                 "color": color_by_colors[idx]

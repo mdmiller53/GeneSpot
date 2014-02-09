@@ -38,6 +38,7 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
                 _.each(this.views, this.__append_downloads, this);
                 _.each(this.views, function (view) {
                     this.$("#tab_" + view.id).html(view.render().el);
+                    view.delegateEvents();
                 }, this);
 
                 this.$el.draggable({ "scroll": true, "cancel": ".map-contents" });

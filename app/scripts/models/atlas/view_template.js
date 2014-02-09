@@ -23,12 +23,12 @@ define(["jquery", "underscore", "backbone"],
                     _.each(_.keys(this.get("datamodels")), function (datamodel_key) {
                         var model_template = this.get("model_templates").get(datamodel_key);
                         if (model_template["by_tumor_type"]) {
-                            model_bucket[datamodel_key] = { "by_tumor_type": true };
-                            _.each(model_template, function (mtpl, tumor_type) {
+                            model_bucket[datamodel_key] = { "by_tumor_type": {} };
+                            _.each(model_template["by_tumor_type"], function (mtpl, tumor_type) {
                                 if (!_.contains(options["tumor_types"], tumor_type)) return;
 
                                 var model = express_model(mtpl);
-                                model_bucket[datamodel_key][tumor_type] = model;
+                                model_bucket[datamodel_key]["by_tumor_type"][tumor_type] = model;
                                 models.push(model);
                             }, this);
                         } else {
@@ -61,11 +61,11 @@ define(["jquery", "underscore", "backbone"],
 
                     var mtpl_tt = this.get("model_templates").get(datamodel_key);
                     if (_.isUndefined(mtpl_tt)) {
-                        mtpl_tt = { "by_tumor_type": true };
+                        mtpl_tt = { "by_tumor_type": {} };
                         this.get("model_templates").set(datamodel_key, mtpl_tt);
                     }
 
-                    mtpl_tt[tumor_type] = { "Model": Model, "options": model_options };
+                    mtpl_tt["by_tumor_type"][tumor_type] = { "Model": Model, "options": model_options };
 
                 } else {
                     this.get("model_templates").set(datamodel_key, { "Model": Model, "options": model_options });

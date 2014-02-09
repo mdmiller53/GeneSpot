@@ -37,7 +37,7 @@ define([
                 this.model["mutations"].on("load", renderFn, this);
                 this.model["mutsig"].on("load", renderFn, this);
                 _.each(this.tumor_types, function(tumor_type) {
-                    var m = this.model["features"][tumor_type];
+                    var m = this.model["features"]["by_tumor_type"][tumor_type];
                     m.on("load", renderFn, this);
                 }, this);
 
@@ -295,7 +295,7 @@ define([
                 console.debug("seqpeek/view.__filter_features:" + this.selected_gene);
 
                 var filtered = _.map(this.tumor_types, function(tumor_type) {
-                    var model = this.model["features"][tumor_type];
+                    var model = this.model["features"]["by_tumor_type"][tumor_type];
                     var items = _.where(model.get("items"), { "gene": this.selected_gene });
                     return _.map(items, function(item) {
                         return _.extend({ "cancer": tumor_type }, item);

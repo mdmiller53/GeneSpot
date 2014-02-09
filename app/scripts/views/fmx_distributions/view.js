@@ -173,7 +173,7 @@ define(["jquery", "underscore", "backbone",
             __load_fdefs_genes: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_genes(" + tumor_type + ")");
 
-                var items_by_gene = _.groupBy(this.model["gene_features"][tumor_type].get("items"), "gene");
+                var items_by_gene = _.groupBy(this.model["gene_features"]["by_tumor_type"][tumor_type].get("items"), "gene");
                 _.each(items_by_gene, function (item_by_gene, gene) {
                     var fd_by_gene = this.feature_definitions[gene];
                     if (_.isUndefined(fd_by_gene)) fd_by_gene = this.feature_definitions[gene] = {};
@@ -189,7 +189,7 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
 
-                this.__aggregate(tumor_type, this.model["gene_features"][tumor_type]);
+                this.__aggregate(tumor_type, this.model["gene_features"]["by_tumor_type"][tumor_type]);
                 this.__render_fLabel_selectors("x");
                 this.__render_fLabel_selectors("y");
             },
@@ -199,7 +199,7 @@ define(["jquery", "underscore", "backbone",
                 _.each(this.options["clinical_variables"], function(item) {
                     this.feature_definitions_by_id[item.id] = _.extend({}, item);
                 }, this);
-                this.__aggregate(tumor_type, this.model["clinical_features"][tumor_type]);
+                this.__aggregate(tumor_type, this.model["clinical_features"]["by_tumor_type"][tumor_type]);
             },
 
             __aggregate: function(tumor_type, model) {

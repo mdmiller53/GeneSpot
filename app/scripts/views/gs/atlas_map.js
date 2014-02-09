@@ -63,18 +63,15 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
                 if (_.has(v.options, "models")) {
                     _.each(v.options["models"], function(m, key) {
                         if (m["by_tumor_type"]) {
-                            _.each(m, function(mm, tumor_type) {
-                                if (_.isEqual(tumor_type, "by_tumor_type")) return;
+                            _.each(m["by_tumor_type"], function(mm, tumor_type) {
                                 var filelabel = v.options["label"] + "_" + tumor_type + "_" + key;
-                                var linklabel = v.options["label"] + " (" + key + "): " + tumor_type;
+                                var linklabel = v.options["label"] + ": " + key + "_" + tumor_type;
                                 var url = this.__tsv_query_url(mm["url"], mm["query"], filelabel);
                                 $targetEl.append(OpenLinkTpl({ "label": linklabel, "url": url }));
                             }, this);
                         } else {
-                            var filelabel = v.options["label"] + "_" + key;
-                            var linklabel = v.options["label"] + " (" + key + ")";
-                            var url = this.__tsv_query_url(m["url"], m["query"], filelabel);
-                            $targetEl.append(OpenLinkTpl({ "label": linklabel, "url": url }));
+                            var url = this.__tsv_query_url(m["url"], m["query"], v.options["label"] + "_" + key);
+                            $targetEl.append(OpenLinkTpl({ "label": v.options["label"] + ": " + key, "url": url }));
                         }
                     }, this);
                 }

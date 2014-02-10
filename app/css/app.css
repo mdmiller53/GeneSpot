@@ -97,3 +97,7 @@
     height: 20px;
     margin-top: -5px;
 }
+
+.capitalized {
+    text-transform:capitalize;
+}

@@ -1,5 +1,6 @@
-define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!templates/open_link" ],
-    function ($, _, Backbone, Tpl, OpenLinkTpl) {
+define([ "jquery", "underscore", "backbone",
+    "hbs!templates/gs/atlas_map", "hbs!templates/open_link", "hbs!templates/open_links_grouped" ],
+    function ($, _, Backbone, Tpl, OpenLinkTpl, GroupedLinksTpl) {
         return Backbone.View.extend({
             events: {
                 "click a.refresh-me": function () {
@@ -56,24 +57,29 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
                 if (_.has(v.options, "model")) {
                     var label = v.options["label"];
                     var m = v.options["model"];
-                    var url = this.__tsv_query_url(m["url"], m["query"], label);
+                    var url = this.__tsv_query_url(m["url"], m["query"], label.toLowerCase());
                     $targetEl.append(OpenLinkTpl({ "label": label, "url": url, "li_class": "download-link" }));
                 }
 
+                var view_label = v.options["label"];
                 if (_.has(v.options, "models")) {
-                    _.each(v.options["models"], function(m, key) {
+                    var groups = _.map(v.options["models"], function (m, datamodel_key) {
+                        var d_label = datamodel_key.replace("_", " ");
+                        var f_label = (view_label + "_" + datamodel_key).toLowerCase();
                         if (m["by_tumor_type"]) {
-                            _.each(m["by_tumor_type"], function(mm, tumor_type) {
-                                var filelabel = v.options["label"] + "_" + tumor_type + "_" + key;
-                                var linklabel = v.options["label"] + ": " + key + "_" + tumor_type;
-                                var url = this.__tsv_query_url(mm["url"], mm["query"], filelabel);
-                                $targetEl.append(OpenLinkTpl({ "label": linklabel, "url": url }));
-                            }, this);
+                            return {
+                                "group": d_label,
+                                "links": _.map(m["by_tumor_type"], function (mm, tumor_type) {
+                                    var url = this.__tsv_query_url(mm["url"], mm["query"], f_label + "_" + tumor_type);
+                                    return { "group": d_label, "label": tumor_type, "url": url };
+                                }, this)
+                            };
                         } else {
-                            var url = this.__tsv_query_url(m["url"], m["query"], v.options["label"] + "_" + key);
-                            $targetEl.append(OpenLinkTpl({ "label": v.options["label"] + ": " + key, "url": url }));
+                            var url = this.__tsv_query_url(m["url"], m["query"], f_label);
+                            return { "label": d_label, "url": url };
                         }
                     }, this);
+                    $targetEl.append(GroupedLinksTpl({ "header": view_label, "groups": groups }));
                 }
             },
 

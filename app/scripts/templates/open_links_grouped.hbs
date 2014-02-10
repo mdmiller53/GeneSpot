@@ -1,0 +1,16 @@
+<li class="nav-header">{{header}}</li>
+{{#each groups}}
+    {{#if group}}
+        <li class="dropdown-submenu">
+            <a href="#" onclick="return false;" class="capitalized">{{group}}</a>
+            <ul class="dropdown-menu">
+                {{#each links}}
+                    <li class="{{li_class}}"><a href="{{url}}" target="_blank">{{label}}</a></li>
+                {{/each}}
+            </ul>
+        </li>
+    {{/if}}
+    {{#unless group}}
+        <li class="{{li_class}}"><a href="{{url}}" target="_blank" class="capitalized">{{label}}</a></li>
+    {{/unless}}
+{{/each}}

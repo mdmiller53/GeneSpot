@@ -1,10 +1,9 @@
-define([ "jquery", "underscore", "backbone",
-    "hbs!templates/gs/atlas_map", "hbs!templates/open_link", "hbs!templates/open_links_grouped" ],
-    function ($, _, Backbone, Tpl, OpenLinkTpl, GroupedLinksTpl) {
+define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!templates/open_links_grouped" ],
+    function ($, _, Backbone, Tpl, GroupedLinksTpl) {
         return Backbone.View.extend({
             events: {
                 "click a.refresh-me": function () {
-                    this.$(".download-link").remove();
+                    this.$(".download-links").empty();
                     this.trigger("refresh", this);
                 },
                 "click .close": function() {
@@ -54,16 +53,18 @@ define([ "jquery", "underscore", "backbone",
 
             __append_downloads: function(v) {
                 var $targetEl = this.$(".download-links");
+                var view_label = v.options["label"];
+
                 if (_.has(v.options, "model")) {
-                    var label = v.options["label"];
                     var m = v.options["model"];
                     if (m["do_fetch"]) {
-                        var url = this.__tsv_query_url(m, label.toLowerCase());
-                        $targetEl.append(OpenLinkTpl({ "label": label, "url": url, "li_class": "download-link" }));
+                        var url = this.__tsv_query_url(m, view_label.toLowerCase());
+                        $targetEl.append(GroupedLinksTpl({ "header": view_label, "groups": [
+                            { "label": view_label, "url": url }
+                        ] }));
                     }
                 }
 
-                var view_label = v.options["label"];
                 if (_.has(v.options, "models")) {
                     var groups = _.compact(_.map(v.options["models"], function (m, datamodel_key) {
                         var d_label = datamodel_key.replace("_", " ");

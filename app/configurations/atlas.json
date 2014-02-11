@@ -9,7 +9,6 @@
                 "top": 0,
                 "left": 150
             },
-            "isOpen": true,
             "views": [
                 {
                     "view": "views/seqpeek/view",

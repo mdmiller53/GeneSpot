@@ -131,6 +131,7 @@ define([
                 }, this);
 
                 var atlasMapView = new AtlasMapView(_.extend(map_template.toJSON(), {
+                    "isOpen": true,
                     "assignedPosition": map_template.get("position") || this.__next_position(),
                     "assignedZindex": map_template.get("zindex") || this.__next_z_index(),
                     "views": views

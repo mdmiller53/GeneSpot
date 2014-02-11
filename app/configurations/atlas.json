@@ -2,6 +2,47 @@
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "maps": [
         {
+            "id": "mutations_combo",
+            "label": "Mutations (combined)",
+            "description": "This map combines multiple mutation data type views",
+            "position": {
+                "top": 0,
+                "left": 150
+            },
+            "isOpen": true,
+            "views": [
+                {
+                    "view": "views/seqpeek/view",
+                    "label": "SeqPeek",
+                    "datamodels": {
+                        "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
+                        "mutsig": "datamodel/mutations/mutsig_rankings",
+                        "features": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/feature_matrix",
+                            "base_query": {
+                                "source": "gnab",
+                                "modifier": "y_n_somatic"
+                            }
+                        }
+                    }
+                },
+                {
+                    "view": "views/pivot_data_view",
+                    "label": "MutSig Top 20",
+                    "dimensions": {
+                        "pivot": "cancer",
+                        "values": "gene",
+                        "groupBy": "rank"
+                    },
+                    "datamodel": {
+                        "uri": "datamodel/mutations/mutsig_top20",
+                        "query_all_genes": true
+                    }
+                }
+            ]
+        },
+        {
             "id": "mutations_per_tumor_type",
             "label": "Mutations per Tumor Type",
             "position": {

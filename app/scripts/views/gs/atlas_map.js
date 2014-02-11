@@ -57,33 +57,46 @@ define([ "jquery", "underscore", "backbone",
                 if (_.has(v.options, "model")) {
                     var label = v.options["label"];
                     var m = v.options["model"];
-                    var url = this.__tsv_query_url(m["url"], m["query"], label.toLowerCase());
-                    $targetEl.append(OpenLinkTpl({ "label": label, "url": url, "li_class": "download-link" }));
+                    if (m["do_fetch"]) {
+                        var url = this.__tsv_query_url(m, label.toLowerCase());
+                        $targetEl.append(OpenLinkTpl({ "label": label, "url": url, "li_class": "download-link" }));
+                    }
                 }
 
                 var view_label = v.options["label"];
                 if (_.has(v.options, "models")) {
-                    var groups = _.map(v.options["models"], function (m, datamodel_key) {
+                    var groups = _.compact(_.map(v.options["models"], function (m, datamodel_key) {
                         var d_label = datamodel_key.replace("_", " ");
                         var f_label = (view_label + "_" + datamodel_key).toLowerCase();
                         if (m["by_tumor_type"]) {
-                            return {
-                                "group": d_label,
-                                "links": _.map(m["by_tumor_type"], function (mm, tumor_type) {
-                                    var url = this.__tsv_query_url(mm["url"], mm["query"], f_label + "_" + tumor_type);
+                            var links = _.compact(_.map(m["by_tumor_type"], function (mm, tumor_type) {
+                                if (mm["do_fetch"]) {
+                                    var url = this.__tsv_query_url(mm, f_label + "_" + tumor_type);
                                     return { "group": d_label, "label": tumor_type, "url": url };
-                                }, this)
-                            };
+                                }
+                                return null;
+                            }, this), this);
+
+                            if (!_.isEmpty(links)) {
+                                return { "group": d_label, "links": links };
+                            }
                         } else {
-                            var url = this.__tsv_query_url(m["url"], m["query"], f_label);
-                            return { "label": d_label, "url": url };
+                            if (m["do_fetch"]) {
+                                var url = this.__tsv_query_url(m, f_label);
+                                return { "label": d_label, "url": url };
+                            }
                         }
-                    }, this);
-                    $targetEl.append(GroupedLinksTpl({ "header": view_label, "groups": groups }));
+                        return null;
+                    }, this), this);
+                    if (!_.isEmpty(groups)) {
+                        $targetEl.append(GroupedLinksTpl({ "header": view_label, "groups": groups }));
+                    }
                 }
             },
 
-            __tsv_query_url: function(url, query, label) {
+            __tsv_query_url: function(model, label) {
+                var url = model["url"];
+                var query = model["query"];
                 var qsarray = [];
                 _.each(query, function (values, key) {
                     if (_.isArray(values)) {

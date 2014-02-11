@@ -137,12 +137,14 @@ define([
                 }));
                 atlasMapView.on("refresh", this.__reload_map_views, this);
 
+                _.each(views, function(view) {
+                    this.__assemble_query(view, gene_list, tumor_type_list, clinvar_list);
+                }, this);
+
                 this.model.get("atlas_map_views").push(atlasMapView);
                 this.$el.find(".atlas-canvas").append(atlasMapView.render().el);
 
-                _.each(views, function(view) {
-                    this.__load_model_data(view, gene_list, tumor_type_list, clinvar_list)
-                }, this);
+                _.each(views, this.__fetch_model_data, this);
             },
 
             __reload_all_maps: function() {
@@ -167,23 +169,27 @@ define([
                     });
                 }, this);
 
+                _.each(atlasMapView["views"], function(view) {
+                    this.__assemble_query(view, gene_list, tumor_type_list, clinvar_list);
+                }, this);
+
                 atlasMapView.render();
 
-                _.each(atlasMapView["views"], function(view) {
-                    this.__load_model_data(view, gene_list, tumor_type_list, clinvar_list);
-                }, this);
+                _.each(atlasMapView["views"], this.__fetch_model_data, this);
             },
 
-            __load_model_data: function(view, gene_list, tumor_type_list, clinvar_list) {
-                console.debug("atlas.__load_model_data");
+            __assemble_query: function(view, gene_list, tumor_type_list, clinvar_list) {
+                console.debug("atlas.__assemble_query");
                 if (!_.has(view.options, "all_models")) return;
 
                 _.each(view.options["all_models"], function(model) {
                     var data = model["base_query"] || {};
                     if (!model["tumor_type"]) data["cancer"] = tumor_type_list;
 
+                    model["do_fetch"] = true;
                     if (model["query_clinical_variables"]) {
                         if (_.isEmpty(clinvar_list)) {
+                            model["do_fetch"] = false;
                             return;
                         }
                         data["id"] = _.pluck(clinvar_list, "id");
@@ -192,8 +198,20 @@ define([
                     }
 
                     model["query"] = data;
+                });
+            },
 
+            __fetch_model_data: function(view) {
+                console.debug("atlas.__fetch_model_data");
+                if (!_.has(view.options, "all_models")) return;
+
+                _.each(view.options["all_models"], function(model) {
                     _.defer(function () {
+                        if (model["do_fetch"] === false) {
+                            model.trigger("load");
+                            return;
+                        }
+
                         model.fetch({
                             "url": model["url"],
                             "data": model["query"],

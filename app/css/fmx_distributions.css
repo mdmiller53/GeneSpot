@@ -1,6 +1,115 @@
-.fmx_distributions_container .data_point {
-    stroke-width: 2px;
-    shape-rendering: crispEdges;
+/*container style*/
+.fmx_distributions_container {
+    padding-left: 20px;
+    display: block;
+    overflow-x: hidden;
+    min-width: 900px;
+}
+
+/*feature selector style*/
+.fmx_distributions_container .feature_selector_elements {
+    float: left;
+    min-height: 1px;
+    min-width: 100px;
+    max-width: 220px;
+    display: block;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-selector-x, .feature-selector-y {
+    overflow-x: hidden;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs li {
+    font-size: 10px;
+    line-height: 10px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs.tabs-left > .nav-tabs > li > a {
+    min-width: 0px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs .nav-tabs {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs .tab-content {
+    margin-top: 10px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs .nav-tabs > li > a {
+    line-height: 10px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs .nav-list > li > a {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.fmx_distributions_container .feature_selector_elements .feature-defs .tab-content ul {
+    max-height: 140px;
+}
+
+/*visualization style*/
+.fmx_distributions_container .visualization_element {
+    min-height: 1px;
+
+    border-left-color: lightgray;
+    border-left-width: 2px;
+    border-left-style: solid;
+
+    border-right-color: lightgray;
+    border-right-width: 2px;
+    border-right-style: solid;
+
+    float: left;
+}
+
+/*legend style*/
+.fmx_distributions_container .legend_element {
+    margin: 0;
+    width: 140px;
+
+    float: left;
+    min-height: 1px;
+    display: block;
+
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.fmx_distributions_container .visualization_element .dropdown {
+    font-size: smaller;
+}
+
+.fmx_distributions_container .legend_items {
+    padding: 0;
+    margin-right: -20px;
+}
+
+.fmx_distributions_container .legend_items li {
+    font-size: smaller;
+    padding-left: 5px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.fmx_distributions_container .legend_items .badge {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+/*visualization style*/
+.fmx_distributions_container .cv {
+    width: 540px;
+    height: 405px;
 }
 
 .fmx_distributions_container .axis path {
@@ -11,15 +120,13 @@
     shape-rendering: crispEdges;
 }
 
+.fmx_distributions_container .axis_label, .ticks {
+    font-size: 16px;
+}
+
 .fmx_distributions_container .axis line {
     stroke-width: 1px;
     shape-rendering: crispEdges;
-}
-
-.fmx_distributions_container .kde_line {
-    shape-rendering: none;
-    stroke-width: 1.5px;
-    visibility: hidden;
 }
 
 .fmx_distributions_container .y.axis path, .y.axis line {
@@ -30,8 +137,15 @@
     stroke: none;
 }
 
-.fmx_distributions_container .axis_label, .ticks {
-    font-size: 16px;
+.fmx_distributions_container .kde_line {
+    shape-rendering: none;
+    stroke-width: 1.5px;
+    visibility: hidden;
+}
+
+.fmx_distributions_container .data_labels {
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .fmx_distributions_container .data_totals {
@@ -40,61 +154,7 @@
     shape-rendering: crispEdges;
 }
 
-.fmx_distributions_container .data_labels {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.fmx_distributions_container .cv {
-    width: 540px;
-    height: 405px;
-}
-
-.fmx_distributions_container .filter-elements {
-    border-right-color: lightgray;
-    border-right-width: 2px;
-    border-right-style: solid;
-}
-
-.fmx_distributions_container .vis-container {
-    padding: 0;
-}
-
-.fmx_distributions_container .fmx-dist-container {
-    border-right-color: lightgray;
-    border-right-width: 2px;
-    border-right-style: solid;
-    padding: 0;
-    margin: 0;
-    width: 600px;
-}
-
-.fmx_distributions_container .fmx-dist-legend {
-    margin-left: 0;
-    width: 100px;
-}
-
-.fmx_distributions_container .legend-items {
-    padding: 0;
-    margin-right: -20px;
-}
-
-.fmx_distributions_container .legend-items li {
-    font-size: smaller;
-    padding-left: 5px;
-    margin: 0;
-    white-space: nowrap;
-}
-
-.fmx_distributions_container .legend-items .badge {
-    padding-right: 3px;
-    padding-left: 3px;
-}
-
-.fmx_distributions_container .feature-selector-x {
-    overflow-x: hidden;
-}
-
-.fmx_distributions_container .feature-selector-y {
-    overflow-x: hidden;
+.fmx_distributions_container .data_point {
+    stroke-width: 2px;
+    shape-rendering: crispEdges;
 }

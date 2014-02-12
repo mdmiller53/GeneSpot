@@ -15,7 +15,7 @@ define(["jquery", "underscore", "backbone",
             sample_types_lookup: {},
 
             events: {
-                "click .dropdown-menu.fmx-dist-tumor-types-selector a": function (e) {
+                "click .dropdown-menu.tumor_types_filter a": function (e) {
                     var tumor_type = $(e.target).data("id");
                     if (tumor_type === "all_tumor_types") {
                         console.debug("fmx-dist.selected_tumor_type:all");
@@ -25,13 +25,13 @@ define(["jquery", "underscore", "backbone",
                         this.selected_tumor_type = tumor_type;
                     }
 
-                    this.$(".dropdown-menu.fmx-dist-tumor-types-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.tumor_types_filter").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
                     _.defer(this.__draw);
                 },
-                "click .dropdown-menu.fmx-dist-sample-types-selector a": function (e) {
+                "click .dropdown-menu.sample_types_filter a": function (e) {
                     var sample_type = $(e.target).data("id");
                     if (sample_type === "all_sample_types") {
                         console.debug("fmx-dist.all_sample_types");
@@ -41,25 +41,25 @@ define(["jquery", "underscore", "backbone",
                         this.selected_sample_type = sample_type;
                     }
 
-                    this.$(".dropdown-menu.fmx-dist-sample-types-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.sample_types_filter").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
                     _.defer(this.__draw);
                 },
-                "click .dropdown-menu.fmx-dist-color-by-selector a": function(e) {
+                "click .dropdown-menu.color_by_selector a": function(e) {
                     var color_by = $(e.target).data("id");
                     console.debug("fmx-dist.selected_color_by:" + color_by);
                     this.selected_color_by = color_by;
                     if (color_by === "tumor_type") this.selected_color_by = null;
 
-                    this.$(".dropdown-menu.fmx-dist-color-by-selector").find(".active").removeClass("active");
+                    this.$(".dropdown-menu.color_by_selector").find(".active").removeClass("active");
                     $(e.target).parent("li").addClass("active");
 
                     this.__reset_highlight();
                     _.defer(this.__draw);
                 },
-                "click .legend-items a": function (e) {
+                "click .legend_items a": function (e) {
                     var LI = $(e.target).parent("li");
                     if (LI.hasClass("active")) {
                         console.debug("fmx-dist.highlight:all");
@@ -69,7 +69,7 @@ define(["jquery", "underscore", "backbone",
                         var selected_item = $(e.target).data("id");
                         if (selected_item) {
                             console.debug("fmx-dist.highlight:" + selected_item);
-                            this.$(".legend-items").find(".active").removeClass("active");
+                            this.$(".legend_items").find(".active").removeClass("active");
                             LI.addClass("active");
                             this.carveVis.highlight(selected_item).render();
                         }
@@ -162,7 +162,7 @@ define(["jquery", "underscore", "backbone",
 
             __init_graph: function () {
                 console.debug("fmx-dist.__init_graph");
-                var carvEl = this.$(".fmx-dist-container").empty();
+                var carvEl = this.$(".graph_element").empty();
                 var carvObj = carve({
                     radius: 20,
                     margin: { top: 15, bottom: 20, left: 15, right: 50 }
@@ -364,7 +364,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __legend: function() {
-                this.$(".legend-items").empty();
+                this.$(".legend_items").empty();
                 var colorBy = this.carveVis.colorBy();
                 var color_by_list = colorBy["list"];
                 var color_by_colors = colorBy["colors"];
@@ -372,7 +372,7 @@ define(["jquery", "underscore", "backbone",
                 if (_.isArray(color_by_list) && _.isArray(color_by_colors)) {
                     if (_.isEqual(color_by_list.length, color_by_colors.length)) {
                         _.each(color_by_list, function (color_by, idx) {
-                            this.$(".legend-items").append(LegendTpl({
+                            this.$(".legend_items").append(LegendTpl({
                                 "id": color_by,
                                 "label": color_by,
                                 "color": color_by_colors[idx]

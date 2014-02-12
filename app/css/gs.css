@@ -58,6 +58,16 @@
     padding-left: 10px;
 }
 
+.atlas-map > .nav {
+    margin-bottom: 10px;
+}
+
+.map-contents {
+    width: auto;
+    zoom: 1;
+    margin-left: 5px;
+}
+
 .showing-border {
     border: 1px solid black;
 }

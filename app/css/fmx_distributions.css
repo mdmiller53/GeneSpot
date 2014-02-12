@@ -3,14 +3,14 @@
     padding-left: 20px;
     display: block;
     overflow-x: hidden;
-    min-width: 900px;
+    min-width: 940px;
 }
 
 /*feature selector style*/
 .fmx_distributions_container .feature_selector_elements {
     float: left;
     min-height: 1px;
-    min-width: 100px;
+    min-width: 200px;
     max-width: 220px;
     display: block;
     padding-top: 10px;
@@ -71,7 +71,7 @@
 /*legend style*/
 .fmx_distributions_container .legend_element {
     margin: 0;
-    width: 140px;
+    min-width: 140px;
 
     float: left;
     min-height: 1px;

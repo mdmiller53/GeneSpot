@@ -1,0 +1,53 @@
+<h4>Collected Maps</h4>
+<div class="row">
+    <div class="span4">
+        <div class="input-append">
+            <input type="text" class="new-collected-map-name" placeholder="New map collection name...">
+            <button class="btn create-collected-map" type="button" title="Add a map collection"><i class="icon-plus"></i></button>
+            <button class="btn refresh-collected-maps" type="button" title="Reload collected maps"><i class="icon-refresh"></i></button>
+        </div>
+    </div>
+    <div class="span3">
+        <span class="alert alert-danger invalid-collected-map-name hide">
+            <strong>Error!</strong> Not a valid map collection name
+        </span>
+        <span class="alert alert-danger duplicate-collected-map-name hide">
+            <strong>Error!</strong> Map collection name already exists
+        </span>
+        <span class="alert alert-success collected-map-added-success hide">
+            <strong>Success!</strong> New map collection added
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="span7">
+        <div class="tabs-left">
+            <ul class="nav nav-tabs collected-maps">
+                {{#each collected_maps}}
+                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                            href="#tab-collected-map-{{id}}" data-toggle="tab">{{label}}</a></li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            {{#each collected_maps}}
+                <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-collected-map-{{id}}">
+                    <div class="well">
+                        <a href="#cm/{{id}}" target="_blank">share link</a>
+                    </div>
+                    <div class="collected-map-infos"></div>
+                    <hr/>
+                    <div class="btn-group">
+                        <button class="btn btn-small open-collected-map" data-id="{{id}}" type="button"><i class="icon-folder-open"></i></button>
+                        <button class="btn btn-small open-collected-map" data-id="{{id}}" type="button">Open map collection '{{label}}'</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-small remove-collected-map" data-id="{{id}}" type="button"><i class="icon-trash"></i></button>
+                        <button class="btn btn-small remove-collected-map" data-id="{{id}}" type="button">Delete map collection '{{label}}'</button>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>

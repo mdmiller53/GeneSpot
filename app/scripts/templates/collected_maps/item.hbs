@@ -1,0 +1,27 @@
+<div class="collected-map-item well">
+    <a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a>
+    {{#each views}}
+        {{#unless @index}}
+            {{#if tumor_types}}
+                <h5>Tumor Types</h5>
+                {{#each tumor_types}}{{#if @index}}, {{/if}}{{.}}{{/each}}
+            {{/if}}
+            {{#if genes}}
+                <h5>Genes</h5>
+                {{#each genes}}{{#if @index}}, {{/if}}{{.}}{{/each}}
+            {{/if}}
+            {{#if clinical_variables}}
+                <h5>Clinical Variables</h5>
+                {{#each clinical_variables}}{{#if @index}}, {{/if}}{{label}}{{/each}}
+            {{/if}}
+        {{/unless}}
+    {{/each}}
+
+    <h5>Views</h5>
+    {{#each views}}{{#if @index}}, {{/if}}{{label}}{{/each}}
+
+    {{#if position}}
+        <h5>Position</h5>
+        top: {{position.top}}px, left: {{position.left}}px
+    {{/if}}
+</div>

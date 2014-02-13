@@ -6,10 +6,11 @@ define([
     "views/genes/control",
     "views/clinvarlist/control",
     "views/gs/tumor_types_control",
-    "views/datamodel_collector/control"
+    "views/datamodel_collector/control",
+    "views/collected_maps/control"
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
-              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl) {
+              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl, CollectedMapsControl) {
 
         return Backbone.View.extend({
             "last-z-index": 10,
@@ -50,6 +51,7 @@ define([
                 this.model.on("load", this.__init_clinicallist_control, this);
                 this.model.on("load", this.__init_tumortypes_control, this);
                 this.model.on("load", this.__init_datamodel_collector, this);
+                this.model.on("load", this.__init_collected_maps_control, this);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
             },
@@ -88,6 +90,14 @@ define([
                 }, this);
 
                 this.$el.find(".clinvarlist-container").html(this.clinicalListControl.render().el);
+            },
+
+            __init_collected_maps_control: function() {
+                this.collectedMapsControl = new CollectedMapsControl({});
+                this.collectedMapsControl.on("selected", function (ev) {
+                    console.debug("atlas.__init_collected_maps_control:selected:" + JSON.stringify(ev));
+                }, this);
+                this.$el.find(".collected-maps-container").html(this.collectedMapsControl.render().el);
             },
 
             __init_tumortypes_control: function() {
@@ -137,6 +147,7 @@ define([
                     "views": views
                 }));
                 atlasMapView.on("refresh", this.__reload_map_views, this);
+                atlasMapView.on("collect", this.__collect_map, this);
 
                 _.each(views, function(view) {
                     this.__assemble_query(view, gene_list, tumor_type_list, clinvar_list);
@@ -238,6 +249,17 @@ define([
                 };
                 this.lastPosition = lastPos;
                 return lastPos;
+            },
+
+            __collect_map: function(atlasMapView) {
+                console.debug("atlas.__collect_map:" + atlasMapView.id);
+
+                var collectedMap = _.omit(atlasMapView.options, "assignedPosition", "assignedZindex", "view_classes", "view_templates", "views");
+                collectedMap["views"] = _.map(atlasMapView.options["views"], function(v) {
+                    return _.omit(v.options, "id", "all_models", "model", "models", "model_templates", "view_class");
+                });
+
+                this.collectedMapsControl.add_to_current(collectedMap);
             },
 
             currentState: function () {

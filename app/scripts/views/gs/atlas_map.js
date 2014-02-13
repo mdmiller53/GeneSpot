@@ -8,6 +8,9 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
                 },
                 "click .close": function() {
                     this.$el.hide({ "always": this.__close });
+                },
+                "click .collect-me": function() {
+                    this.trigger("collect", this);
                 }
             },
 

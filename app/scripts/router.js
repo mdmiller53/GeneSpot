@@ -7,6 +7,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
             navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",
+                "cm/:cm_id": "load_collected_map",
                 "v/*uri/:view_name": "viewsByUri",
                 "s/*sessionId": "loadSessionById"
             },
@@ -117,6 +118,31 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
                                 _this.$el.fadeIn();
                             }
+                        });
+                    }
+                });
+
+                return view;
+            },
+
+            load_collected_map: function (collected_map_id) {
+                console.debug("router.load_collected_map:" + collected_map_id);
+
+                var model = new MapFactory();
+                var view = new AtlasView({ "model": model });
+
+                var _this = this;
+                this.$el.fadeOut({
+                    "always": function() {
+                        model.fetch({
+                            "url": "svc/collections/collected_maps/" + collected_map_id,
+                            "success": function () {
+                                _this.$el.html(view.render().el);
+                                model.trigger("load");
+
+                                _this.$el.fadeIn();
+                            },
+                            "error": _this.atlas
                         });
                     }
                 });

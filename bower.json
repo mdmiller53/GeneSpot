@@ -21,6 +21,7 @@
     "carve": "~0.0.7"
   },
   "resolutions": {
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "jquery": "~2.0.3"
   }
 }

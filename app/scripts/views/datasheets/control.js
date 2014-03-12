@@ -1,10 +1,10 @@
 define(["jquery", "underscore", "backbone", "base64",
-    "views/datasheets/itemizer", "hbs!templates/datasheets/container"],
-    function ($, _, Backbone, base64, Itemizer, Tpl) {
+    "views/datasheets/itemizer", "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login"],
+    function ($, _, Backbone, base64, Itemizer, Tpl, NeedsLoginTpl) {
         return Backbone.View.extend({
             itemizers: {},
             datasheets: new Backbone.Collection([], { "url": "svc/collections/datasheets" }),
-            about: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/about" }),
+            folder: new Backbone.Model({}, { "url": "svc/collections/folders" } ),
 
             events: {
                 "click .create-datasheets": function() {
@@ -49,7 +49,7 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             initialize: function() {
-                _.bindAll(this, "render", "__load", "__render");
+                _.bindAll(this, "render", "__load", "__render", "__load_folder", "__create_folder");
 
                 this.datasheets.on("change", function(item) {
                     console.debug("views/datasheets/control.datasheets:change");
@@ -61,14 +61,12 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             render: function() {
-                this.datasheets.fetch({ "success": this.__load });
-                this.about.fetch({
-                    "success": function(json) {
-                        console.debug("views/datasheets/control.about.fetch:" + json["displayName"]);
-                    }
-                });
+                console.debug("views/datasheets/control.render");
 
-                this.$el.html(Tpl({ "datasheets": [] }));
+                this.datasheets.fetch({ "success": this.__load });
+                this.folder.fetch({ "success": this.__load_folder });
+
+                this.$el.html(NeedsLoginTpl());
                 return this;
             },
 
@@ -98,7 +96,25 @@ define(["jquery", "underscore", "backbone", "base64",
                 }
             },
 
-            new_datasheet: function(meta, contents) {
+            __load_folder: function(model) {
+                console.debug("views/datasheets/control.__load_folder");
+                if (_.isEmpty(model.values())) _.defer(this.__create_folder);
+            },
+
+            __create_folder: function() {
+                console.debug("views/datasheets/control.__create_folder");
+                var new_folder = new Backbone.Model(
+                    {
+                        "title": "GeneSpot | Data",
+                        "parents": [ {"id": "root"} ],
+                        "mimeType": "application/vnd.google-apps.folder"
+                    },
+                    { "url": "svc/auth/providers/google_drive/drive/v2/files" }
+                );
+                new_folder.save({ "method": "POST", "success": this.render });
+            },
+
+            __new_datasheet: function(meta, contents) {
                 const boundary = "-------314159265358979323846";
                 const delimiter = "\r\n--" + boundary + "\r\n";
                 const close_delim = "\r\n--" + boundary + "--";

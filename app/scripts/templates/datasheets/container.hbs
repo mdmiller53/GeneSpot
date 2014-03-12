@@ -19,16 +19,17 @@
         </span>
     </div>
 </div>
+{{#if folder}}
+    <div class="well">
+        <a href="{{folder.alternateLink}}" target="_blank">
+            <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
+            <img src="{{folder.iconLink}}" class="signin-pic" alt="&nbsp;"/>
+            {{folder.title}}
+        </a>
+    </div>
+{{/if}}
 <div class="row">
     <div class="span7">
-        {{#if folder}}
-            <a href="{{folder.alternateLink}}" target="_blank">
-                <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
-                <img src="{{folder.iconLink}}" class="signin-pic" alt="&nbsp;"/>
-                {{folder.title}}
-            </a>
-            <hr/>
-        {{/if}}
         <div class="tabs-left">
             <ul class="nav nav-tabs datasheets">
                 {{#each datasheets}}

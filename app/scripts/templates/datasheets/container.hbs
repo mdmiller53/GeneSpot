@@ -8,9 +8,8 @@
         </div>
     </div>
     <div class="span3">
-        <div class="drive-folder-link"></div>
         <span class="alert alert-danger invalid-datasheets-name hide">
-            <strong>Error!</strong> Not a valid map sheet name
+            <strong>Error!</strong> Not a valid sheet name
         </span>
         <span class="alert alert-danger duplicate-datasheets-name hide">
             <strong>Error!</strong> Sheet name already exists
@@ -22,11 +21,20 @@
 </div>
 <div class="row">
     <div class="span7">
+        {{#if folder}}
+            <a href="{{folder.alternateLink}}" target="_blank">
+                <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
+                <img src="{{folder.iconLink}}" class="signin-pic" alt="&nbsp;"/>
+                {{folder.title}}
+            </a>
+            <hr/>
+        {{/if}}
         <div class="tabs-left">
             <ul class="nav nav-tabs datasheets">
                 {{#each datasheets}}
-                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
-                            href="#tab-datasheets-{{id}}" data-toggle="tab">{{label}}</a></li>
+                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}">
+                        <a href="#tab-datasheets-{{id}}" data-toggle="tab"><img src="{{iconLink}}" alt="&nbsp;"/> {{title}}</a>
+                    </li>
                 {{/each}}
             </ul>
         </div>
@@ -35,14 +43,12 @@
             {{#each datasheets}}
                 <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-datasheets-{{id}}">
                     <div class="well">
-                        <a href="{{url}}" target="_blank">open sheet (in new window)</a>
+                        <a href="{{alternateLink}}" target="_blank">
+                            <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
+                            Open in Google Drive
+                        </a>
                     </div>
                     <div class="datasheets-infos"></div>
-                    <hr/>
-                    <div class="btn-group">
-                        <button class="btn btn-small remove-datasheets" data-id="{{id}}" type="button"><i class="icon-trash"></i></button>
-                        <button class="btn btn-small remove-datasheets" data-id="{{id}}" type="button">Delete sheet '{{label}}'</button>
-                    </div>
                 </div>
             {{/each}}
         </div>

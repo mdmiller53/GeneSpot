@@ -19,7 +19,8 @@ require.config({
         "jsPlumb" : "../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min",
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
         "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
-        "carve" : "../bower_components/carve/carve"
+        "carve" : "../bower_components/carve/carve",
+        "base64" : "../bower_components/base64/jquery.base64.min"
     },
     "shim": {
         "underscore" : {

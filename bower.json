@@ -18,6 +18,7 @@
     "jsPlumb": "git://github.com/sporritt/jsPlumb.git#1.5.4",
     "colorbrewer": "git://github.com/undashes/colorbrewer.git",
     "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
+    "base64": "git://github.com/carlo/jquery-base64",
     "carve": "~0.0.7"
   },
   "resolutions": {

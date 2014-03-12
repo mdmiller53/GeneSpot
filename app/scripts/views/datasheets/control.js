@@ -1,9 +1,10 @@
-define(["jquery", "underscore", "backbone",
+define(["jquery", "underscore", "backbone", "base64",
     "views/datasheets/itemizer", "hbs!templates/datasheets/container"],
-    function ($, _, Backbone, Itemizer, Tpl) {
+    function ($, _, Backbone, base64, Itemizer, Tpl) {
         return Backbone.View.extend({
             itemizers: {},
             datasheets: new Backbone.Collection([], { "url": "svc/collections/datasheets" }),
+            about: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/about" }),
 
             events: {
                 "click .create-datasheets": function() {
@@ -61,6 +62,12 @@ define(["jquery", "underscore", "backbone",
 
             render: function() {
                 this.datasheets.fetch({ "success": this.__load });
+                this.about.fetch({
+                    "success": function(json) {
+                        console.debug("views/datasheets/control.about.fetch:" + json["displayName"]);
+                    }
+                });
+
                 this.$el.html(Tpl({ "datasheets": [] }));
                 return this;
             },
@@ -89,6 +96,35 @@ define(["jquery", "underscore", "backbone",
                     existing_sheets.push(new_map);
                     currentSheet.set("maps", existing_sheets);
                 }
+            },
+
+            new_datasheet: function(meta, contents) {
+                const boundary = "-------314159265358979323846";
+                const delimiter = "\r\n--" + boundary + "\r\n";
+                const close_delim = "\r\n--" + boundary + "--";
+
+//                var file_meta = {
+//                    "title": "testfile01",
+//                    "description": "This text describes the file",
+//                    "mimeType": "text/plain",
+//                    "writersCanShare": true
+//                };
+
+                var request_body = "\r\n--" + boundary + "\r\n" +
+                    "Content-Type: application/json\r\n\r\n" + JSON.stringify(meta) +
+                    "\r\n--" + boundary + "\r\n" +
+                    "Content-Type: application/octet-stream" +
+                    "\r\n" +
+                    "Content-Transfer-Encoding: base64" +
+                    "\r\n\r\n" + $.base64.encode(contents) +
+                    "\r\n--" + boundary + "--";
+
+                $.ajax({
+                    "url": "svc/auth/providers/google_drive/upload/drive/v2/files?uploadType=multipart",
+                    "method": "POST",
+                    "contentType": "multipart/mixed; boundary=\"" + boundary + "\"",
+                    "data": request_body
+                });
             }
         });
     });

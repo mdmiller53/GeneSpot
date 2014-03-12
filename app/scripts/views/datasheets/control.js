@@ -1,10 +1,12 @@
 define(["jquery", "underscore", "backbone", "base64",
-    "views/datasheets/itemizer", "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login"],
-    function ($, _, Backbone, base64, Itemizer, Tpl, NeedsLoginTpl) {
+    "views/datasheets/itemizer", "hbs!templates/datasheets/container",
+    "hbs!templates/datasheets/needs_login", "hbs!templates/datasheets/drive_folder_link"],
+    function ($, _, Backbone, base64, Itemizer, Tpl, NeedsLoginTpl, DriveFolderLinkTpl) {
         return Backbone.View.extend({
             itemizers: {},
             datasheets: new Backbone.Collection([], { "url": "svc/collections/datasheets" }),
-            folder: new Backbone.Model({}, { "url": "svc/collections/folders" } ),
+            folder: new Backbone.Model(),
+            application_data: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/files" } ),
 
             events: {
                 "click .create-datasheets": function() {
@@ -49,7 +51,8 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             initialize: function() {
-                _.bindAll(this, "render", "__load", "__render", "__load_folder", "__create_folder");
+                _.bindAll(this, "render", "__load", "__render");
+                _.bindAll(this, "__load_application_data", "__load_folder", "__create_folder");
 
                 this.datasheets.on("change", function(item) {
                     console.debug("views/datasheets/control.datasheets:change");
@@ -64,7 +67,7 @@ define(["jquery", "underscore", "backbone", "base64",
                 console.debug("views/datasheets/control.render");
 
                 this.datasheets.fetch({ "success": this.__load });
-                this.folder.fetch({ "success": this.__load_folder });
+                this.application_data.fetch({ "success": this.__load_application_data });
 
                 this.$el.html(NeedsLoginTpl());
                 return this;
@@ -96,22 +99,39 @@ define(["jquery", "underscore", "backbone", "base64",
                 }
             },
 
-            __load_folder: function(model) {
+            __load_application_data: function(model) {
+                console.debug("views/datasheets/control.__load_application_data");
+                var folderInfo = _.findWhere(model.get("items"), { "title": "GeneSpot | Data Sheets" });
+                if (folderInfo) {
+                    this.folder = new Backbone.Model(folderInfo);
+                    _.defer(this.__load_folder);
+                } else {
+                    _.defer(this.__create_folder);
+                }
+            },
+
+            __load_folder: function() {
                 console.debug("views/datasheets/control.__load_folder");
-                if (_.isEmpty(model.values())) _.defer(this.__create_folder);
+                this.$(".drive-folder-link").html(DriveFolderLinkTpl({
+                    "title": this.folder.get("title"),
+                    "alternateLink": this.folder.get("alternateLink"),
+                    "iconLink": this.folder.get("iconLink")
+                }));
             },
 
             __create_folder: function() {
                 console.debug("views/datasheets/control.__create_folder");
-                var new_folder = new Backbone.Model(
+                this.folder.save(
                     {
-                        "title": "GeneSpot | Data",
+                        "title": "GeneSpot | Data Sheets",
                         "parents": [ {"id": "root"} ],
                         "mimeType": "application/vnd.google-apps.folder"
                     },
-                    { "url": "svc/auth/providers/google_drive/drive/v2/files" }
-                );
-                new_folder.save({ "method": "POST", "success": this.render });
+                    {
+                        "url": "svc/auth/providers/google_drive/drive/v2/files",
+                        "method": "POST",
+                        "success": this.render
+                    });
             },
 
             __new_datasheet: function(meta, contents) {

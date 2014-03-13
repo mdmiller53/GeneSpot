@@ -1,5 +1,5 @@
 {
-  "name": "WebAppTemplate",
+  "name": "GeneSpot",
   "version": "0.0.0",
   "dependencies": {
     "requirejs": "~2.1.4",
@@ -19,7 +19,8 @@
     "colorbrewer": "git://github.com/undashes/colorbrewer.git",
     "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
     "base64": "git://github.com/carlo/jquery-base64",
-    "carve": "~0.0.7"
+    "carve": "~0.0.7",
+    "x2js": "*"
   },
   "resolutions": {
     "underscore": "~1.5.2",

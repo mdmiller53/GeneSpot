@@ -20,6 +20,7 @@ require.config({
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
         "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
         "carve" : "../bower_components/carve/carve",
+        "xml2json" : "../bower_components/x2js/xml2json",
         "base64" : "../bower_components/base64/jquery.base64.min"
     },
     "shim": {

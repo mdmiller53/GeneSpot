@@ -1,45 +1,30 @@
-define   (['jquery', 'underscore', 'backbone', 'hbs!templates/sign_in'],
-function ( $,        _,            Backbone, SignInTemplate) {
+define(["jquery", "underscore", "backbone", "hbs!templates/sign_in"],
+    function ($, _, Backbone, Tpl) {
+        return Backbone.View.extend({
+            events: {
+                "click .signout-link": function() {
+                    $.ajax({
+                        url: "svc/auth/signout/" + this.provider.id,
+                        method: "GET",
+                        success: function() {
+                            _.defer(function() {
+                                document.location = document.location.href;
+                            });
+                        }
+                    });
+                }
+            },
 
-return Backbone.View.extend({
+            initialize: function() {
+                this.provider = this.options.provider || {};
+            },
 
-    events: {
-        "click .signout-link": "signout"
-    },
-
-    initialize: function(options) {
-        _.extend(this, options);
-        _.bindAll(this, "signout");
-
-        this.$el.append(SignInTemplate(this.provider));
-
-        if (this.provider.user && this.provider.user.pic) {
-            this.$el.find(".user-pic").show();
-        }
-
-        if (this.provider.active) {
-            this.$el.find(".user-details").show();
-            this.$el.find(".signin-link").hide();
-        } else {
-            this.$el.find(".signin-link").show();
-            this.$el.find(".user-details").hide();
-        }
-    },
-
-    signout: function() {
-        $.ajax({
-            url:"svc/auth/signout/" + this.provider.id,
-            method:"GET",
-            context: this,
-            success:function () {
-                this.provider.user = null;
-                this.provider.active = false;
-                this.refresh();
-                this.trigger("signout");
+            render: function() {
+                this.$el.append(Tpl({
+                    "provider": this.provider,
+                    "active_user": this.provider["user"]
+                }));
+                return this;
             }
         });
-    }
-});
-
-// end define
-});
+    });

@@ -2,23 +2,13 @@
     <div class="navbar-inner">
         <div class="pull-left">
             <a class="brand" href="/">
-                <img src="img/isblogo.png" class="imgbrand" alt="ISB"> <b class="titled">ISB</b>
+                <img src="img/isblogo.png" class="imgbrand" alt="ISB"> <b>{{title}}</b>
             </a>
         </div>
         <div class="container">
             <ul class="nav nav-pills pull-center">
                 <li class="data-dropdown dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data <b class="caret"></b></a>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Sessions <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" class="new-session" onclick="return false;">New...</a></li>
-                        <li class="disabled"><a href="#" class="save-session" onclick="return false;">Save</a></li>
-                        <li class="divider"></li>
-                        <li class="nav-header">Recent...</li>
-                        <div class="sessions-container"></div>
-                    </ul>
                 </li>
                 <li>
                     <form action="" class="pull-left navbar-form">
@@ -27,12 +17,12 @@
                 </li>
             </ul>
             <ul class="nav nav-pills pull-right">
-                <li>
-                    <a href="#" class="signin" onclick="return false;">
+                <li class="dropdown">
+                    <a class="dropdown-toggle active" href="#" data-toggle="dropdown" onclick="return false;">
                         <img class="signin-pic" src="https://www.google.com/images/icons/ui/gprofile_button-64.png" alt="&nbsp;"/>
                     </a>
+                    <ul class="dropdown-menu signin-container"></ul>
                 </li>
-                <!--<li class="hangout-container requires-google-oauth hide"></li>-->
                 <li class="dropdown">
                     <a class="dropdown-toggle active" href="#" data-toggle="dropdown" onclick="return false;">
                         <i class="icon-chevron-left"></i> <i class="icon-chevron-down"></i> <i class="icon-chevron-right"></i>

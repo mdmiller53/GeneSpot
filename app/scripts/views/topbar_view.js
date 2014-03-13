@@ -5,75 +5,37 @@ define([
 
     "views/data_menu_modal",
     "views/data_menu_sections",
-    "views/sessions_view",
-
-    "hbs!templates/topbar",
-    "hbs!templates/sign_in_modal",
-    "hbs!templates/hangout_link",
-    "hbs!templates/about_link",
-
     "views/sign_in",
-    "views/cloud_storage_view"
+    "hbs!templates/topbar",
+    "hbs!templates/about_link"
 ],
-
-    function ($, _, Bootstrap, DataMenuModal, DataMenuSections, SessionsView, Template, SignInModal, HangoutLink, AboutLink, SignInView, CloudStorageView) {
+    function ($, _, Bootstrap, DataMenuModal, DataMenuSections, SignInView, Tpl, AboutLinkTpl) {
 
         return Backbone.View.extend({
-            events: {
-                "click .signin": function () {
-                    this.$signInModal.modal("toggle");
-                    return false;
-                }
+            render: function() {
+                this.$el.html(Tpl({ "title": WebApp.Display.get("title") || "ISB" }));
+
+                this.init_about_menu();
+                this.init_sign_in();
+
+                return this;
             },
 
-            initialize: function () {
-                _.bindAll(this, "init_data_menu", "init_sessions_menu", "init_hangout_link", "init_about_menu");
-
-                this.$el.html(Template());
-
-                this.initSignIn();
-                _.defer(function () {
-                    new CloudStorageView();
-                });
-
-                _.defer(this.init_data_menu);
-                _.defer(this.init_sessions_menu);
-                _.defer(this.init_hangout_link);
-                _.defer(this.init_about_menu);
-
-                this.$el.find(".titled").html(WebApp.Display.get("title") || "AppTemplate");
-            },
-
-            init_data_menu: function () {
-                console.log("topbar:init_data_menu");
-                var dataMenuSectionsView = new DataMenuSections({
-                    sections: _.map(_.keys(WebApp.Datamodel.attributes), function (section_id) {
-                        return {
-                            data: WebApp.Datamodel.get(section_id),
-                            id: section_id
-                        };
-                    })
-                });
-
-                dataMenuSectionsView.on("select-data-item", function (selected) {
-                    new DataMenuModal(_.extend({ el: $("#modal-container") }, selected));
-                });
-
-                $(".data-dropdown").append(dataMenuSectionsView.render().el);
-            },
-
-            init_sessions_menu: function () {
-                console.log("topbar:init_sessions_menu");
-                var sessionsView = new SessionsView();
-                this.$el.find(".sessions-container").html(sessionsView.render().el);
-            },
-
-            init_hangout_link: function () {
-                var hangoutUrl = WebApp.Display.get("hangoutUrl");
-                if (hangoutUrl) {
-                    this.$el.find(".hangout-container").html(HangoutLink({ "url": hangoutUrl }));
-                }
-            },
+//            init_data_menu: function () {
+//                console.log("topbar:init_data_menu");
+//                var dataMenuSectionsView = new DataMenuSections({
+//                    sections: _.map(_.keys(WebApp.Datamodel.attributes), function (section_id) {
+//                        return {
+//                            data: WebApp.Datamodel.get(section_id),
+//                            id: section_id
+//                        };
+//                    })
+//                });
+//                dataMenuSectionsView.on("select-data-item", function (selected) {
+//                    new DataMenuModal(_.extend({ el: $("#modal-container") }, selected));
+//                });
+//                $(".data-dropdown").append(dataMenuSectionsView.render().el);
+//            },
 
             init_about_menu: function () {
                 var aboutLinks = WebApp.Display.get("aboutLinks") || [];
@@ -87,44 +49,24 @@ define([
                                 UL.append("<li class=\"nav-header\">" + aboutLink.header + "</li>");
                             }
                         } else {
-                            UL.append(AboutLink(aboutLink));
+                            UL.append(AboutLinkTpl(aboutLink));
                         }
                     });
                 }
             },
 
-            initSignIn: function () {
-                this.$signInModal = $("body").append(SignInModal()).find(".signin-container");
-
+            init_sign_in: function () {
                 var _this = this;
                 var addAuthProviders = function (json) {
-                    _.each(json.providers, function (provider) {
+                    _.each(json["providers"], function (provider) {
                         var sign_in_view = new SignInView({ "provider": provider });
-                        _this.$signInModal.find(".modal-body").append(sign_in_view.render().el);
-                        _this.$signInModal.find(".signout-all").click(function () {
-                            sign_in_view.signout();
-                        });
-                        if (provider.id == "google") {
-                            if (provider.active) _this.$el.find(".requires-google-oauth").show();
-                            sign_in_view.on("signout", function () {
-                                _this.$el.find(".requires-google-oauth").hide();
-                            });
-                        }
+                        _this.$(".signin-container").append(sign_in_view.render().el);
                     });
                 };
 
                 // prepare sign in process in case of 403 (Forbidden)
                 var signInProcessStart = _.once(function () {
-                    $.ajax({
-                        url: "svc/auth/providers",
-                        type: "GET",
-                        dataType: "json",
-                        success: function (json) {
-                            addAuthProviders(json);
-                            _this.$signInModal.modal("show");
-                            _this.$signInModal.find(".signout-all").click();
-                        }
-                    });
+                    $.ajax({ url: "svc/auth/providers", type: "GET", dataType: "json", success: addAuthProviders });
                 });
 
                 $(document).ajaxError(function (event, request) {

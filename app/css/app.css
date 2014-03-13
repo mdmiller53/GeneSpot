@@ -52,23 +52,20 @@
 	height: 800px;
 }
 
-.signin-container {
-    width: 400px;
-}
-
 .signin-pic {
     width: 20px;
     margin-top: -5px;
     padding-left: 1px;
 }
 
+.provider {
+    margin: 10px;
+    min-width: 300px;
+}
+
 .provider .logo {
     width: 50px;
     margin: 5px;
-}
-
-.provider {
-    margin-bottom: 20px;
 }
 
 .provider .user-pic {

@@ -1,15 +1,5 @@
-define([
-    "jquery",
-    "underscore",
-    "bootstrap",
-
-    "views/data_menu_modal",
-    "views/data_menu_sections",
-    "views/sign_in",
-    "hbs!templates/topbar",
-    "hbs!templates/about_link"
-],
-    function ($, _, Bootstrap, DataMenuModal, DataMenuSections, SignInView, Tpl, AboutLinkTpl) {
+define(["jquery", "underscore", "bootstrap", "views/sign_in", "hbs!templates/topbar", "hbs!templates/about_link"],
+    function ($, _, Bootstrap, SignInView, Tpl, AboutLinkTpl) {
 
         return Backbone.View.extend({
             render: function() {
@@ -20,22 +10,6 @@ define([
 
                 return this;
             },
-
-//            init_data_menu: function () {
-//                console.log("topbar:init_data_menu");
-//                var dataMenuSectionsView = new DataMenuSections({
-//                    sections: _.map(_.keys(WebApp.Datamodel.attributes), function (section_id) {
-//                        return {
-//                            data: WebApp.Datamodel.get(section_id),
-//                            id: section_id
-//                        };
-//                    })
-//                });
-//                dataMenuSectionsView.on("select-data-item", function (selected) {
-//                    new DataMenuModal(_.extend({ el: $("#modal-container") }, selected));
-//                });
-//                $(".data-dropdown").append(dataMenuSectionsView.render().el);
-//            },
 
             init_about_menu: function () {
                 var aboutLinks = WebApp.Display.get("aboutLinks") || [];
@@ -56,11 +30,11 @@ define([
             },
 
             init_sign_in: function () {
-                var _this = this;
+                var $signinEl = this.$(".signin-container");
                 var addAuthProviders = function (json) {
                     _.each(json["providers"], function (provider) {
                         var sign_in_view = new SignInView({ "provider": provider });
-                        _this.$(".signin-container").append(sign_in_view.render().el);
+                        $signinEl.append(sign_in_view.render().el);
                     });
                 };
 

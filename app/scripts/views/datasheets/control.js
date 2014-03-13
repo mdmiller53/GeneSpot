@@ -1,9 +1,12 @@
-define(["jquery", "underscore", "backbone", "base64",
-    "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login"],
-    function ($, _, Backbone, base64, Tpl, NeedsLoginTpl) {
+define(["jquery", "underscore", "backbone", "base64", "models/xmlmodel",
+    "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login", "hbs!templates/datasheets/worksheets"],
+    function ($, _, Backbone, base64, XmlModel, Tpl, NeedsLoginTpl, WorksheetsTpl) {
+        API_URL = "https://spreadsheets.google.com/feeds/worksheets/";
+        TPL_URL = "svc/auth/providers/google_spreadsheets/feeds/worksheets/KEY/private/full";
+
         return Backbone.View.extend({
             folder: new Backbone.Model(),
-            files: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/files" } ),
+            files: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/files" }),
 
             events: {
                 "click .create-datasheets": function() {
@@ -42,7 +45,7 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             initialize: function() {
-                _.bindAll(this, "render", "__load", "__render", "__create_folder");
+                _.bindAll(this, "render", "__load", "__render", "__create_folder", "__render_worksheets");
             },
 
             render: function() {
@@ -70,6 +73,27 @@ define(["jquery", "underscore", "backbone", "base64",
                 var onlysheets = { "mimeType": "application/vnd.google-apps.spreadsheet" };
                 var datasheets = _.where(this.files.get("items"), onlysheets);
                 this.$el.html(Tpl({ "datasheets": _.sortBy(datasheets, "title"), "folder": this.folder.toJSON() }));
+
+                _.each(datasheets, function(datasheet) {
+                    var worksheet = new XmlModel({}, { "url": TPL_URL.replace("KEY", datasheet["id"]) });
+                    worksheet.fetch({ "success": this.__render_worksheets });
+                }, this);
+            },
+
+            __render_worksheets: function (model) {
+                console.debug("views/datasheets/control.__render_worksheets");
+                var worksheets = model.get("feed").entry;
+                var titles = [];
+                if (_.isArray(worksheets)) {
+                    _.each(model.get("feed").entry, function(entry) {
+                        titles.push(entry["title"].toString());
+                    });
+                } else {
+                    titles.push([worksheets["title"].toString()]);
+                }
+
+                var sheet_id = _.first(model.get("feed")["id"].replace(API_URL, "").split("/"));
+                this.$("#tab-datasheets-" + sheet_id).find(".datasheets-infos").html(WorksheetsTpl({"titles": titles}));
             },
 
             __create_folder: function() {

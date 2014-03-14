@@ -11,6 +11,9 @@
         <span class="alert alert-danger invalid-datasheets-name hide">
             <strong>Error!</strong> Not a valid sheet name
         </span>
+        <span class="alert alert-danger invalid-worksheet-name hide">
+            <strong>Error!</strong> Not a valid worksheet name
+        </span>
         <span class="alert alert-danger duplicate-datasheets-name hide">
             <strong>Error!</strong> Sheet name already exists
         </span>
@@ -48,6 +51,10 @@
                             <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
                             Open in Google Drive
                         </a>
+                    </div>
+                    <div class="input-append">
+                        <input type="text" class="new-worksheet-name" placeholder="New worksheet name...">
+                        <button class="btn add-worksheet" type="button" data-id="{{id}}" title="Add a worksheet"><i class="icon-plus"></i></button>
                     </div>
                     <div class="datasheets-infos"></div>
                 </div>

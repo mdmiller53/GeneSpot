@@ -14,8 +14,8 @@
     </div>
 {{/if}}
 {{#unless active_user}}
-    <div class="signin-link">
-        <img class="logo" src="{{provider.logo}}" alt="{{provider.label}}"/>
+    <div>
+        <img class="signin-pic" src="{{provider.logo}}" alt="{{provider.label}}"/>
         <a href="svc/auth/signin/{{provider.id}}">Sign In</a>
     </div>
 {{/unless}}

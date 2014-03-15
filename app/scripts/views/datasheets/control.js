@@ -47,7 +47,12 @@ define(["jquery", "underscore", "backbone", "base64", "models/xmlmodel",
 
                 "click .add-worksheet": function(e) {
                     var datasheet_id = $(e.target).data("id");
-                    var worksheet_name = this.$(".new-worksheet-name").val();
+                    var worksheet = _.find(this.$(".new-worksheet-name"), function(worksheet) {
+                        return _.isEqual($(worksheet).data("id"), datasheet_id);
+                    });
+                    if (!worksheet) return;
+
+                    var worksheet_name = $(worksheet).val();
                     if (_.isEmpty(worksheet_name)) {
                         WebApp.alert(this.$(".invalid-worksheet-name"), 3000);
                         return;

@@ -6,7 +6,7 @@ define(["jquery", "underscore", "bootstrap", "views/sign_in", "hbs!templates/top
                 this.$el.html(Tpl({ "title": WebApp.Display.get("title") || "ISB" }));
 
                 this.init_about_menu();
-                this.init_sign_in();
+                this.__init_sign_in();
 
                 return this;
             },
@@ -29,7 +29,7 @@ define(["jquery", "underscore", "bootstrap", "views/sign_in", "hbs!templates/top
                 }
             },
 
-            init_sign_in: function () {
+            __init_sign_in: function () {
                 var $signinEl = this.$(".signin-container");
                 var addAuthProviders = function (json) {
                     _.each(json["providers"], function (provider) {
@@ -45,6 +45,17 @@ define(["jquery", "underscore", "bootstrap", "views/sign_in", "hbs!templates/top
 
                 $(document).ajaxError(function (event, request) {
                     if (request.status == 403) signInProcessStart();
+                    if (request.status == 401) {
+                        $.ajax({
+                            "url": "svc/auth/signin/google/refresh", "method": "GET", "context": this,
+                            "success": function(json) {
+                                console.debug("topbar_view.__init_sign_in:ajaxError:auth/refresh:success");
+                            },
+                            "error": function(json) {
+                                console.debug("topbar_view.__init_sign_in:ajaxError:auth/refresh:error");
+                            }
+                        })
+                    }
                 });
 
                 $.ajax({ url: "svc/auth/whoami", method: "GET", context: this, success: addAuthProviders });

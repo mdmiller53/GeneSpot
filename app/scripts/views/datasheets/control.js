@@ -8,7 +8,7 @@ define(["jquery", "underscore", "backbone", "base64", "models/xmlmodel",
 
         return Backbone.View.extend({
             folder: new Backbone.Model(),
-            files: new Backbone.Model({}, { "url": "svc/auth/providers/google_drive/drive/v2/files" }),
+            files: new Backbone.Model({}, { "url": "svc/auth/providers/google_apis/drive/v2/files" }),
 
             events: {
                 "click .create-datasheets": function() {
@@ -35,7 +35,7 @@ define(["jquery", "underscore", "backbone", "base64", "models/xmlmodel",
                             "mimeType": "application/vnd.google-apps.spreadsheet"
                         },
                         {
-                            "url": "svc/auth/providers/google_drive/drive/v2/files",
+                            "url": "svc/auth/providers/google_apis/drive/v2/files",
                             "method": "POST",
                             "success": this.render
                         });
@@ -129,7 +129,7 @@ define(["jquery", "underscore", "backbone", "base64", "models/xmlmodel",
                         "mimeType": "application/vnd.google-apps.folder"
                     },
                     {
-                        "url": "svc/auth/providers/google_drive/drive/v2/files",
+                        "url": "svc/auth/providers/google_apis/drive/v2/files",
                         "method": "POST",
                         "success": this.render
                     });

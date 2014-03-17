@@ -15,6 +15,7 @@ define([
               DatasheetsControl) {
 
         return Backbone.View.extend({
+            "datasheetsControl": new DatasheetsControl({}),
             "last-z-index": 10,
             "lastPosition": {
                 "top": 0, "left": 0
@@ -104,7 +105,6 @@ define([
             },
 
             __init_datasheets_control: function() {
-                this.datasheetsControl = new DatasheetsControl({});
                 this.$el.find(".datasheets-container").html(this.datasheetsControl.render().el);
             },
 
@@ -144,7 +144,8 @@ define([
                     return view_template.spin({
                         "genes": gene_list,
                         "tumor_types": tumor_type_list,
-                        "clinical_variables": clinvar_list
+                        "clinical_variables": clinvar_list,
+                        "datasheets_control": this.datasheetsControl
                     });
                 }, this);
 

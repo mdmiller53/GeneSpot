@@ -1,9 +1,10 @@
 define(["jquery", "underscore", "backbone",
+    "models/worksheet_cells",
     "hbs!templates/fmx_distributions/container", "hbs!templates/line_item",
     "hbs!templates/fmx_distributions/feature_defs","hbs!templates/clinvarlist/feature_defs",
-    "hbs!templates/fmx_distributions/legend_item",
+    "hbs!templates/fmx_distributions/legend_item", "hbs!templates/fmx_distributions/export_datasheets",
     "carve", "colorbrewer"],
-    function ($, _, Backbone, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, LegendTpl, carve) {
+    function ($, _, Backbone, CellsModel, Tpl, LineItemTpl, FeatureDefsTpl, ClinVarFeatureDefsTpl, LegendTpl, ExportDatasheetsTpl, carve) {
         return Backbone.View.extend({
             selected_genes: {},
             selected_features: {},
@@ -13,6 +14,7 @@ define(["jquery", "underscore", "backbone",
             feature_definitions_by_id: {},
             aggregate_features_by_id: {},
             sample_types_lookup: {},
+            latest_data: [],
 
             events: {
                 "click .dropdown-menu.tumor_types_filter a": function (e) {
@@ -59,6 +61,13 @@ define(["jquery", "underscore", "backbone",
                     this.__reset_highlight();
                     _.defer(this.__draw);
                 },
+                "click .dropdown-menu.export_data_selector a": function(e) {
+                    var datasheet_id = $(e.target).data("datasheet");
+                    var worksheet_id = $(e.target).data("id");
+                    console.debug("fmx-dist.export_data_selector:" + datasheet_id + "," + worksheet_id + ":" + this.latest_data.length);
+                    var cells = new CellsModel({ "data": this.latest_data });
+                    this.datasheets_control.populate_worksheet(datasheet_id, worksheet_id, cells.get("cells"));
+                },
                 "click .legend_items a": function (e) {
                     var LI = $(e.target).parent("li");
                     if (LI.hasClass("active")) {
@@ -96,6 +105,7 @@ define(["jquery", "underscore", "backbone",
                 _.bindAll(this, "__draw", "__init_graph");
 
                 this.model = this.options["models"];
+                this.datasheets_control = this.options["datasheets_control"];
 
                 this.__init_sample_types();
             },
@@ -138,6 +148,8 @@ define(["jquery", "underscore", "backbone",
                         }, this);
                     }
                 }, this);
+
+                this.datasheets_control.on("worksheet:loaded", this.__render_datasheets, this);
                 return this;
             },
 
@@ -287,6 +299,10 @@ define(["jquery", "underscore", "backbone",
                 $tabEl.find(".feature-selector-" + axis).click(this.__feature_selector_handler(axis));
             },
 
+            __render_datasheets: function() {
+                this.$(".export-datasheets").html(ExportDatasheetsTpl({ "sheets": _.values(this.datasheets_control["sheets"]) }));
+            },
+
             __feature_selector_handler: function(axis) {
                 var _this = this;
                 return function(e) {
@@ -315,6 +331,8 @@ define(["jquery", "underscore", "backbone",
                     data = this.__visdata(this.options["tumor_types"], X_feature.id, Y_feature.id);
                 }
                 if (_.isEmpty(data)) {
+                    this.latest_data = [];
+
                     console.debug("fmx-dist.__draw:no_data_found");
                     WebApp.alert(this.$(".no-data-found"), 3000);
 
@@ -350,6 +368,7 @@ define(["jquery", "underscore", "backbone",
                     }
                 }
 
+                this.latest_data = data;
                 this.carveVis.colorBy({
                     label: color_by_label,
                     list: color_by_list,

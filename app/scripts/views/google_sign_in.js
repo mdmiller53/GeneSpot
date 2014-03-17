@@ -1,12 +1,12 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/sign_in"],
+define(["jquery", "underscore", "backbone", "hbs!templates/google_sign_in"],
     function ($, _, Backbone, Tpl) {
         return Backbone.View.extend({
             events: {
                 "click .signout-link": function() {
                     $.ajax({
-                        url: "svc/auth/signout/" + this.provider.id,
-                        method: "GET",
-                        success: function() {
+                        "url": "svc/auth/signout/google",
+                        "method": "GET",
+                        "success": function() {
                             _.defer(function() {
                                 document.location = document.location.href;
                             });
@@ -15,15 +15,11 @@ define(["jquery", "underscore", "backbone", "hbs!templates/sign_in"],
                 }
             },
 
-            initialize: function() {
-                this.provider = this.options.provider || {};
-            },
-
             render: function() {
-                this.$el.append(Tpl({
-                    "provider": this.provider,
-                    "active_user": this.provider["user"]
-                }));
+                this.$el.html(Tpl({}));
+                this.options.user.on("load", function() {
+                    this.$el.html(Tpl(this.options.user.toJSON()));
+                }, this);
                 return this;
             }
         });

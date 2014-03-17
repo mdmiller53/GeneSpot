@@ -1,64 +1,59 @@
-define(["jquery", "underscore", "bootstrap", "views/sign_in", "hbs!templates/topbar", "hbs!templates/about_link"],
-    function ($, _, Bootstrap, SignInView, Tpl, AboutLinkTpl) {
+define(["jquery", "underscore", "bootstrap",
+    "hbs!templates/topbar", "hbs!templates/about_links",
+    "views/google_sign_in"],
+    function ($, _, Bootstrap, Tpl, AboutLinksTpl, GoogleSignInView) {
 
         return Backbone.View.extend({
             render: function() {
                 this.$el.html(Tpl({ "title": WebApp.Display.get("title") || "ISB" }));
 
-                this.init_about_menu();
+                this.__init_about_menu();
                 this.__init_sign_in();
+                this.__init_error_handlers();
 
                 return this;
             },
 
-            init_about_menu: function () {
+            __init_about_menu: function () {
                 var aboutLinks = WebApp.Display.get("aboutLinks") || [];
                 if (!_.isEmpty(aboutLinks)) {
-                    var UL = this.$el.find(".about-links");
-                    UL.empty();
-                    _.each(aboutLinks, function (aboutLink) {
-                        if (aboutLink.divider) {
-                            UL.append("<li class=\"divider\"></li>");
-                            if (aboutLink.header) {
-                                UL.append("<li class=\"nav-header\">" + aboutLink.header + "</li>");
-                            }
-                        } else {
-                            UL.append(AboutLinkTpl(aboutLink));
-                        }
-                    });
+                    this.$(".about-links").html(AboutLinksTpl(aboutLinks));
                 }
             },
 
             __init_sign_in: function () {
-                var $signinEl = this.$(".signin-container");
-                var addAuthProviders = function (json) {
-                    _.each(json["providers"], function (provider) {
-                        var sign_in_view = new SignInView({ "provider": provider });
-                        $signinEl.append(sign_in_view.render().el);
-                    });
-                };
+                var userinfo = new Backbone.Model();
 
-                // prepare sign in process in case of 403 (Forbidden)
-                var signInProcessStart = _.once(function () {
-                    $.ajax({ url: "svc/auth/providers", type: "GET", dataType: "json", success: addAuthProviders });
-                });
+                var g_si_view = new GoogleSignInView({ "user": userinfo });
+                this.$(".signin-container").append(g_si_view.render().el);
 
-                $(document).ajaxError(function (event, request) {
-                    if (request.status == 403) signInProcessStart();
-                    if (request.status == 401) {
-                        $.ajax({
-                            "url": "svc/auth/signin/google/refresh", "method": "GET", "context": this,
-                            "success": function(json) {
-                                console.debug("topbar_view.__init_sign_in:ajaxError:auth/refresh:success");
-                            },
-                            "error": function(json) {
-                                console.debug("topbar_view.__init_sign_in:ajaxError:auth/refresh:error");
-                            }
-                        })
+                userinfo.fetch({
+                    "url": "svc/auth/providers/google_apis/oauth2/v1/userinfo",
+                    "success": function() {
+                        userinfo.trigger("load");
                     }
                 });
+            },
 
-                $.ajax({ url: "svc/auth/whoami", method: "GET", context: this, success: addAuthProviders });
+            __init_error_handlers: function() {
+                var $403 = this.$(".ajax-forbidden-access");
+                $(document).ajaxError(function (event, request) {
+                    if (request.status == 403) {
+                        $403.show();
+                        return;
+                    }
+//                    if (request.status == 401) {
+//                        $.ajax({
+//                            "url": "svc/auth/signin/google/refresh", "method": "GET", "context": this,
+//                            "success": function(json) {
+//                                console.debug("topbar_view.__init_error_handlers:ajaxError:auth/refresh:success");
+//                            },
+//                            "error": function(json) {
+//                                console.debug("topbar_view.__init_error_handlers:ajaxError:auth/refresh:error");
+//                            }
+//                        })
+//                    }
+                });
             }
         });
     });

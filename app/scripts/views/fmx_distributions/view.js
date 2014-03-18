@@ -149,7 +149,7 @@ define(["jquery", "underscore", "backbone",
                     }
                 }, this);
 
-                this.datasheets_control.on("worksheet:loaded", this.__render_datasheets, this);
+                this.datasheets_control.on("datasheets:loaded", this.__render_datasheets, this);
                 return this;
             },
 
@@ -300,7 +300,7 @@ define(["jquery", "underscore", "backbone",
             },
 
             __render_datasheets: function() {
-                this.$(".export-datasheets").html(ExportDatasheetsTpl({ "sheets": _.values(this.datasheets_control["sheets"]) }));
+                this.$(".export-datasheets").html(ExportDatasheetsTpl({ "datasheets": _.values(this.datasheets_control["datasheets"]) }));
             },
 
             __feature_selector_handler: function(axis) {

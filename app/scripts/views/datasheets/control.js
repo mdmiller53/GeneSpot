@@ -2,15 +2,9 @@ define(["jquery", "underscore", "backbone", "base64",
     "models/xmlmodel", "models/xmlmodel_feed",
     "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login", "hbs!templates/datasheets/worksheets"],
     function ($, _, Backbone, base64, XmlModel, FeedXmlModel, Tpl, NeedsLoginTpl, WorksheetsTpl) {
-        WRKSHT_API = "https://spreadsheets.google.com/feeds/worksheets/";
-        WRKSHT_URL = "https://spreadsheets.google.com/feeds/cells/KEY/WRKSHT/private/full";
-        WRKSHT_SVC = "svc/auth/providers/google_spreadsheets/feeds/worksheets/KEY/private/full";
-        WRKSHT_DATA_SVC = "svc/auth/providers/google_spreadsheets/feeds/cells/KEY/WRKSHT/private/full/batch";
-
         return Backbone.View.extend({
             folder: new Backbone.Model(),
             files: new Backbone.Model({}, { "url": "svc/auth/providers/google_apis/drive/v2/files" }),
-            sheets: {},
 
             events: {
                 "click .create-datasheets": function() {
@@ -92,10 +86,11 @@ define(["jquery", "underscore", "backbone", "base64",
                 console.debug("views/datasheets/control.__render");
                 var onlysheets = { "mimeType": "application/vnd.google-apps.spreadsheet" };
                 var datasheets = _.where(this.files.get("items"), onlysheets);
+                this.datasheets = _.indexBy(datasheets, "id");
                 this.$el.html(Tpl({ "datasheets": _.sortBy(datasheets, "title"), "folder": this.folder.toJSON() }));
 
                 _.each(datasheets, function(datasheet) {
-                    var worksheet = new XmlModel({}, { "url": WRKSHT_SVC.replace("KEY", datasheet["id"]) });
+                    var worksheet = new XmlModel({}, { "url": this.__api_worksheet(datasheet["id"]) });
                     worksheet.fetch({ "success": this.__render_worksheets });
                 }, this);
             },
@@ -104,27 +99,28 @@ define(["jquery", "underscore", "backbone", "base64",
                 console.debug("views/datasheets/control.__render_worksheets");
                 var worksheets = model.get("feed")["entry"];
                 var ws = [];
+                var wsUrl = "https://spreadsheets.google.com/feeds/worksheets/";
                 if (_.isArray(worksheets)) {
                     _.each(worksheets, function(entry) {
                         ws.push({
-                            "id": _.last(entry["id"].replace(WRKSHT_API, "").split("/")),
+                            "id": _.last(entry["id"].replace(wsUrl, "").split("/")),
                             "title": entry["title"].toString()
                         });
                     });
                 } else {
                     ws.push({
-                        "id": _.last(worksheets["id"].replace(WRKSHT_API, "").split("/")),
+                        "id": _.last(worksheets["id"].replace(wsUrl, "").split("/")),
                         "title": worksheets["title"].toString()
                     });
                 }
 
-                var sheet_id = _.first(model.get("feed")["id"].replace(WRKSHT_API, "").split("/"));
-                var sheet = {"datasheet": { "id": sheet_id, "title": sheet_id }, "worksheets": ws};
-                this.$("#tab-datasheets-" + sheet_id).find(".datasheets-infos").html(WorksheetsTpl(sheet));
 
-                this.sheets[sheet_id] = sheet;
+                var datasheet_id = _.first(model.get("feed")["id"].replace(wsUrl, "").split("/"));
+                var datasheet = this.datasheets[datasheet_id];
+                datasheet["worksheets"] = ws;
 
-                this.trigger("worksheet:loaded");
+                this.$("#tab-datasheets-" + datasheet_id).find(".datasheets-infos").html(WorksheetsTpl(datasheet));
+                this.trigger("datasheets:loaded", datasheet);
             },
 
             __create_folder: function() {
@@ -152,23 +148,38 @@ define(["jquery", "underscore", "backbone", "base64",
                         "gs:rowCount": 10,
                         "gs:colCount": 10
                     }
-                }, { "url": WRKSHT_SVC.replace("KEY", datasheet_id) });
+                }, { "url": this.__api_worksheet(datasheet_id) });
                 worksheet.save({ "success": this.__render });
             },
 
-            __resize_worksheet: function(datasheet_id, worksheet_id, sizes, callbackFn) {
-                var worksheet_url = WRKSHT_API + datasheet_id + "/private/full/" + worksheet_id;
-                var link_listfeed = "https://spreadsheets.google.com/feeds/list/" + datasheet_id + "/" + worksheet_id + "/private/full";
+            populate_worksheet: function(datasheet_id, worksheet_id, data) {
+                console.debug("views/datasheets/control.populate_worksheet(" + datasheet_id + "," + worksheet_id + "," + data.length + ")");
+
+                var numberOfRows = 1 + _.max(data, function(item) { return item["_row"] })["_row"];
+                var numberOfColumns = 1 + _.max(data, function(item) { return item["_col"] })["_col"];
+
+                var datasheet = this.datasheets[datasheet_id];
+                var worksheet = _.findWhere(datasheet["worksheets"], { "id": worksheet_id });
+
+                var pkg = { "datasheet_id": datasheet_id, "worksheet_id": worksheet_id };
+                var cells = new FeedXmlModel({}, {
+                    "url": this.__api_cells(datasheet_id, worksheet_id),
+                    "worksheet_url": this.__url_worksheet(datasheet_id, worksheet_id),
+                    "worksheet_title": worksheet["title"],
+                    "cells": data
+                });
+
+                var worksheet_url = this.__url_feeds(datasheet_id, worksheet_id);
                 var resize = new XmlModel({
                     "entry": {
                         "_xmlns": "http://www.w3.org/2005/Atom",
                         "_xmlns:gs": "http://schemas.google.com/spreadsheets/2006",
                         "id": worksheet_url,
-                        "updated": new Date(),
                         "category": {
                             "_scheme": "http://schemas.google.com/spreadsheets/2006",
                             "_term": "http://schemas.google.com/spreadsheets/2006#worksheet"
                         },
+                        "title": worksheet["title"],
                         "link": [
                             {
                                 "_rel": "http://schemas.google.com/spreadsheets/2006#listfeed",
@@ -191,28 +202,35 @@ define(["jquery", "underscore", "backbone", "base64",
                                 "_href": worksheet_url + "/version"
                             }
                         ],
-                        "gs:rowCount": sizes["rows"] || 100,
-                        "gs:colCount": sizes["columns"] || 20
+                        "gs:rowCount": numberOfRows,
+                        "gs:colCount": numberOfColumns
                     }
-                }, { "url": WRKSHT_SVC.replace("KEY", datasheet_id) + "/" + worksheet_id });
-                resize.save({ "method": "POST", "success": callbackFn })
+                }, { "url": this.__api_worksheet(datasheet_id, worksheet_id) });
+                resize.save({
+                    "method": "PUT",
+                    "headers": { "If-Match": "*" },
+                    "success": function() {
+                        cells.save({ "method": "POST", "headers": { "If-Match": "*" } });
+                    }
+                });
             },
 
-            populate_worksheet: function(datasheet_id, worksheet_id, data) {
-                console.debug("views/datasheets/control.populate_worksheet(" + datasheet_id + "," + worksheet_id + "," + data.length + ")");
+            __url_worksheet: function(datasheet_id, worksheet_id) {
+                return "https://spreadsheets.google.com/feeds/cells/" + datasheet_id + "/" + worksheet_id + "/private/full";
+            },
 
-                var numberOfColumns = _.max(_.map(data, function(item) {
-                    return _.keys(item).length
-                }));
+            __url_feeds: function(datasheet_id, worksheet_id) {
+                return "https://spreadsheets.google.com/feeds/worksheets/" + datasheet_id + "/private/full/" + worksheet_id;
+            },
 
-                var cells = new FeedXmlModel({}, {
-                    "url": WRKSHT_DATA_SVC.replace("KEY", datasheet_id).replace("WRKSHT", worksheet_id),
-                    "worksheet_url": WRKSHT_URL.replace("KEY", datasheet_id).replace("WRKSHT", worksheet_id),
-                    "cells": data
-                });
-                this.__resize_worksheet(datasheet_id, worksheet_id, { "rows": data.length, "columns": numberOfColumns }, function() {
-                    cells.save({ "method": "POST", "headers": { "If-Match": "*" } });
-                });
+            __api_worksheet: function(datasheet_id, worksheet_id) {
+                var api = "svc/auth/providers/google_spreadsheets/feeds/worksheets/" + datasheet_id + "/private/full";
+                if (!_.isEmpty(worksheet_id)) api += "/" + worksheet_id;
+                return api;
+            },
+
+            __api_cells: function(datasheet_id, worksheet_id) {
+                return "svc/auth/providers/google_spreadsheets/feeds/cells/" + datasheet_id + "/" + worksheet_id + "/private/full/batch";
             }
         });
     });

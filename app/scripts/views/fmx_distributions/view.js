@@ -65,7 +65,7 @@ define(["jquery", "underscore", "backbone",
                     var datasheet_id = $(e.target).data("datasheet");
                     var worksheet_id = $(e.target).data("id");
                     console.debug("fmx-dist.export_data_selector:" + datasheet_id + "," + worksheet_id + ":" + this.latest_data.length);
-                    var cells = new CellsModel({ "data": this.latest_data });
+                    var cells = new CellsModel(this.latest_data, { "features": this.selected_features, "id_attribute": "sample" });
                     this.datasheets_control.populate_worksheet(datasheet_id, worksheet_id, cells.get("cells"));
                 },
                 "click .legend_items a": function (e) {

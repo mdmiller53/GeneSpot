@@ -59,7 +59,7 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             initialize: function() {
-                _.bindAll(this, "render", "__load", "__render", "__create_folder", "__render_worksheets");
+                _.bindAll(this, "render", "__load", "__render", "__create_folder", "__render_worksheets", "__put_data_in_chunks");
             },
 
             render: function() {
@@ -161,14 +161,6 @@ define(["jquery", "underscore", "backbone", "base64",
                 var datasheet = this.datasheets[datasheet_id];
                 var worksheet = _.findWhere(datasheet["worksheets"], { "id": worksheet_id });
 
-                var pkg = { "datasheet_id": datasheet_id, "worksheet_id": worksheet_id };
-                var cells = new FeedXmlModel({}, {
-                    "url": this.__api_cells(datasheet_id, worksheet_id),
-                    "worksheet_url": this.__url_worksheet(datasheet_id, worksheet_id),
-                    "worksheet_title": worksheet["title"],
-                    "cells": data
-                });
-
                 var worksheet_url = this.__url_feeds(datasheet_id, worksheet_id);
                 var resize = new XmlModel({
                     "entry": {
@@ -206,13 +198,24 @@ define(["jquery", "underscore", "backbone", "base64",
                         "gs:colCount": numberOfColumns
                     }
                 }, { "url": this.__api_worksheet(datasheet_id, worksheet_id) });
-                resize.save({
-                    "method": "PUT",
-                    "headers": { "If-Match": "*" },
-                    "success": function() {
-                        cells.save({ "method": "POST", "headers": { "If-Match": "*" } });
-                    }
+
+                var successFn = this.__put_data_in_chunks(data, {
+                    "url": this.__api_cells(datasheet_id, worksheet_id),
+                    "worksheet_url": this.__url_worksheet(datasheet_id, worksheet_id),
+                    "worksheet_title": worksheet["title"]
                 });
+                resize.save({ "method": "PUT", "headers": { "If-Match": "*" }, "success": successFn });
+            },
+
+            __put_data_in_chunks: function(data, default_config) {
+                if (_.isEmpty(data)) return function() {};
+
+                var batch_size = 2000;
+                var successFn = this.__put_data_in_chunks(_.rest(data, batch_size), default_config);
+                return function() {
+                    var cells = new FeedXmlModel({}, _.extend({ "cells": _.first(data, batch_size) }, default_config));
+                    cells.save({ "headers": { "If-Match": "*" }, "success": successFn });
+                }
             },
 
             __url_worksheet: function(datasheet_id, worksheet_id) {

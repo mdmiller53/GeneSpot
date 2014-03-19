@@ -1,16 +1,7 @@
 define([
-    "jquery", "underscore", "backbone", "d3", "vq",
-    "views/seqpeek/vis",
+    "jquery", "underscore", "backbone", "d3",
 
-    'seqpeek/util/data_adapters',
-    'seqpeek/util/gene_region_utils',
-    'seqpeek/util/region_layouts',
-    'seqpeek/seqpeek_viewport',
-    'seqpeek/seqpeek_svg_context',
-    'seqpeek/variant_layout',
-    'seqpeek/tracks/bar_plot_track',
-    'seqpeek/tracks/region_scale_track',
-    'seqpeek/tracks/horizontal_tick_track',
+    'seqpeek/builders/builder_for_existing_elements',
 
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table"
@@ -20,25 +11,14 @@ define([
         _,
         Backbone,
         d3,
-        vq,
-        SeqPeekFactory,
 
-        DataAdapters,
-        GeneRegionUtils,
-        RegionLayouts,
-        ViewportFactory,
-        SeqPeekSVGContextFactory,
-        VariantLayoutFactory,
-        BarPlotTrackFactory,
-        RegionTrackFactory,
-        TickTrackFactory,
+        SeqPeekBuilder,
 
         MutationsMapTpl,
         MutationsMapTableTpl
     ) {
 
-        var VERTICAL_PADDING = 10,
-            BAR_PLOT_TRACK_MAX_HEIGHT = 100,
+        var BAR_PLOT_TRACK_MAX_HEIGHT = 100,
             TICK_TRACK_HEIGHT = 25,
             REGION_TRACK_HEIGHT = 10,
             VIEWPORT_WIDTH = 1000;
@@ -142,7 +122,6 @@ define([
 
                 this.$(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
 
-                var $table_el = this.$(".mutations_map_table");
                 var region_data = [ { "type": "exon", "start": 0, "end": 1000 } ];
                 var seqpeek_data = [];
 
@@ -158,87 +137,42 @@ define([
                 }, this);
 
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-row"))
-                this.__build_all(seqpeek_data, region_data, seqpeek_tick_track_element);
+                this.__render_tracks(seqpeek_data, region_data, seqpeek_tick_track_element);
             },
 
-            __build_all: function(mutation_data, region_array, seqpeek_tick_track_element) {
-                console.log(mutation_data);
-                var region_data = GeneRegionUtils.buildRegionsFromArray(region_array);
-                var region_layout = RegionLayouts.BasicLayoutFactory
-                    .create({})
-                    .intron_width(5);
+            __render_tracks: function(mutation_data, region_array, seqpeek_tick_track_element) {
+                console.debug("seqpeek/view.__render_tracks");
 
-                region_layout.process(region_data);
-                var region_metadata = region_layout.getMetadata();
-
-                var variant_layout = VariantLayoutFactory.create({});
-                console.log(mutation_data);
+                var seqpeek = SeqPeekBuilder.create({
+                    region_data: region_array,
+                    viewport: {
+                        width: VIEWPORT_WIDTH
+                    },
+                    bar_plot_tracks: {
+                        bar_width: 5.0,
+                        height: BAR_PLOT_TRACK_MAX_HEIGHT,
+                        stem_height: 30
+                    },
+                    region_track: {
+                        height: REGION_TRACK_HEIGHT
+                    },
+                    tick_track: {
+                        height: TICK_TRACK_HEIGHT
+                    },
+                    region_layout: {
+                        intron_width: 5
+                    },
+                    variant_layout: {
+                        variant_width: 5.0
+                    },
+                    variant_data_location_field: 'location',
+                    variant_data_type_field: 'mutation_id'
+                });
 
                 _.each(mutation_data, function(track_obj) {
-                    variant_layout.add_track_data(track_obj.variants);
-                });
-
-                variant_layout
-                    .location_field('location')
-                    .variant_type_field('mutation_id')
-                    .variant_width(5.0)
-                    .regions(region_data)
-                    .processFlatArray('location');
-
-                var bar_plot_tracks = _.map(mutation_data, function(track_obj) {
-                    var track_data = DataAdapters.group_by_location(track_obj.variants, 'mutation_id', 'location');
-                    DataAdapters.apply_statistics(track_data, function() {return 'all';});
-                    console.log(track_data);
-
-                    return BarPlotTrackFactory
-                        .create()
-                        .color_scheme({
-                            'all': '#fd8f42'
-                        })
-                        .data(track_data, function(d) {return d;})
-                        .regions(region_data, 'location')
-                        .variant_layout(variant_layout)
-                        .bar_width(5.0)
-                        .stem_height(30)
-                        .height(BAR_PLOT_TRACK_MAX_HEIGHT)
-                        .category_totals({ })
-                        .scaling({
-                            type: 'log2nabs',
-                            min_height: 10,
-                            max_height: BAR_PLOT_TRACK_MAX_HEIGHT - 30,
-                            scaling_factor: 200
-                        });
-                });
-
-                //////////////
-                // Viewport //
-                //////////////
-                var common_viewport = ViewportFactory.createFromRegionData(region_data, region_metadata, 1300);
-                common_viewport.setViewportPosition({
-                    x: 0,
-                    y: 0
-                });
-
-                ////////////////////////////////////////
-                // Create SVG element for both tracks //
-                ////////////////////////////////////////
-                var total_height = _.reduce(bar_plot_tracks, function(memo, track, index) {
-                    return memo + track.getHeight() + REGION_TRACK_HEIGHT + (index > 0 ? VERTICAL_PADDING : 0);
-                }, 0);
-
-                total_height = total_height + TICK_TRACK_HEIGHT;
-
-                ////////////////////////////////////////////
-                // Create context for each bar plot track //
-                ////////////////////////////////////////////
-                var bar_plot_SVG_contexts = [],
-                    region_scale_SVG_contexts = [];
-
-                _.each(bar_plot_tracks, function(track_instance, index, array) {
                     var current_y = 0;
-                    var target_el = mutation_data[index].target_element;
 
-                    var track_elements_svg = d3.select(target_el)
+                    var track_elements_svg = d3.select(track_obj.target_element)
                         .append("svg")
                         .attr("width", VIEWPORT_WIDTH)
                         .attr("height", BAR_PLOT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
@@ -249,35 +183,16 @@ define([
                         .attr("transform", "translate(0," + current_y + ")")
                         .style("pointer-events", "none");
 
-                    current_y = current_y + track_instance.getHeight();
-
-                    bar_plot_SVG_contexts.push(SeqPeekSVGContextFactory.createIntoSVG(bar_plot_track_svg));
-
-                    // Create context for region track below each bar plot track
-                    var region_track = RegionTrackFactory
-                        .create()
-                        .height(REGION_TRACK_HEIGHT)
-                        .data(region_data);
+                    current_y = current_y + BAR_PLOT_TRACK_MAX_HEIGHT;
 
                     var region_track_svg = track_elements_svg
                         .append("g")
                         .attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
-                    var region_scale_ctx = SeqPeekSVGContextFactory.createIntoSVG(region_track_svg)
-                        .track(region_track);
-
-                    region_scale_SVG_contexts.push(region_scale_ctx);
-
-                    current_y = current_y + region_track.getHeight() + (index < array.length - 1 ? VERTICAL_PADDING : 0);
+                    seqpeek.addBarPlotTrackWithArrayData(track_obj.variants, bar_plot_track_svg);
+                    seqpeek.addRegionScaleTrackToElement(region_track_svg);
                 });
-
-                var tick_track = TickTrackFactory
-                    .create()
-                    .height(TICK_TRACK_HEIGHT)
-                    .tick_height(10)
-                    .tick_text_y(22)
-                    .data(region_data);
 
                 var tick_track_svg = d3.select(seqpeek_tick_track_element)
                     .append("svg")
@@ -285,64 +200,9 @@ define([
                     .attr("height", TICK_TRACK_HEIGHT)
                     .style("pointer-events", "none");
 
-                var tick_ctx = SeqPeekSVGContextFactory.createIntoSVG(tick_track_svg)
-                    .track(tick_track);
+                seqpeek.addTickTrackToElement(tick_track_svg);
 
-                var scroll_handler = function(event) {
-                    common_viewport.setViewportPosition({
-                        x: event.translate[0],
-                        y: 0
-                    });
-
-                    var visible_coordinates = common_viewport._getVisibleCoordinates();
-                    variant_layout.doLayoutForViewport(visible_coordinates, 'coordinate');
-
-                    // Update viewport for each bar plot context
-                    _.each(bar_plot_SVG_contexts, function(context) {
-                        _.bind(context._updateViewportTranslation, context)();
-                    });
-
-                    // Scroll the region scale track context
-                    _.each(region_scale_SVG_contexts, function(context) {
-                        _.bind(context._updateViewportTranslation, context)();
-                    });
-
-                    // Scroll the tick track context
-                    _.bind(tick_ctx._updateViewportTranslation, tick_ctx)();
-                };
-
-                _.chain(_.zip(bar_plot_tracks, bar_plot_SVG_contexts))
-                    .each(function(bar_plot_info) {
-                        var track = bar_plot_info[0],
-                            context = bar_plot_info[1];
-
-                        context
-                            .width(VIEWPORT_WIDTH)
-                            .scroll_handler(scroll_handler)
-                            .track(track)
-                            .viewport(common_viewport);
-                    });
-
-                var initial_viewport = bar_plot_SVG_contexts[0].getCurrentViewport();
-                variant_layout.doLayoutForViewport(initial_viewport.getVisibleCoordinates(), 'coordinate');
-
-                _.each(bar_plot_SVG_contexts, function(context) {
-                    context.draw();
-                });
-
-                _.each(region_scale_SVG_contexts, function(context) {
-                    context
-                        .width(VIEWPORT_WIDTH)
-                        .scroll_handler(scroll_handler)
-                        .viewport(common_viewport)
-                        .draw();
-                });
-
-                tick_ctx
-                    .width(VIEWPORT_WIDTH)
-                    .scroll_handler(scroll_handler)
-                    .viewport(common_viewport)
-                    .draw();
+                seqpeek.draw();
             },
 
             __filter_data: function(data_by_tumor_type) {

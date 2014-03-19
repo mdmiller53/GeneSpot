@@ -19,11 +19,12 @@
     "colorbrewer": "git://github.com/undashes/colorbrewer.git",
     "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
     "carve": "~0.0.7",
-    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#935e874e76e97ee676030180af5ebfafec151f29"
+    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#7923972e5bd7ba582d811c456a787d6d9f6ad3fd"
   },
   "resolutions": {
     "underscore": "~1.5.2",
     "jquery": "~2.0.3",
-    "visquick": "~0.1.2"
+    "visquick": "~0.1.2",
+    "d3": "~3.4.1"
   }
 }

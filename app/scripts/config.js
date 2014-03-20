@@ -21,7 +21,8 @@ require.config({
         "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
         "carve" : "../bower_components/carve/carve",
         "xml2json" : "../bower_components/x2js/xml2json",
-        "base64" : "../bower_components/base64/jquery.base64.min"
+        "base64" : "../bower_components/base64/jquery.base64.min",
+        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min"
     },
     "shim": {
         "underscore" : {

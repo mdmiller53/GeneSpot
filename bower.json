@@ -20,7 +20,8 @@
     "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
     "base64": "git://github.com/carlo/jquery-base64",
     "carve": "~0.0.7",
-    "x2js": "*"
+    "x2js": "*",
+    "cytoscape": "~2.2.1"
   },
   "resolutions": {
     "underscore": "~1.5.2",

@@ -192,7 +192,7 @@
             "catalog": {
                 "consolidated_20131223": {
                     "label": "TCGA Network : Consolidated Tumor Types (23dec)",
-                    "service": "graphs/cypher/consolidated_tumortypes_20131223",
+                    "service": "graphs/transaction/commit",
                     "model": "models/graphs/cypher"
                 }
             }

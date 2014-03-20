@@ -16,12 +16,12 @@
                     "label": "Network",
                     "datamodels": {
                         "graph_db": {
-                            "uri": "datamodel/graphs/consolidated_20131223",
-                            "base_query": {
-                                "cypher": "limit 25"
-                            }
+                            "uri": "datamodel/graphs/consolidated_20131223"
                         }
-                    }
+                    },
+                    "linkouts": [
+                        { "label": "Neo4J", "url": "http://csacr.systemsbiology.net/neo4j/" }
+                    ]
                 }
             ]
         },

@@ -591,9 +591,9 @@ td.vertical_cell {
 }
 
 .cytoscape-container {
-    min-height: 300px;
+    min-height: 400px;
 }
 
 .cytoscape-container > div {
-    height: 300px;
+    height: 400px;
 }

@@ -68,12 +68,14 @@ require(
         "models/feature_matrix",
         "models/gs/by_tumor_type",
         "models/gs/sample_types",
+        "models/graphs/cypher",
 
         "views/gs/atlas_quick_tutorial",
         "views/gs/atlas_maptext_view",
         "views/stacksvis/view",
         "views/fmx_distributions/view",
         "views/seqpeek/view",
+        "views/graphs/view",
         "views/pubcrawl/view"
     ],
     function () {

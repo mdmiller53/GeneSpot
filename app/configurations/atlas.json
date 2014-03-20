@@ -2,6 +2,30 @@
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "maps": [
         {
+            "id": "graph_view",
+            "label": "TCGA Feature Network",
+            "description": "This map presents a network of all genomic and clinical TCGA features. The nodes are bio-entities (e.g. Genes, Methylation, Protein Expresion), and the edges represent associations found from Pair Wise associations.",
+            "isOpen": true,
+            "position": {
+                "top": 0,
+                "left": 150
+            },
+            "views": [
+                {
+                    "view": "views/graphs/view",
+                    "label": "Network",
+                    "datamodels": {
+                        "graph_db": {
+                            "uri": "datamodel/graphs/consolidated_20131223",
+                            "base_query": {
+                                "cypher": "limit 25"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
             "id": "mutations_combo",
             "label": "Mutations (combined)",
             "description": "This map combines multiple mutation data type views",
@@ -113,7 +137,7 @@
                 "top": 20,
                 "left": 200
             },
-            "isOpen": true,
+            "isOpen": false,
             "views": [
                 {
                     "view": "views/fmx_distributions/view",

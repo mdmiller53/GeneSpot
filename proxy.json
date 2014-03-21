@@ -34,13 +34,13 @@
             "xforward": true
         },
         {
-            "context" : "/svc/graphs",
+            "context" : "/svc/neo4j",
             "host" : "csacr.systemsbiology.net",
             "port" : 80,
             "https" : false,
             "changeOrigin" : true,
             "rewrite" : {
-                "^/svc/graphs": "/neo4j/db/data"
+                "^/svc": "/staging"
             },
             "xforward": true
         },

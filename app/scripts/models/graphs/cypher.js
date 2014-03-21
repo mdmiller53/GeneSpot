@@ -40,13 +40,17 @@ define(["jquery", "underscore", "backbone"],
                     "data": JSON.stringify(cypherQuery),
                     "async": false,
                     "success": function(data) {
-                        console.log("data=" + data.length);
                         var data_elements = _.flatten(_.pluck(data["results"], "data"));
                         var graphs = _.flatten(_.pluck(data_elements, "graph"));
                         var nodes = _.flatten(_.pluck(graphs, "nodes"));
                         ids = _.pluck(nodes, "id");
                     }
                 }));
+
+                if (_.isEmpty(ids)) {
+                    console.debug("models/graphs/cypher.fetch:empty ids");
+                    return null;
+                }
 
                 var node_ids = ids.join(",");
                 var secondQuery = {

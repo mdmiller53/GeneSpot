@@ -20,7 +20,22 @@
                         }
                     },
                     "linkouts": [
-                        { "label": "Neo4J", "url": "http://csacr.systemsbiology.net/neo4j/" }
+                        { "label": "Neo4J", "url": "http://csacr.systemsbiology.net/staging/neo4j" }
+                    ]
+                },
+                {
+                    "view": "views/gs/atlas_maptext_view",
+                    "label": "Info",
+                    "text": "This map uses the Cytoscape.js visualization developed by the Cytoscape consortium.",
+                    "links": [
+                        {
+                            "label": "Cytoscape.js Home",
+                            "url": "http://cytoscape.github.io/cytoscape.js"
+                        },
+                        {
+                            "label": "Cytoscape.js Github",
+                            "url": "https://github.com/cytoscape/cytoscape.js"
+                        }
                     ]
                 }
             ]

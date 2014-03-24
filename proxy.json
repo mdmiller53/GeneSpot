@@ -34,7 +34,7 @@
             "xforward": true
         },
         {
-            "context" : "/svc/neo4j",
+            "context" : "/svc/neo4jdb",
             "host" : "csacr.systemsbiology.net",
             "port" : 80,
             "https" : false,

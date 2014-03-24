@@ -72,12 +72,11 @@ define(["jquery", "underscore", "backbone", "hbs!templates/graphs/container", "c
             initialize: function () {
                 console.debug("views/graphs.initialize");
                 this.model = this.options.models["graph_db"];
+                this.model.on("load", this.__load, this);
             },
 
             render: function () {
                 console.debug("views/graphs.render");
-
-                this.model.on("load", this.__load, this);
                 this.$el.html(Tpl({ "linkouts": _.map(this.options["linkouts"], this.__make_url, this) }));
                 return this;
             },

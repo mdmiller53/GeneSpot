@@ -1,0 +1,11 @@
+{{#each links}}
+    {{#if divider}}
+        <li class="divider"></li>
+        {{#if header}}
+            <li class="hav-header">{{header}}</li>
+        {{/if}}
+    {{/if}}
+    {{#unless divider}}
+        <li><a href="{{url}}" target="_blank">{{label}}</a></li>
+    {{/unless}}
+{{/each}}

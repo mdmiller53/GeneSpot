@@ -1,0 +1,64 @@
+<h4>Data Sheets</h4>
+<div class="row">
+    <div class="span4">
+        <div class="input-append">
+            <input type="text" class="new-datasheets-name" placeholder="New sheet name...">
+            <button class="btn create-datasheets" type="button" title="Add a sheet"><i class="icon-plus"></i></button>
+            <button class="btn refresh-datasheets" type="button" title="Reload sheets"><i class="icon-refresh"></i></button>
+        </div>
+    </div>
+    <div class="span3">
+        <span class="alert alert-danger invalid-datasheets-name hide">
+            <strong>Error!</strong> Not a valid sheet name
+        </span>
+        <span class="alert alert-danger invalid-worksheet-name hide">
+            <strong>Error!</strong> Not a valid worksheet name
+        </span>
+        <span class="alert alert-danger duplicate-datasheets-name hide">
+            <strong>Error!</strong> Sheet name already exists
+        </span>
+        <span class="alert alert-success datasheets-added-success hide">
+            <strong>Success!</strong> New sheet added
+        </span>
+    </div>
+</div>
+{{#if folder}}
+    <div class="well">
+        <a href="{{folder.alternateLink}}" target="_blank">
+            <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
+            <img src="{{folder.iconLink}}" class="signin-pic" alt="&nbsp;"/>
+            {{folder.title}}
+        </a>
+    </div>
+{{/if}}
+<div class="row">
+    <div class="span7">
+        <div class="tabs-left">
+            <ul class="nav nav-tabs datasheets">
+                {{#each datasheets}}
+                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}">
+                        <a href="#tab-datasheets-{{id}}" data-toggle="tab"><img src="{{iconLink}}" alt="&nbsp;"/> {{title}}</a>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            {{#each datasheets}}
+                <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-datasheets-{{id}}">
+                    <div class="well">
+                        <a href="{{alternateLink}}" target="_blank">
+                            <img src="//developers.google.com/drive/images/drive_icon.png" class="signin-pic" alt="&nbsp;"/>
+                            Open in Google Drive
+                        </a>
+                    </div>
+                    <div class="input-append">
+                        <input type="text" class="new-worksheet-name" data-id="{{id}}" placeholder="New worksheet name...">
+                        <button class="btn add-worksheet" type="button" data-id="{{id}}" title="Add a worksheet"><i data-id="{{id}}" class="icon-plus"></i></button>
+                    </div>
+                    <div class="datasheets-infos"></div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>

@@ -187,6 +187,16 @@
                 }
             }
         },
+        "graphs": {
+            "label": "Graph Database",
+            "catalog": {
+                "consolidated_20131223": {
+                    "label": "TCGA Network : Consolidated Tumor Types (23dec)",
+                    "service": "neo4jdb/data/transaction/commit",
+                    "model": "models/graphs/cypher"
+                }
+            }
+        },
         "reference_data": {
             "label": "Reference Data",
             "catalog": {

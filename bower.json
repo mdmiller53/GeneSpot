@@ -1,5 +1,5 @@
 {
-  "name": "WebAppTemplate",
+  "name": "GeneSpot",
   "version": "0.0.0",
   "dependencies": {
     "requirejs": "~2.1.4",
@@ -18,7 +18,10 @@
     "jsPlumb": "git://github.com/sporritt/jsPlumb.git#1.5.4",
     "colorbrewer": "git://github.com/undashes/colorbrewer.git",
     "stacksvis": "git://github.com/cancerregulome/StacksVis#improving_layout",
+    "base64": "git://github.com/carlo/jquery-base64",
     "carve": "~0.0.7",
+    "x2js": "*",
+    "cytoscape": "~2.2.1",
     "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#7923972e5bd7ba582d811c456a787d6d9f6ad3fd"
   },
   "resolutions": {

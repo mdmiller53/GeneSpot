@@ -20,7 +20,10 @@ require.config({
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
         "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
         "carve" : "../bower_components/carve/carve",
-        "seqpeek": '../bower_components/seqpeek/src'
+        "seqpeek": "../bower_components/seqpeek/src",
+        "xml2json" : "../bower_components/x2js/xml2json",
+        "base64" : "../bower_components/base64/jquery.base64.min",
+        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min"
     },
     "shim": {
         "underscore" : {
@@ -67,12 +70,14 @@ require(
         "models/feature_matrix",
         "models/gs/by_tumor_type",
         "models/gs/sample_types",
+        "models/graphs/cypher",
 
         "views/gs/atlas_quick_tutorial",
         "views/gs/atlas_maptext_view",
         "views/stacksvis/view",
         "views/fmx_distributions/view",
         "views/seqpeek/view",
+        "views/graphs/view",
         "views/pubcrawl/view"
     ],
     function () {

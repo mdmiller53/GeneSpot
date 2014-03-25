@@ -52,36 +52,33 @@
 	height: 800px;
 }
 
-.signin-container {
-    width: 400px;
-}
-
 .signin-pic {
     width: 20px;
     margin-top: -5px;
     padding-left: 1px;
 }
 
-.provider .logo {
+.signin-container {
+    margin: 10px;
+    min-width: 300px;
+}
+
+.signin-container .logo {
     width: 50px;
     margin: 5px;
 }
 
-.provider {
-    margin-bottom: 20px;
-}
-
-.provider .user-pic {
+.signin-container .user-pic {
     width: 50px;
     float: left;
     margin: 5px;
 }
 
-.provider .email {
+.signin-container .email {
     font-weight: bold;
 }
 
-.provider a {
+.signin-container a {
     font-size: smaller;
     margin-top: 10px;
     padding-top: 10px;

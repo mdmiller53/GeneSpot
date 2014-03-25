@@ -1,0 +1,18 @@
+<div class="signin-container">
+{{#if email}}
+    {{#if picture}}
+        <img class="user-pic" src="{{picture}}" alt="&nbsp;"/>
+    {{/if}}
+    {{#unless picture}}
+        <img class="user-pic" src="https://www.google.com/images/icons/ui/gprofile_button-64.png" alt="&nbsp;"/>
+    {{/unless}}
+    <span><a href="{{link}}" target="_blank">{{name}}</a></span><br/>
+    <span class="email">{{email}}</span>
+    <br/>
+    <a class="signout-link">Sign Out</a>
+{{/if}}
+{{#unless email}}
+    <img class="signin-pic" src="https://www.google.com/images/icons/ui/gprofile_button-64.png" alt="Google+"/>
+    <a href="svc/auth/signin/google">Sign In</a>
+{{/unless}}
+</div>

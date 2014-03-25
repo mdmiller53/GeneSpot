@@ -34,6 +34,17 @@
             "xforward": true
         },
         {
+            "context" : "/svc/neo4jdb",
+            "host" : "csacr.systemsbiology.net",
+            "port" : 80,
+            "https" : false,
+            "changeOrigin" : true,
+            "rewrite" : {
+                "^/svc": "/staging"
+            },
+            "xforward": true
+        },
+        {
             "context" : "/svc",
             "host" : "localhost",
             "port" : 8000,

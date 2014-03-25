@@ -7,12 +7,15 @@ define([
     "views/clinvarlist/control",
     "views/gs/tumor_types_control",
     "views/datamodel_collector/control",
-    "views/collected_maps/control"
+    "views/collected_maps/control",
+    "views/datasheets/control"
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
-              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl, CollectedMapsControl) {
+              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl, CollectedMapsControl,
+              DatasheetsControl) {
 
         return Backbone.View.extend({
+            "datasheetsControl": new DatasheetsControl({}),
             "last-z-index": 10,
             "lastPosition": {
                 "top": 0, "left": 0
@@ -52,6 +55,7 @@ define([
                 this.model.on("load", this.__init_tumortypes_control, this);
                 this.model.on("load", this.__init_datamodel_collector, this);
                 this.model.on("load", this.__init_collected_maps_control, this);
+                this.model.on("load", this.__init_datasheets_control, this);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
             },
@@ -100,6 +104,10 @@ define([
                 this.$el.find(".collected-maps-container").html(this.collectedMapsControl.render().el);
             },
 
+            __init_datasheets_control: function() {
+                this.$el.find(".datasheets-container").html(this.datasheetsControl.render().el);
+            },
+
             __init_tumortypes_control: function() {
                 this.tumorTypesControl = new TumorTypesControl({});
 
@@ -136,7 +144,8 @@ define([
                     return view_template.spin({
                         "genes": gene_list,
                         "tumor_types": tumor_type_list,
-                        "clinical_variables": clinvar_list
+                        "clinical_variables": clinvar_list,
+                        "datasheets_control": this.datasheetsControl
                     });
                 }, this);
 

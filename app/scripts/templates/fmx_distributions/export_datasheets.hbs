@@ -1,0 +1,13 @@
+{{#if datasheets}}
+<a href="#" onclick="return false;" class="dropdown-toggle" data-toggle="dropdown">
+    <img src="https://ssl.gstatic.com/docs/doclist/images/icon_11_spreadsheet_list.png" alt="&nbsp;"/> Export <b class="caret"></b>
+</a>
+<ul class="dropdown-menu export_data_selector" role="menu">
+    {{#each datasheets}}
+        <li class="nav-header">{{title}}</li>
+        {{#each worksheets}}
+            <li><a href="#" onclick="return false;" data-datasheet="{{../id}}" data-id="{{id}}">{{title}}</a></li>
+        {{/each}}
+    {{/each}}
+</ul>
+{{/if}}

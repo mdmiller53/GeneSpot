@@ -1,0 +1,35 @@
+<ul class="nav nav-tabs">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" onclick="return false;">Layouts <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu layouts-all" role="menu">
+            <li><a href="#" onclick="return false;" class="layouts-circle">Circle</a></li>
+            <li><a href="#" onclick="return false;" class="layouts-grid">Grid</a></li>
+            <li><a href="#" onclick="return false;" class="layouts-concentric">Concentric</a></li>
+            <li><a href="#" onclick="return false;" class="layouts-breadthfirst">Breadthfirst</a></li>
+            <li><a href="#" onclick="return false;" class="layouts-cose">Spring</a></li>
+            <li class="divider"></li>
+            <li class="nav-header">Debug</li>
+            <li class="active"><a href="#" onclick="return false;" class="layouts-random">Random</a></li>
+            <li><a href="#" onclick="return false;" class="layouts-null">Null</a></li>
+        </ul>
+    </li>
+    {{#if linkouts}}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" onclick="return false;">Explore <b class="caret"></b></a>
+        <ul class="dropdown-menu linkouts" role="menu">
+        {{#each linkouts}}
+            <li><a href="{{url}}" target="_blank">{{label}}</a></li>
+        {{/each}}
+        </ul>
+    {{/if}}
+</ul>
+<div class="tab-content">
+    <div class="alert alert-info cytoscape-loading hide">
+        <strong>Loading</strong>, please wait...
+    </div>
+    <div class="tab-pane active">
+        <div class="cytoscape-container"></div>
+    </div>
+</div>
+

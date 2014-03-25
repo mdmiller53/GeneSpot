@@ -1,11 +1,27 @@
 define([
-    "jquery", "underscore", "backbone", "vq",
-    "views/gs/gene_region_utils",
-    "views/seqpeek/vis",
+    "jquery", "underscore", "backbone", "d3",
+
+    'seqpeek/builders/builder_for_existing_elements',
+
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table"
 ],
-    function ($, _, Backbone, vq, GeneRegionUtils, SeqPeekFactory, MutationsMapTpl, MutationsMapTableTpl) {
+    function (
+        $,
+        _,
+        Backbone,
+        d3,
+
+        SeqPeekBuilder,
+
+        MutationsMapTpl,
+        MutationsMapTableTpl
+    ) {
+
+        var BAR_PLOT_TRACK_MAX_HEIGHT = 100,
+            TICK_TRACK_HEIGHT = 25,
+            REGION_TRACK_HEIGHT = 10,
+            VIEWPORT_WIDTH = 1000;
 
         return Backbone.View.extend({
             "genes": [],
@@ -106,170 +122,87 @@ define([
 
                 this.$(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
 
-                var $table_el = this.$(".mutations_map_table");
                 var region_data = [ { "type": "exon", "start": 0, "end": 1000 } ];
-                _.each(mutations, function (mutation_data, tumor_type) {
-                    if (_.isEmpty(mutation_data)) return;
+                var seqpeek_data = [];
 
-                    var seqpeek_el = _.first(this.$("#seqpeek-row-" + tumor_type));
-                    this.__render_track(mutation_data, region_data, seqpeek_el);
+                _.each(this.tumor_types, function (tumor_type) {
+                    var variants = mutations[tumor_type];
+                    if (_.isEmpty(variants)) return;
+
+                    seqpeek_data.push({
+                        variants: variants,
+                        tumor_type: tumor_type,
+                        target_element: _.first(this.$("#seqpeek-row-" + tumor_type))
+                    });
                 }, this);
+
+                var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-row"))
+                this.__render_tracks(seqpeek_data, region_data, seqpeek_tick_track_element);
             },
 
-            __render_track: function (all_variants, region_data, element) {
-                console.debug("seqpeek/view.__render_track");
-                var transcript_track = this.__process_track(all_variants, region_data);
+            __render_tracks: function(mutation_data, region_array, seqpeek_tick_track_element) {
+                console.debug("seqpeek/view.__render_tracks");
 
-                var data = {
-                    protein: {
-                        domains: [],
-                        length: 100,
-                        name: "TEST",
-                        uniprot_id: "TEST"
+                var seqpeek = SeqPeekBuilder.create({
+                    region_data: region_array,
+                    viewport: {
+                        width: VIEWPORT_WIDTH
                     },
-                    tracks: [
-                        _.extend(transcript_track, {
-                            label: ""
-                        })
-                    ]
-                };
+                    bar_plot_tracks: {
+                        bar_width: 5.0,
+                        height: BAR_PLOT_TRACK_MAX_HEIGHT,
+                        stem_height: 30
+                    },
+                    region_track: {
+                        height: REGION_TRACK_HEIGHT
+                    },
+                    tick_track: {
+                        height: TICK_TRACK_HEIGHT
+                    },
+                    region_layout: {
+                        intron_width: 5
+                    },
+                    variant_layout: {
+                        variant_width: 5.0
+                    },
+                    variant_data_location_field: 'location',
+                    variant_data_type_field: 'mutation_id'
+                });
 
-                var options = {
-                    location_tick_height: 25,
-                    protein_scale: {
-                        width: 1000,
-                        vertical_padding: 10
-                    },
-                    protein_domains: {
-                        padding: 10,
-                        key: "dbname"
-                    },
-                    signature_height: 10,
-                    enable_transitions: false,
-                    enable_mutation_stems: true,
-                    mutation_layout: "all_subtypes",
-                    variant_layout: "all_subtypes",
-                    mutation_groups: {
-                        padding: 0,
-                        stems: {
-                            height: 20,
-                            stroke_width: 1.0
-                        }
-                    },
-                    mutation_shape_width: 5,
-                    mutation_order: [
-                        "SUBSTITUTION",
-                        "POSSIBLE-SPLICE5/SUBSTITUTION"
-                    ],
-                    mutation_sample_id_field: "patient_id",
-                    variant_color_field: "type",
-                    variant_colors: {
-                        SUBSTITUTION: "red",
-                        "POSSIBLE-SPLICE5/SUBSTITUTION": "green",
-                        Frame_Shift_Del: "gold",
-                        Frame_Shift_Ins: "gold",
-                        Missense_Mutation: "blue"
-                    },
-                    mutation_label_rows: [
-                        {label: "ID", name: "mutation_id"},
-                        {label: "Location", name: "location"}
-                    ],
-                    plot: {
-                        horizontal_padding: 0,
-                        vertical_padding: 0
-                    },
-                    band_label_width: 0,
-                    tooltips: {
-                        interpro: {
-                            items: {
-                                "DB": function (d) {
-                                    return d.dbname;
-                                },
-                                "EVD": function (d) {
-                                    return d.evd;
-                                },
-                                "ID": function (d) {
-                                    return d.id;
-                                },
-                                "Name": function (d) {
-                                    return d.name;
-                                },
-                                "Status": function (d) {
-                                    return d.status;
-                                },
-                                "LOC": function (d) {
-                                    return d.location.start + " - " + d.location.end;
-                                }
-                            }
-                        }
-                    }
-                };
+                _.each(mutation_data, function(track_obj) {
+                    var current_y = 0;
 
-                var vis = SeqPeekFactory.create(element);
-                vis.draw(data, options);
-                console.debug("seqpeek/view.__render_track:vis:ready");
-            },
+                    var track_elements_svg = d3.select(track_obj.target_element)
+                        .append("svg")
+                        .attr("width", VIEWPORT_WIDTH)
+                        .attr("height", BAR_PLOT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
+                        .style("pointer-events", "none");
 
-            __process_track: function (param_variants, region_data) {
-                console.debug("seqpeek/view.__process_track");
-                var variant_hovercard_items = {
-                    "Location": function (d) {
-                        return d.location;
-                    },
-                    "Mutation Type": function (d) {
-                        return d.mutation_type;
-                    },
-                    "Samples": function (d) {
-                        return d.sample_ids.length;
-                    }
-                };
+                    var bar_plot_track_svg = track_elements_svg
+                        .append("g")
+                        .attr("transform", "translate(0," + current_y + ")")
+                        .style("pointer-events", "none");
 
-                var region_hovercard_items = {
-                    "Type": function (d) {
-                        return d.type;
-                    },
-                    "Coordinates": function (d) {
-                        return d.start + ":" + d.end;
-                    }
-                };
+                    current_y = current_y + BAR_PLOT_TRACK_MAX_HEIGHT;
 
-                var proc_var = _.chain(param_variants)
-                    .map(function (v) {
-                        var sample_key = v.sample_id,
-                            value = 1;
+                    var region_track_svg = track_elements_svg
+                        .append("g")
+                        .attr("transform", "translate(0," + (current_y) + ")")
+                        .style("pointer-events", "none");
 
-                        var obj = _.extend(v, {
-                            mutation_id: v.protein_change,
-                            source_id: v.sample_id,
-                            value: value
-                        });
+                    seqpeek.addBarPlotTrackWithArrayData(track_obj.variants, bar_plot_track_svg);
+                    seqpeek.addRegionScaleTrackToElement(region_track_svg);
+                });
 
-                        return obj;
-                    })
-                    .value();
+                var tick_track_svg = d3.select(seqpeek_tick_track_element)
+                    .append("svg")
+                    .attr("width", VIEWPORT_WIDTH)
+                    .attr("height", TICK_TRACK_HEIGHT)
+                    .style("pointer-events", "none");
 
-                var seqpeek_regions = GeneRegionUtils.buildRegionsFromArray(region_data);
-                GeneRegionUtils.fillDataIntoRegions(seqpeek_regions, proc_var, "location");
+                seqpeek.addTickTrackToElement(tick_track_svg);
 
-                return {
-                    type: "genomic",
-                    label_mouseover_handler: function (label_data) {
-                        console.debug("seqpeek/view.__process_track:mouseover:" + label_data);
-                    },
-                    variants: proc_var,
-                    variant_coordinate_field: "location",
-                    variant_id_field: "mutation_type",
-                    variant_shape_width: 5,
-                    tooltips: {
-                        variants: {
-                            items: variant_hovercard_items
-                        },
-                        regions: {
-                            items: region_hovercard_items
-                        }
-                    },
-                    region_data: seqpeek_regions
-                };
+                seqpeek.draw();
             },
 
             __filter_data: function(data_by_tumor_type) {

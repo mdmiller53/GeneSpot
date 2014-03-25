@@ -5,7 +5,7 @@
             "id": "graph_view",
             "label": "TCGA Feature Network",
             "description": "This map presents a network of all genomic and clinical TCGA features. The nodes are bio-entities (e.g. Genes, Methylation, Protein Expresion), and the edges represent associations found from Pair Wise associations.",
-            "isOpen": true,
+            "isOpen": false,
             "position": {
                 "top": 0,
                 "left": 150
@@ -42,8 +42,8 @@
         },
         {
             "id": "mutations_combo",
-            "label": "Mutations (combined)",
-            "description": "This map combines multiple mutation data type views",
+            "label": "Mutations",
+            "description": "This map combines multiple mutation data types, including TCGA MutSig CV data produced by Firehose",
             "position": {
                 "top": 0,
                 "left": 150
@@ -73,56 +73,6 @@
                         "values": "gene",
                         "groupBy": "rank"
                     },
-                    "datamodel": {
-                        "uri": "datamodel/mutations/mutsig_top20",
-                        "query_all_genes": true
-                    }
-                }
-            ]
-        },
-        {
-            "id": "mutations_per_tumor_type",
-            "label": "Mutations per Tumor Type",
-            "position": {
-                "top": 10,
-                "left": 150
-            },
-            "views": [
-                {
-                    "view": "views/seqpeek/view",
-                    "label": "SeqPeek",
-                    "datamodels": {
-                        "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
-                        "mutsig": "datamodel/mutations/mutsig_rankings",
-                        "features": {
-                            "uri": "datamodel/feature_matrices",
-                            "url_suffix": "/feature_matrix",
-                            "base_query": {
-                                "source": "gnab",
-                                "modifier": "y_n_somatic"
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "id": "mutsig_ranks",
-            "label": "MutSig Ranks",
-            "description": "This dataset was prepared from TCGA MutSig CV data produced by Firehose.",
-            "position": {
-                "top": 10,
-                "left": 76
-            },
-            "views": [
-                {
-                    "view": "views/pivot_data_view",
-                    "dimensions": {
-                        "pivot": "cancer",
-                        "values": "gene",
-                        "groupBy": "rank"
-                    },
-                    "label": "Top 20",
                     "datamodel": {
                         "uri": "datamodel/mutations/mutsig_top20",
                         "query_all_genes": true

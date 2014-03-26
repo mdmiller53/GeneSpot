@@ -98,3 +98,8 @@
 .capitalized {
     text-transform:capitalize;
 }
+
+.comments-container .user-pic {
+    width: 50px;
+    margin: 5px;
+}

@@ -23,7 +23,8 @@ require.config({
         "seqpeek": "../bower_components/seqpeek/src",
         "xml2json" : "../bower_components/x2js/xml2json",
         "base64" : "../bower_components/base64/jquery.base64.min",
-        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min"
+        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min",
+        "jquery-dateFormat": "../bower_components/jquery-dateFormat/dist/jquery-dateFormat.min"
     },
     "shim": {
         "underscore" : {

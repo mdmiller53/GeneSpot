@@ -2,7 +2,7 @@
 <div class="row">
     <div class="span4">
         <div class="input-append">
-            <input type="text" class="new-comments-name" placeholder="New comment...">
+            <input type="text" class="new-comments-text" placeholder="New comment...">
             <button class="btn create-comments" type="button" title="Add a comment"><i class="icon-plus"></i></button>
             <button class="btn refresh-comments" type="button" title="Reload comments"><i class="icon-refresh"></i></button>
         </div>
@@ -18,22 +18,52 @@
 </div>
 <div class="row">
     <div class="span7">
-        <div class="tabs-left">
-            <ul class="nav nav-tabs comments">
-                {{#each comments}}
-                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}">
-                        <a href="#tab-comments-{{id}}" data-toggle="tab"><img src="{{iconLink}}" alt="&nbsp;"/> {{title}}</a>
-                    </li>
-                {{/each}}
-            </ul>
-        </div>
-
-        <div class="tab-content">
+        <ul class="nav nav-list">
             {{#each comments}}
-                <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-comments-{{id}}">
-                    <div class="comments-infos"></div>
-                </div>
+                <li>
+                    <div class="row">
+                        <div class="span3">{{displayName}}</div>
+                        <div class="span3 pull-right">{{prettyDate}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="span1">
+                            {{#if picture}}
+                                <img class="user-pic" src="{{picture}}" alt="&nbsp;"/>
+                            {{/if}}
+                            {{#unless picture}}
+                                <img class="user-pic" src="https://www.google.com/images/icons/ui/gprofile_button-64.png" alt="&nbsp;"/>
+                            {{/unless}}
+                        </div>
+                        <div class="span5">
+                            <div class="well">{{htmlContent}}</div>
+                        </div>
+                    </div>
+                    {{#if replies}}
+                        <ul class="nav nav-list">
+                            {{#each replies}}
+                                <div class="row">
+                                    <div class="offset1 span2">{{displayName}}</div>
+                                    <div class="span2 pull-right">{{prettyDate}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="offset1 span1">
+                                        {{#if picture}}
+                                            <img class="user-pic" src="{{picture}}" alt="&nbsp;"/>
+                                        {{/if}}
+                                        {{#unless picture}}
+                                            <img class="user-pic" src="https://www.google.com/images/icons/ui/gprofile_button-64.png" alt="&nbsp;"/>
+                                        {{/unless}}
+                                    </div>
+                                    <div class="span4">
+                                        <div class="well">{{htmlContent}}</div>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </ul>
+                    {{/if}}
+                </li>
+                <li class="divider"/>
             {{/each}}
-        </div>
+        </ul>
     </div>
 </div>

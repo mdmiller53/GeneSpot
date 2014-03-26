@@ -1,5 +1,5 @@
 define(["jquery", "underscore", "backbone",
-    "hbs!templates/comments/container", "hbs!templates/comments/needs_login", "base64"],
+    "hbs!templates/comments/container", "hbs!templates/comments/needs_login", "jquery-dateFormat"],
     function ($, _, Backbone, Tpl, NeedsLoginTpl) {
         return Backbone.View.extend({
             file: new Backbone.Model(),
@@ -9,34 +9,25 @@ define(["jquery", "underscore", "backbone",
                 "click .create-comments": function () {
                     this.$(".alert").hide();
 
-                    var newname = this.$(".new-comments-name").val();
-                    this.$(".new-comments-name").val("");
+                    var newcomment = this.$(".new-comments-text").val();
+                    this.$(".new-comments-text").val("");
 
-                    if (_.isEmpty(newname)) {
+                    if (_.isEmpty(newcomment)) {
                         WebApp.alert(this.$(".invalid-comments-name"), 3000);
                         return;
                     }
 
-                    var labels = _.pluck(this.files.get("items"), "title");
-                    if (labels.indexOf(newname) >= 0) {
-                        WebApp.alert(this.$(".duplicate-comments-name"), 3000);
-                        return;
-                    }
-
-//                    new Backbone.Model().save(
-//                        {
-//                            "title": newname,
-//                            "parents": [ {"id": this.folder.get("id")} ]
-//                        },
-//                        {
-//                            "url": "svc/auth/providers/google_apis/drive/v2/files",
-//                            "method": "POST",
-//                            "success": this.render
-//                        });
+                    $.ajax({
+                        "url": this.comments["url"],
+                        "method": "POST",
+                        "contentType": "application/json",
+                        "data": JSON.stringify({ "content": newcomment }),
+                        "success": this.__render
+                    });
                 },
 
                 "click .refresh-comments": function () {
-                    _.defer(this.render);
+                    _.defer(this.__render);
                 }
             },
 
@@ -80,11 +71,26 @@ define(["jquery", "underscore", "backbone",
 
             __load: function () {
                 console.debug("views/comments/control.__load");
-
-                var comments = _.map(this.comments.get("items"), function (item) {
-                    return item.toJSON();
+                var comments = _.map(this.comments.get("items"), function(item) {
+                    return {
+                        "displayName": item["author"]["displayName"],
+                        "picture": item["author"]["picture"]["url"],
+                        "createdDate": item["createdDate"],
+                        "prettyDate": $.format.prettyDate(item["createdDate"]),
+                        "htmlContent": item["htmlContent"],
+                        "replies": _.sortBy(_.map(item["replies"], function(reply) {
+                            return {
+                                "displayName": reply["author"]["displayName"],
+                                "picture": reply["author"]["picture"]["url"],
+                                "createdDate": reply["createdDate"],
+                                "prettyDate": $.format.prettyDate(reply["createdDate"]),
+                                "htmlContent": reply["htmlContent"],
+                            }
+                        }), "createdDate").reverse()
+                    }
                 });
-                this.$el.html(Tpl({ "comments": _.sortBy(comments, "order") }));
+                var comments = _.sortBy(comments, "createdDate");
+                this.$el.html(Tpl({ "comments": comments.reverse() }));
             }
         });
     });

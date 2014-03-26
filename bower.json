@@ -22,7 +22,8 @@
     "carve": "~0.0.7",
     "x2js": "*",
     "cytoscape": "~2.2.1",
-    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#7923972e5bd7ba582d811c456a787d6d9f6ad3fd"
+    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#7923972e5bd7ba582d811c456a787d6d9f6ad3fd",
+    "jquery-dateFormat": "git://github.com/phstc/jquery-dateFormat#1.0.0"
   },
   "resolutions": {
     "underscore": "~1.5.2",

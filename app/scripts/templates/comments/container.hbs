@@ -1,0 +1,39 @@
+<h4>Comments</h4>
+<div class="row">
+    <div class="span4">
+        <div class="input-append">
+            <input type="text" class="new-comments-name" placeholder="New comment...">
+            <button class="btn create-comments" type="button" title="Add a comment"><i class="icon-plus"></i></button>
+            <button class="btn refresh-comments" type="button" title="Reload comments"><i class="icon-refresh"></i></button>
+        </div>
+    </div>
+    <div class="span3">
+        <span class="alert alert-danger invalid-comments-name hide">
+            <strong>Error!</strong> Not a valid comment
+        </span>
+        <span class="alert alert-success comments-added-success hide">
+            <strong>Success!</strong> New comment added
+        </span>
+    </div>
+</div>
+<div class="row">
+    <div class="span7">
+        <div class="tabs-left">
+            <ul class="nav nav-tabs comments">
+                {{#each comments}}
+                    <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}">
+                        <a href="#tab-comments-{{id}}" data-toggle="tab"><img src="{{iconLink}}" alt="&nbsp;"/> {{title}}</a>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            {{#each comments}}
+                <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-comments-{{id}}">
+                    <div class="comments-infos"></div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>

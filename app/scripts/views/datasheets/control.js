@@ -1,11 +1,8 @@
-define(["jquery", "underscore", "backbone", "base64",
+define(["jquery", "underscore", "backbone",
     "models/xmlmodel", "models/xmlmodel_feed",
     "hbs!templates/datasheets/container", "hbs!templates/datasheets/needs_login", "hbs!templates/datasheets/worksheets"],
-    function ($, _, Backbone, base64, XmlModel, FeedXmlModel, Tpl, NeedsLoginTpl, WorksheetsTpl) {
+    function ($, _, Backbone, XmlModel, FeedXmlModel, Tpl, NeedsLoginTpl, WorksheetsTpl) {
         return Backbone.View.extend({
-            folder: new Backbone.Model(),
-            files: new Backbone.Model({}, { "url": "svc/auth/providers/google_apis/drive/v2/files" }),
-
             events: {
                 "click .create-datasheets": function() {
                     this.$(".alert").hide();
@@ -59,27 +56,18 @@ define(["jquery", "underscore", "backbone", "base64",
             },
 
             initialize: function() {
-                _.bindAll(this, "render", "__load", "__render", "__create_folder", "__render_worksheets", "__put_data_in_chunks");
+                _.bindAll(this, "render", "__render", "__render_worksheets", "__put_data_in_chunks");
+
+                this.files = this.options.folder_control["files"];
+                this.folder = this.options.folder_control["folder"];
+                this.options.folder_control.on("folder-ready", this.__render);
             },
 
             render: function() {
                 console.debug("views/datasheets/control.render");
 
-                this.files.fetch({ "success": this.__load });
-
                 this.$el.html(NeedsLoginTpl());
                 return this;
-            },
-
-            __load: function(model) {
-                console.debug("views/datasheets/control.__load");
-                var folderInfo = _.findWhere(model.get("items"), { "title": "GeneSpot | Data Sheets" });
-                if (folderInfo) {
-                    this.folder = new Backbone.Model(folderInfo);
-                    _.defer(this.__render);
-                } else {
-                    _.defer(this.__create_folder);
-                }
             },
 
             __render: function() {
@@ -121,21 +109,6 @@ define(["jquery", "underscore", "backbone", "base64",
 
                 this.$("#tab-datasheets-" + datasheet_id).find(".datasheets-infos").html(WorksheetsTpl(datasheet));
                 this.trigger("datasheets:loaded", datasheet);
-            },
-
-            __create_folder: function() {
-                console.debug("views/datasheets/control.__create_folder");
-                this.folder.save(
-                    {
-                        "title": "GeneSpot | Data Sheets",
-                        "parents": [ {"id": "root"} ],
-                        "mimeType": "application/vnd.google-apps.folder"
-                    },
-                    {
-                        "url": "svc/auth/providers/google_apis/drive/v2/files",
-                        "method": "POST",
-                        "success": this.render
-                    });
             },
 
             __add_a_worksheet: function(datasheet_id, worksheet_name) {

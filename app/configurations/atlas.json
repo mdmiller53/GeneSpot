@@ -62,6 +62,10 @@
                                 "source": "gnab",
                                 "modifier": "y_n_somatic"
                             }
+                        },
+                        "mutated_samples": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/mutated_samples"
                         }
                     }
                 },
@@ -134,7 +138,11 @@
                     "label": "Distributions",
                     "datamodels": {
                         "copy_number": "datamodel/copy_number/copy_number_gistic2",
-                        "q_value": "datamodel/copy_number/copy_number_qvalue"
+                        "q_value": "datamodel/copy_number/copy_number_qvalue",
+                        "mutated_samples": {
+                            "uri": "datamodel/feature_matrices",
+                            "url_suffix": "/mutated_samples"
+                        }
                     }
                 }
             ]

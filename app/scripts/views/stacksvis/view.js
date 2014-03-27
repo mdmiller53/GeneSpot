@@ -16,6 +16,12 @@ define(["jquery", "underscore", "backbone", "stacksvis",
             "initialize": function () {
                 this.options["models"]["copy_number"].on("load", this.__render_copy_number, this);
                 this.options["models"]["q_value"].on("load", this.__render_q_value, this);
+
+                _.each(this.options["models"]["mutated_samples"]["by_tumor_type"], function(model, tumor_type) {
+                    model.on("load", function() {
+                        this.__render_mutated_samples(tumor_type, model);
+                    }, this);
+                }, this);
             },
 
             render: function () {
@@ -116,6 +122,14 @@ define(["jquery", "underscore", "backbone", "stacksvis",
                         "row_selectors": gene_row_items
                     });
                     vis.draw({ "data": data });
+                }, this);
+            },
+
+            __render_mutated_samples: function(tumor_type, model) {
+                _.each(model.get("items"), function(item) {
+                    var gene = item["gene"];
+                    var $mutEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + gene.toUpperCase()).show();
+                    $mutEl.find(".stats-mutations").html(item["numberOf"]);
                 }, this);
             },
 

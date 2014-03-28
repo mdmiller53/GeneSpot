@@ -1,39 +1,65 @@
 <div class="well">
-    This guide reviews the controls used on this application.  It is available from the <b>Maps</b> menu.
+    This guide reviews the controls used on this application.  It is available from the <b>Visualizations</b> menu.
 </div>
 
 <div class="accordion" id="accordion_{{id}}">
     <div class="accordion-group">
         <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_explore_{{id}}">
-                Exploring the Data
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_vismenu_{{id}}">
+                Visualizations Menu
             </a>
         </div>
-        <div id="collapse_explore_{{id}}" class="accordion-body collapse in">
+        <div id="collapse_vismenu_{{id}}" class="accordion-body collapse in">
             <div class="accordion-inner">
                 <div class="row">
                     <div class="span2">
-                        <button class="btn btn-success" type="button">Maps</button>
+                        <ul class="list-controls-qt nav nav-list">
+                            <li><a href="#" onclick="return false;" data-toggle="collapse" data-target="#maps-collapser"><h5>Visualizations</h5></a></li>
+                        </ul>
                     </div>
-                    <div class="span5">
-                        <ul>
-                            <li>Explore the TCGA data using one of our available visualizations</li>
-                            <li>Additional maps will be added regularly</li>
-                            <li>Multiple instances of a map may be opened</li>
-                            <li>Minimized maps can be re-opened from here</li>
+                    <div class="span6">
+                        <ul class="nav nav-list">
+                            <li>Explore the TCGA data using one of our visualizations</li>
+                            <li class="divider"/>
+                            <li>Multiple instances of a visualization may be opened</li>
+                            <li class="divider"/>
+                            <li>Additional visualizations will be added regularly</li>
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_glistmenu_{{id}}">
+                Gene Lists Menu
+            </a>
+        </div>
+        <div id="collapse_glistmenu_{{id}}" class="accordion-body collapse in">
+            <div class="accordion-inner">
                 <div class="row">
                     <div class="span2">
-                        <button class="btn btn-success" type="button">Genes</button>
+                        <ul class="list-controls-qt nav nav-list">
+                            <li><a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser"><h5>Gene Lists</h5></a></li>
+                            <li class="divider"/>
+                            <li class="gene-item">
+                                <div class="btn-group">
+                                  <button class="btn btn-small btn-success">Gene Symbol</button>
+                                  <button class="btn btn-mini btn-warning item-remover">&times;</button>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="span5">
-                        <ul>
-                            <li>Simple control to view, add, and remove Genes of interest for queries</li>
-                            <li>Users may enter one-to-many Genes to include in queries</li>
-                            <li>Genes can be re-ordered through "drag-n-drop"</li>
-                            <li>Genes can be removed using the <i class="icon-trash"></i> trash icon</li>
+                    <div class="span6">
+                        <ul class="nav nav-list">
+                            <li>Helps user manage lists containing genes of interest</li>
+                            <li class="divider"/>
+                            <li>Users may enter many Genes to automatically include in their visualization analysis</li>
+                            <li class="divider"/>
+                            <li>Genes are easy to re-order in the list by <i>dragging</i></li>
+                            <li class="divider"/>
+                            <li>Genes are easy to remove from the list by clicking the <button class="btn btn-mini btn-warning item-remover">&times;</button> button</li>
                         </ul>
                     </div>
                 </div>
@@ -71,14 +97,6 @@
                         </ul>
                     </div>
                     <div class="span4">Refresh Map Data</div>
-                </div>
-                <div class="row">
-                    <div class="span1">
-                        <ul class="nav nav-list">
-                            <li><a href="#" onclick="return false" rel="tooltip" title="Download Data"> <i class="icon-download"/></i> </a></li>
-                        </ul>
-                    </div>
-                    <div class="span4">Lists downloads available</div>
                 </div>
             </div>
         </div>

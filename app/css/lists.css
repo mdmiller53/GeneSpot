@@ -5,13 +5,19 @@
     width: 110px;
 }
 
+.list-controls-qt {
+    width: 110px;
+    background-color: darkgray;
+    padding: 30px;
+}
+
 .list-containers {
     position: fixed;
     top: 50px;
     left: 150px;
 }
 
-.list-controls > li > a {
+.list-controls > li > a, .list-controls-qt > li > a {
     display: block;
     margin-top: 3px;
     padding-left: 8px;

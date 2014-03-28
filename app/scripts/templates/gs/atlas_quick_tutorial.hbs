@@ -5,19 +5,22 @@
 <div class="accordion" id="accordion_{{id}}">
     <div class="accordion-group">
         <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_vismenu_{{id}}">
-                Visualizations Menu
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_menus_{{id}}">
+                Menus
             </a>
         </div>
-        <div id="collapse_vismenu_{{id}}" class="accordion-body collapse in">
+        <div id="collapse_menus_{{id}}" class="accordion-body collapse in">
             <div class="accordion-inner">
+                <h5>Visualizations Menu</h5>
                 <div class="row">
-                    <div class="span2">
+                    <div class="span3">
                         <ul class="list-controls-qt nav nav-list">
-                            <li><a href="#" onclick="return false;" data-toggle="collapse" data-target="#maps-collapser"><h5>Visualizations</h5></a></li>
+                            <li>
+                                <a href="#" onclick="return false;" data-toggle="collapse" data-target="#maps-collapser">Visualizations <i class="pull-right icon-chevron-right"></i></a>
+                            </li>
                         </ul>
                     </div>
-                    <div class="span6">
+                    <div class="span6 well">
                         <ul class="nav nav-list">
                             <li>Explore the TCGA data using one of our visualizations</li>
                             <li class="divider"/>
@@ -27,21 +30,13 @@
                         </ul>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_glistmenu_{{id}}">
-                Gene Lists Menu
-            </a>
-        </div>
-        <div id="collapse_glistmenu_{{id}}" class="accordion-body collapse in">
-            <div class="accordion-inner">
+                <h5>Gene Lists Menu</h5>
                 <div class="row">
-                    <div class="span2">
+                    <div class="span3">
                         <ul class="list-controls-qt nav nav-list">
-                            <li><a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser"><h5>Gene Lists</h5></a></li>
+                            <li>
+                                <a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser">Gene Lists <i class="pull-right icon-chevron-right"></i></a>
+                            </li>
                             <li class="divider"/>
                             <li class="gene-item">
                                 <div class="btn-group">
@@ -51,7 +46,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="span6">
+                    <div class="span6 well">
                         <ul class="nav nav-list">
                             <li>Helps user manage lists containing genes of interest</li>
                             <li class="divider"/>
@@ -69,7 +64,7 @@
     <div class="accordion-group">
         <div class="accordion-heading">
             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_{{id}}" href="#collapse_map_{{id}}">
-                Map Controls
+                Visualization Window Controls
             </a>
         </div>
         <div id="collapse_map_{{id}}" class="accordion-body collapse">
@@ -80,15 +75,7 @@
                             <li><a href="#" onclick="return false;" class="info-me"> <i class="icon-info-sign" /></i> </a></li>
                         </ul>
                     </div>
-                    <div class="span4">General information about the underlying data</div>
-                </div>
-                <div class="row">
-                    <div class="span1">
-                        <ul class="nav nav-list">
-                            <li><a href="#" onclick="return false;" class="notes-me disabled" rel="tooltip" title="Take Notes (todo:notes_view)"> <i class="icon-pencil"/></i> </a></li>
-                        </ul>
-                    </div>
-                    <div class="span4">Save Notes (under development)</div>
+                    <div class="span4">General information about the visualization</div>
                 </div>
                 <div class="row">
                     <div class="span1">
@@ -96,7 +83,15 @@
                             <li><a href="#" onclick="return false;" class="refresh-me" rel="tooltip" title="Refresh Data"> <i class="icon-refresh"/></i> </a></li>
                         </ul>
                     </div>
-                    <div class="span4">Refresh Map Data</div>
+                    <div class="span4">Refresh Visualization Data</div>
+                </div>
+                <div class="row">
+                    <div class="span1">
+                        <ul class="nav nav-list">
+                            <li><button type="button" class="close">&times;</button></li>
+                        </ul>
+                    </div>
+                    <div class="span4">Close Visualization Window</div>
                 </div>
             </div>
         </div>

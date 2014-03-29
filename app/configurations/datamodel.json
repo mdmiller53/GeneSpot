@@ -15,16 +15,13 @@
                 },
                 "mutsig_top20": {
                     "label": "MutSig Top20",
-                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20"
-                },
-                "mutsig_provenance": {
-                    "label": "MutSig Provenance",
-                    "url": "data/provenance/mutsig_provenance.json"
+                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20",
+                    "description": "This dataset is an aggregation of the TCGA MutSig 2.0 data, containing only the top 20 ranking genes across tumor types"
                 }
             }
         },
         "feature_matrices": {
-            "label": "Feature Matrices (testing)",
+            "label": "Feature Matrices",
             "by_tumor_type": "tumor_type",
             "catalog": {
                 "BLCA-20131223": {

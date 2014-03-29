@@ -1,4 +1,4 @@
-<h4>Data Model</h4>
+<h4>Databases</h4>
 <div class="row">
     <div class="span7">
         <div class="accordion" id="accordion_container_datamodel">
@@ -11,13 +11,21 @@
                     </a>
                 </div>
 
-                <div id="collapse_section_{{datamodel_key}}"
-                     class="accordion-body collapse {{#unless @index}}in{{/unless}}">
+                <div id="collapse_section_{{datamodel_key}}" class="accordion-body collapse">
                     <div class="accordion-inner">
                         {{#unless by_tumor_type}}
                             {{#each items}}
                                 <div class="row" data-id="{{item_key}}">
                                     <div class="alert alert-info">
+                                        <div class="btn-group pull-right">
+                                            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Web Service API
+                                                <span class="caret"></span></a>
+                                            <ul class="dropdown-menu" style="z-index: 1000;">
+                                                <li><a href="{{url}}" target="_blank">Endpoint</a></li>
+                                                <li><a href="{{url}}/fields" target="_blank">Query Fields</a></li>
+                                                <li><a href="https://github.com/IlyaLab/Addama/blob/master/APIs.md#data-stores" target="_blank">API docs</a></li>
+                                            </ul>
+                                        </div>
                                         <h6>{{label}}</h6>
                                         <small>{{description}}</small>
                                     </div>
@@ -30,9 +38,22 @@
                                 {{#each items}}
                                     <div class="row" data-id="{{item_key}}">
                                         <div class="alert alert-info">
+                                            <div class="btn-group pull-right">
+                                                <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Web Service API
+                                                    <span class="caret"></span></a>
+                                                <ul class="dropdown-menu" style="z-index: 1000;">
+                                                    <li><a href="{{url}}" target="_blank">Main Endpoint</a></li>
+                                                    <li><a href="https://github.com/IlyaLab/Addama/blob/master/APIs.md#data-stores" target="_blank">API docs</a></li>
+                                                    <li class="nav-header">Feature Matrix</li>
+                                                    <li><a href="{{url}}/feature_matrix" target="_blank">Endpoint</a></li>
+                                                    <li><a href="{{url}}/feature_matrix/fields" target="_blank">Query Fields</a></li>
+                                                    <li class="nav-header">Mutated Samples</li>
+                                                    <li><a href="{{url}}/mutated_samples" target="_blank">Endpoint</a></li>
+                                                    <li><a href="{{url}}/mutated_samples/fields" target="_blank">Query Fields</a></li>
+                                                </ul>
+                                            </div>
                                             <h6>{{label}}</h6>
                                             <small>{{description}}</small>
-                                            {{#if active}}<span class="badge pull-right">active</span>{{/if}}
                                         </div>
                                     </div>
                                 {{/each}}
@@ -43,7 +64,7 @@
                 </div>
             </div>
         {{else}}
-            <p class="empty">No data models found :(</p>
+            <p class="empty">No databases found :(</p>
         {{/each}}
         </div>
     </div>

@@ -150,10 +150,14 @@
         {
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
-            "description": "General information about this web application",
+            "description": "This application allows users to view a variety of interactive visualizations of TCGA data.  Each particular 'open' button will activate the specified analysis.",
+            "buttonLabel": "Quick Guide",
+            "isPrimary": true,
+            "order": 1,
+            "isOpen": true,
             "position": {
-                "top": 0,
-                "left": 720
+                "top": 10,
+                "left": 200
             },
             "views": [
                 {
@@ -176,25 +180,10 @@
                         {
                             "label": "Contact Us",
                             "url": "mailto:info@csacr.org?subject=GeneSpot Questions"
-                        }
-                    ]
-                },
-                {
-                    "view": "views/gs/atlas_maptext_view",
-                    "label": "Software Releases",
-                    "text": "The GeneSpot team follows Agile software practices. Our primary goal is to prioritize new features and bug fixes and rapidly deploy them to users. We welcome you to visit our development sandbox to preview and test new and experimental features.",
-                    "links": [
-                        {
-                            "label": "Development Branches",
-                            "url": "/branches"
                         },
                         {
                             "label": "Issues, Bugs, and Feature Suggestions ",
                             "url": "https://github.com/cancerregulome/GeneSpot/issues"
-                        },
-                        {
-                            "label": "Feedback",
-                            "url": "mailto:info@csacr.org?subject=GeneSpot Feedback"
                         }
                     ]
                 }

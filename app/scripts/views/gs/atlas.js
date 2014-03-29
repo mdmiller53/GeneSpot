@@ -130,7 +130,7 @@ define([
                     return map_template.toJSON();
                 }, this);
 
-                this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(maps, "label") }));
+                this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(_.sortBy(maps, "label"), "order") }));
             },
 
             __append_atlasmap: function (map_template) {

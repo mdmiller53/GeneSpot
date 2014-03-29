@@ -2,22 +2,33 @@
     position: fixed;
     top: 50px;
     left:0;
-    width: 110px;
+    width: 150px;
+}
+
+.list-controls-qt {
+    width: 150px;
+    background-color: darkgray;
+    padding-top: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
 }
 
 .list-containers {
     position: fixed;
     top: 50px;
-    left: 150px;
+    left: 190px;
 }
 
-.list-controls > li > a {
+.list-controls > li > a, .list-controls-qt > li > a {
     display: block;
     margin-top: 3px;
+    padding-top: 8px;
     padding-left: 8px;
+    height: 25px;
+
     border: 1px solid #e3e3e3;
     background-color: lightgray;
-    font-size: smaller;
+    font-size: medium;
 
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
@@ -25,6 +36,10 @@
     -webkit-border-top-right-radius: 10px;
     -moz-border-radius-bottomright: 10px;
     -moz-border-radius-topright: 10px;
+}
+
+.list-controls > li > a > i, .list-controls-qt > li > a > i {
+    opacity: .25;
 }
 
 .list-container > div {

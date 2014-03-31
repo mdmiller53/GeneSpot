@@ -18,7 +18,7 @@ define([
         MutationsMapTableTpl
     ) {
 
-        var BAR_PLOT_TRACK_MAX_HEIGHT = 100,
+        var VARIANT_TRACK_MAX_HEIGHT = 100,
             TICK_TRACK_HEIGHT = 25,
             REGION_TRACK_HEIGHT = 10,
             VIEWPORT_WIDTH = 1000;
@@ -122,8 +122,19 @@ define([
 
                 this.$(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
 
-                var region_data = [ { "type": "exon", "start": 0, "end": 1000 } ];
-                var seqpeek_data = [];
+                var seqpeek_data = [],
+                    max_location = 0;
+
+                // Find maximum protein location to create region data
+                _.each(this.tumor_types, function (tumor_type) {
+                    _.each(mutations[tumor_type], function(variant) {
+                        if (variant['location'] > max_location) {
+                            max_location = variant['location'];
+                        }
+                    });
+                });
+
+                var region_data = [ { "type": "exon", "start": 0, "end": max_location + 10 } ];
 
                 _.each(this.tumor_types, function (tumor_type) {
                     var variants = mutations[tumor_type];
@@ -150,8 +161,19 @@ define([
                     },
                     bar_plot_tracks: {
                         bar_width: 5.0,
-                        height: BAR_PLOT_TRACK_MAX_HEIGHT,
+                        height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30
+                    },
+                    sample_plot_tracks: {
+                        height: VARIANT_TRACK_MAX_HEIGHT,
+                        stem_height: 30,
+                        color_scheme: {
+                            Nonsense_Mutation: "red",
+                            Silent: "green",
+                            Frame_Shift_Del: "gold",
+                            Frame_Shift_Ins: "gold",
+                            Missense_Mutation: "blue"
+                        }
                     },
                     region_track: {
                         height: REGION_TRACK_HEIGHT
@@ -166,7 +188,7 @@ define([
                         variant_width: 5.0
                     },
                     variant_data_location_field: 'location',
-                    variant_data_type_field: 'mutation_id'
+                    variant_data_type_field: 'mutation_type'
                 });
 
                 _.each(mutation_data, function(track_obj) {
@@ -175,7 +197,7 @@ define([
                     var track_elements_svg = d3.select(track_obj.target_element)
                         .append("svg")
                         .attr("width", VIEWPORT_WIDTH)
-                        .attr("height", BAR_PLOT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
+                        .attr("height", VARIANT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
                         .style("pointer-events", "none");
 
                     var bar_plot_track_svg = track_elements_svg
@@ -183,14 +205,14 @@ define([
                         .attr("transform", "translate(0," + current_y + ")")
                         .style("pointer-events", "none");
 
-                    current_y = current_y + BAR_PLOT_TRACK_MAX_HEIGHT;
+                    current_y = current_y + VARIANT_TRACK_MAX_HEIGHT;
 
                     var region_track_svg = track_elements_svg
                         .append("g")
                         .attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
-                    seqpeek.addBarPlotTrackWithArrayData(track_obj.variants, bar_plot_track_svg);
+                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, bar_plot_track_svg);
                     seqpeek.addRegionScaleTrackToElement(region_track_svg);
                 });
 

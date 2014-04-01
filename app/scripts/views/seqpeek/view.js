@@ -1,6 +1,8 @@
 define([
     "jquery", "underscore", "backbone", "d3",
 
+    'models/gs/protein_domain_model',
+
     'seqpeek/builders/builder_for_existing_elements',
 
     "hbs!templates/seqpeek/mutations_map",
@@ -12,6 +14,7 @@ define([
         Backbone,
         d3,
 
+        ProteinDomainModel,
         SeqPeekBuilder,
 
         MutationsMapTpl,
@@ -21,6 +24,7 @@ define([
         var VARIANT_TRACK_MAX_HEIGHT = 150,
             TICK_TRACK_HEIGHT = 25,
             REGION_TRACK_HEIGHT = 10,
+            PROTEIN_DOMAIN_TRACK_HEIGHT = 40,
             VIEWPORT_WIDTH = 1000;
 
         return Backbone.View.extend({
@@ -48,7 +52,7 @@ define([
                 this.genes = this.options["genes"] || [];
                 if (!_.isEmpty(this.genes)) this.selected_gene = _.first(this.genes);
 
-                var renderFn = _.after(this.tumor_types.length + 2, this.__render);
+                var renderFn = _.after(this.tumor_types.length + 2, this.__load_protein_domains);
 
                 this.model["mutations"].on("load", renderFn, this);
                 this.model["mutsig"].on("load", renderFn, this);
@@ -91,8 +95,9 @@ define([
                         statistics.samples.numberOf = mutations[tumor_type].length;
                     }
 
-                    var totals_per_gene = that.options.models.mutated_samples.by_tumor_type[tumor_type].attributes.items,
-                        total = d3.sum(totals_per_gene, function(d) {return d.numberOf;});
+                    var totals_per_gene_array = that.options.models.mutated_samples.by_tumor_type[tumor_type].attributes.items,
+                        stats_for_gene = _.indexBy(totals_per_gene_array, 'gene')[that.selected_gene],
+                        total = stats_for_gene.numberOf;
 
                     statistics.samples.totals = {
                         percentOf: formatter(100 * statistics.samples.numberOf / total)
@@ -141,11 +146,13 @@ define([
                     });
                 }, this);
 
-                var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-row"))
-                this.__render_tracks(seqpeek_data, region_data, seqpeek_tick_track_element);
+                var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element")),
+                    seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
+
+                this.__render_tracks(seqpeek_data, region_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
             },
 
-            __render_tracks: function(mutation_data, region_array, seqpeek_tick_track_element) {
+            __render_tracks: function(mutation_data, region_array, seqpeek_tick_track_element, seqpeek_domain_track_element) {
                 console.debug("seqpeek/view.__render_tracks");
 
                 var seqpeek = SeqPeekBuilder.create({
@@ -171,6 +178,15 @@ define([
                     },
                     region_track: {
                         height: REGION_TRACK_HEIGHT
+                    },
+                    protein_domain_tracks: {
+                        source_key: 'dbname',
+                        source_order: ['SMART', 'PFAM', 'PROFILE'],
+                        color_scheme: {
+                            'PFAM': 'lightgray',
+                            'SMART': 'gray',
+                            'PROFILE': 'darkgray'
+                        }
                     },
                     tick_track: {
                         height: TICK_TRACK_HEIGHT
@@ -219,6 +235,20 @@ define([
 
                 seqpeek.addTickTrackToElement(tick_track_svg);
 
+                var found_uniprot_ids = _.keys(this.found_protein_domains),
+                    rendered_domain_data;
+
+                if (found_uniprot_ids.length > 0) {
+                    rendered_domain_data = this.found_protein_domains[found_uniprot_ids[0]].domains;
+
+                    var protein_domain_track_svg = d3.select(seqpeek_domain_track_element)
+                        .append("svg")
+                        .attr("width", VIEWPORT_WIDTH)
+                        .attr("height", PROTEIN_DOMAIN_TRACK_HEIGHT)
+                        .style("pointer-events", "none");
+
+                    seqpeek.addProteinDomainTrackToElement(rendered_domain_data, protein_domain_track_svg);
+                }
                 seqpeek.draw();
             },
 
@@ -260,6 +290,39 @@ define([
                     memo[feature.cancer].push(feature);
                     return memo;
                 }, {});
+            },
+
+            __load_protein_domains: function() {
+                console.debug("seqpeek/view.__load_protein_domains");
+                var that = this,
+                    protein_ids = this.__find_protein_identifiers(),
+                    protein_domain_model = new ProteinDomainModel({}, {
+                        data_source: {
+                            uri: that.options.protein_domains
+                        }
+                    });
+
+                protein_domain_model.on("change", function(changed) {
+                    that.found_protein_domains = changed.toJSON();
+                    that.__render();
+                });
+
+                protein_domain_model.fetch({
+                    protein_ids: protein_ids,
+
+                    error: function(xhr, textStatus, errorThrown){
+                        console.log([xhr, textStatus, errorThrown]);
+                    }
+                });
+            },
+
+            __find_protein_identifiers: function() {
+                console.debug("seqpeek/view.__find_protein_identifiers");
+                var items = this.model["mutations"].get("items");
+                return _.chain(items)
+                    .pluck('uniprot_id')
+                    .unique()
+                    .value();
             }
         });
     });

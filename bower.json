@@ -27,7 +27,6 @@
   "resolutions": {
     "underscore": "~1.5.2",
     "jquery": "~2.0.3",
-    "visquick": "~0.1.2",
     "d3": "~3.4.1"
   }
 }

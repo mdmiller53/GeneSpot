@@ -1,5 +1,5 @@
 define([
-    "jquery", "underscore", "backbone", "d3",
+    "jquery", "underscore", "backbone", "d3", "vq",
 
     'models/gs/protein_domain_model',
 
@@ -13,6 +13,7 @@ define([
         _,
         Backbone,
         d3,
+        vq,
 
         ProteinDomainModel,
         SeqPeekBuilder,
@@ -241,13 +242,44 @@ define([
                 if (found_uniprot_ids.length > 0) {
                     rendered_domain_data = this.found_protein_domains[found_uniprot_ids[0]].domains;
 
-                    var protein_domain_track_svg = d3.select(seqpeek_domain_track_element)
+                    var protein_domain_track_guid = 'C' + vq.utils.VisUtils.guid(),
+                        protein_domain_track_svg = d3.select(seqpeek_domain_track_element)
                         .append("svg")
                         .attr("width", VIEWPORT_WIDTH)
                         .attr("height", PROTEIN_DOMAIN_TRACK_HEIGHT)
+                        .attr("id", protein_domain_track_guid)
                         .style("pointer-events", "none");
 
-                    seqpeek.addProteinDomainTrackToElement(rendered_domain_data, protein_domain_track_svg);
+                    seqpeek.addProteinDomainTrackToElement(rendered_domain_data, protein_domain_track_svg, {
+                        guid: protein_domain_track_guid,
+                        hovercard_config: {
+                            include_header: false,
+                            include_footer: true,
+                            self_hover: true,
+                            timeout: 200,
+                            tool_config: []
+                        },
+                        hovercard_content: {
+                            "DB": function(d) {
+                                return d.dbname;
+                            },
+                            "EVD": function(d) {
+                                return d.evd;
+                            },
+                            "ID": function(d) {
+                                return d.id;
+                            },
+                            "Name": function(d) {
+                                return d.name;
+                            },
+                            "Status": function(d) {
+                                return d.status;
+                            },
+                            "LOC": function(d) {
+                                return d.start + " - " + d.end;
+                            }
+                        }
+                    });
                 }
                 seqpeek.draw();
             },

@@ -17,14 +17,8 @@
                             {{#each items}}
                                 <div class="row" data-id="{{item_key}}">
                                     <div class="alert alert-info">
-                                        <div class="btn-group pull-right">
-                                            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Web Service API
-                                                <span class="caret"></span></a>
-                                            <ul class="dropdown-menu" style="z-index: 1000;">
-                                                <li><a href="{{url}}" target="_blank">Endpoint</a></li>
-                                                <li><a href="{{url}}/fields" target="_blank">Query Fields</a></li>
-                                                <li><a href="https://github.com/IlyaLab/Addama/blob/master/APIs.md#data-stores" target="_blank">API docs</a></li>
-                                            </ul>
+                                        <div class="pull-right">
+                                            <a class="btn btn-mini" href="{{url}}" target="_blank">Web Service API</a>
                                         </div>
                                         <h6>{{label}}</h6>
                                         <small>{{description}}</small>
@@ -38,19 +32,8 @@
                                 {{#each items}}
                                     <div class="row" data-id="{{item_key}}">
                                         <div class="alert alert-info">
-                                            <div class="btn-group pull-right">
-                                                <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Web Service API
-                                                    <span class="caret"></span></a>
-                                                <ul class="dropdown-menu" style="z-index: 1000;">
-                                                    <li><a href="{{url}}" target="_blank">Main Endpoint</a></li>
-                                                    <li><a href="https://github.com/IlyaLab/Addama/blob/master/APIs.md#data-stores" target="_blank">API docs</a></li>
-                                                    <li class="nav-header">Feature Matrix</li>
-                                                    <li><a href="{{url}}/feature_matrix" target="_blank">Endpoint</a></li>
-                                                    <li><a href="{{url}}/feature_matrix/fields" target="_blank">Query Fields</a></li>
-                                                    <li class="nav-header">Mutated Samples</li>
-                                                    <li><a href="{{url}}/mutated_samples" target="_blank">Endpoint</a></li>
-                                                    <li><a href="{{url}}/mutated_samples/fields" target="_blank">Query Fields</a></li>
-                                                </ul>
+                                            <div class="pull-right">
+                                                <a class="btn btn-mini" href="{{url}}" target="_blank">Web Service API</a>
                                             </div>
                                             <h6>{{label}}</h6>
                                             <small>{{description}}</small>

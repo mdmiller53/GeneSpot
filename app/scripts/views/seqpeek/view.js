@@ -182,7 +182,8 @@ define([
                         height: TICK_TRACK_HEIGHT
                     },
                     region_layout: {
-                        intron_width: 5
+                        intron_width: 5,
+                        exon_width: VIEWPORT_WIDTH
                     },
                     variant_layout: {
                         variant_width: 5.0
@@ -200,7 +201,7 @@ define([
                         .attr("height", VARIANT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
                         .style("pointer-events", "none");
 
-                    var bar_plot_track_svg = track_elements_svg
+                    var sample_plot_track_svg = track_elements_svg
                         .append("g")
                         .attr("transform", "translate(0," + current_y + ")")
                         .style("pointer-events", "none");
@@ -212,7 +213,7 @@ define([
                         .attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
-                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, bar_plot_track_svg);
+                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg);
                     seqpeek.addRegionScaleTrackToElement(region_track_svg);
                 });
 

@@ -206,13 +206,16 @@ define([
                 _.each(mutation_data, function(track_obj) {
                     var current_y = 0;
 
-                    var track_elements_svg = d3.select(track_obj.target_element)
+                    var track_guid = 'C' + vq.utils.VisUtils.guid(),
+                        track_elements_svg = d3.select(track_obj.target_element)
                         .append("svg")
                         .attr("width", VIEWPORT_WIDTH)
                         .attr("height", VARIANT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
+                        .attr("id", track_guid)
                         .style("pointer-events", "none");
 
-                    var sample_plot_track_svg = track_elements_svg
+                    var
+                        sample_plot_track_svg = track_elements_svg
                         .append("g")
                         .attr("transform", "translate(0," + current_y + ")")
                         .style("pointer-events", "none");
@@ -224,7 +227,26 @@ define([
                         .attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
-                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg);
+                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg, {
+                        guid: track_guid,
+                        hovercard_content: {
+                            "Location": function(d) {
+                                return d.location;
+                            },
+                            "Protein change": function(d) {
+                                return d.mutation_id;
+                            },
+                            "Type": function(d) {
+                                return d.mutation_type;
+                            },
+                            "Patient ID": function(d) {
+                                return d.patient_id;
+                            },
+                            "UniProt ID": function(d) {
+                                return d.uniprot_id;
+                            }
+                        }
+                    });
                     seqpeek.addRegionScaleTrackToElement(region_track_svg);
                 });
 
@@ -252,13 +274,6 @@ define([
 
                     seqpeek.addProteinDomainTrackToElement(rendered_domain_data, protein_domain_track_svg, {
                         guid: protein_domain_track_guid,
-                        hovercard_config: {
-                            include_header: false,
-                            include_footer: true,
-                            self_hover: true,
-                            timeout: 200,
-                            tool_config: []
-                        },
                         hovercard_content: {
                             "DB": function(d) {
                                 return d.dbname;

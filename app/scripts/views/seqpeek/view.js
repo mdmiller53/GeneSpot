@@ -18,7 +18,7 @@ define([
         MutationsMapTableTpl
     ) {
 
-        var VARIANT_TRACK_MAX_HEIGHT = 100,
+        var VARIANT_TRACK_MAX_HEIGHT = 150,
             TICK_TRACK_HEIGHT = 25,
             REGION_TRACK_HEIGHT = 10,
             VIEWPORT_WIDTH = 1000;
@@ -52,9 +52,9 @@ define([
 
                 this.model["mutations"].on("load", renderFn, this);
                 this.model["mutsig"].on("load", renderFn, this);
-                _.each(this.tumor_types, function(tumor_type) {
-                    var m = this.model["features"]["by_tumor_type"][tumor_type];
-                    m.on("load", renderFn, this);
+
+                _.each(this.options["models"]["mutated_samples"]["by_tumor_type"], function(model, tumor_type) {
+                    model.on("load", renderFn, this);
                 }, this);
 
                 this.$el.html(MutationsMapTpl({ "selected_gene": this.selected_gene, "genes": this.genes }));
@@ -70,8 +70,8 @@ define([
             __render: function () {
                 console.debug("seqpeek/view.__render");
 
+                var that = this;
                 var mutations = this.__filter_data(this.__parse_mutations());
-                var features = this.__filter_features();
                 var mutsig_ranks = this.__filter_data(this.__parse_mutsig());
 
                 var formatter = function (value) {
@@ -91,18 +91,12 @@ define([
                         statistics.samples.numberOf = mutations[tumor_type].length;
                     }
 
-                    if (_.has(features, tumor_type)) {
-                        var first_feature = _.first(features[tumor_type]);
-                        if (first_feature && _.has(first_feature, "values")) {
-                            var grouped = _.groupBy(first_feature.values, function (v) {
-                                return v;
-                            });
+                    var totals_per_gene = that.options.models.mutated_samples.by_tumor_type[tumor_type].attributes.items,
+                        total = d3.sum(totals_per_gene, function(d) {return d.numberOf;});
 
-                            statistics.samples.totals = _.extend({
-                                percentOf: formatter(100 * statistics.samples.numberOf / grouped["1"].length)
-                            }, grouped);
-                        }
-                    }
+                    statistics.samples.totals = {
+                        percentOf: formatter(100 * statistics.samples.numberOf / total)
+                    };
 
                     var mutsig_rank;
                     if (_.has(mutsig_ranks, tumor_type)) {
@@ -245,26 +239,6 @@ define([
                     }
                 });
                 return filtered;
-            },
-
-            __filter_features: function() {
-                console.debug("seqpeek/view.__filter_features:" + this.selected_gene);
-
-                var filtered = _.map(this.tumor_types, function(tumor_type) {
-                    var model = this.model["features"]["by_tumor_type"][tumor_type];
-                    var items = _.where(model.get("items"), { "gene": this.selected_gene });
-                    return _.map(items, function(item) {
-                        return _.extend({ "cancer": tumor_type }, item);
-                    })
-                }, this);
-
-                return _.reduce(_.flatten(filtered), function (memo, feature) {
-                        if (!_.has(memo, feature.cancer)) {
-                            memo[feature.cancer] = [];
-                        }
-                        memo[feature.cancer].push(feature);
-                        return memo;
-                    }, {});
             },
 
             __parse_mutations: function () {

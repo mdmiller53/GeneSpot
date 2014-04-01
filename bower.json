@@ -22,7 +22,7 @@
     "carve": "~0.0.7",
     "x2js": "*",
     "cytoscape": "~2.2.1",
-    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#9a4d77a72a992a0eebb5beee33c3fcda9e1723d0"
+    "seqpeek": "git://github.com/IlyaLab/SeqPeek.git#45256ba37d253bb4a0813637df8b0e4bb267609b"
   },
   "resolutions": {
     "underscore": "~1.5.2",

@@ -52,6 +52,7 @@
                 {
                     "view": "views/seqpeek/view",
                     "label": "SeqPeek",
+                    "protein_domains": "svc/datastores/interpro/interpro/interpro",
                     "datamodels": {
                         "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
                         "mutsig": "datamodel/mutations/mutsig_rankings",

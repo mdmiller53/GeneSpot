@@ -35,12 +35,7 @@ function (
 
             if (_.has(json, 'items')) {
                 domain_map = _.reduce(json.items, function(memo, protein) {
-                    memo[protein.uniprot_id] = {
-                        length: protein.length,
-                        domains: protein.matches,
-                        name: protein.name,
-                        uniprot_id: protein.uniprot_id
-                    };
+                    memo[protein.uniprot_id] = protein;
                     return memo;
                 }, {});
             }

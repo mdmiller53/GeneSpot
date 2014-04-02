@@ -1,8 +1,8 @@
 define(["jquery", "underscore", "backbone",
     "router",
     "models/sessions", "models/datamodel", "models/lookups",
-    "views/items_grid_view", "views/pivot_data_view"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView) {
+    "views/items_grid_view", "views/pivot_data_view", "views/search_control"],
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView, SearchControl) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
@@ -22,7 +22,8 @@ define(["jquery", "underscore", "backbone",
                 Producers: {}
             },
             LocalSession: new Backbone.Model(), // TODO : Add Sync
-            UserPreferences: new Backbone.Model()
+            UserPreferences: new Backbone.Model(),
+            Search: new SearchControl()
         };
 
         WebApp.initialize = function () {

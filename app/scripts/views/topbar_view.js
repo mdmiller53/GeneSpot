@@ -11,6 +11,8 @@ define(["jquery", "underscore", "bootstrap",
                 this.__init_sign_in();
                 this.__init_error_handlers();
 
+                WebApp.Search.setElement(this.$(".search-box"));
+                WebApp.Search.render();
                 return this;
             },
 

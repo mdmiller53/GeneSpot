@@ -19,7 +19,7 @@ define(["jquery", "underscore", "bootstrap",
             __init_about_menu: function () {
                 var aboutLinks = WebApp.Display.get("aboutLinks") || [];
                 if (!_.isEmpty(aboutLinks)) {
-                    this.$(".about-links").html(AboutLinksTpl(aboutLinks));
+                    this.$(".about-links").html(AboutLinksTpl({ "links": aboutLinks }));
                 }
             },
 

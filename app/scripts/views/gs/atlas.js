@@ -139,10 +139,20 @@ define([
             __init_maps: function () {
                 var maps = _.map(this.model.get("map_templates").values(), function(map_template) {
                     if (map_template.get("isOpen")) _.defer(this.__append_atlasmap, map_template);
+
+                    if (!map_template.get("disabled")) {
+                        var openMapFn = this.__append_atlasmap;
+                        var map_label = map_template.get("label");
+                        var view_labels = _.pluck(map_template.get("views") || [], "label");
+                        var map_keywords = map_template.get("keywords") || [];
+                        WebApp.Search.add_callback("Visualizations", map_label, _.flatten([view_labels, map_keywords]), function() {
+                            _.defer(openMapFn, map_template);
+                        });
+                    }
                     return map_template.toJSON();
                 }, this);
 
-                this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(maps, "label") }));
+                this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(_.sortBy(maps, "label"), "order") }));
             },
 
             __append_atlasmap: function (map_template) {

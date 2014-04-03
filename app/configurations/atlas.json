@@ -5,6 +5,7 @@
             "id": "graph_view",
             "label": "TCGA Feature Network",
             "description": "This map presents a network of all genomic and clinical TCGA features. The nodes are bio-entities (e.g. Genes, Methylation, Protein Expresion), and the edges represent associations found from Pair Wise associations.",
+            "keywords": ["Graph", "Pairwise", "CytoscapeJS"],
             "isOpen": false,
             "position": {
                 "top": 0,
@@ -44,6 +45,7 @@
             "id": "mutations_combo",
             "label": "Mutations",
             "description": "This map combines multiple mutation data types, including TCGA MutSig CV data produced by Firehose",
+            "keywords": ["Interpro", "Protein Mutations"],
             "position": {
                 "top": 0,
                 "left": 150
@@ -52,6 +54,7 @@
                 {
                     "view": "views/seqpeek/view",
                     "label": "SeqPeek",
+                    "protein_domains": "svc/datastores/interpro/interpro/interpro",
                     "datamodels": {
                         "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
                         "mutsig": "datamodel/mutations/mutsig_rankings",
@@ -150,10 +153,15 @@
         {
             "id": "quick_tutorial",
             "label": "Welcome to GeneSpot",
-            "description": "General information about this web application",
+            "description": "This application allows users to view a variety of interactive visualizations of TCGA data.  Each particular 'open' button will activate the specified analysis.",
+            "buttonLabel": "Quick Guide",
+            "isPrimary": true,
+            "order": 1,
+            "isOpen": true,
+            "keywords": ["Help", "Report a Bug"],
             "position": {
-                "top": 0,
-                "left": 720
+                "top": 10,
+                "left": 200
             },
             "views": [
                 {
@@ -176,25 +184,10 @@
                         {
                             "label": "Contact Us",
                             "url": "mailto:info@csacr.org?subject=GeneSpot Questions"
-                        }
-                    ]
-                },
-                {
-                    "view": "views/gs/atlas_maptext_view",
-                    "label": "Software Releases",
-                    "text": "The GeneSpot team follows Agile software practices. Our primary goal is to prioritize new features and bug fixes and rapidly deploy them to users. We welcome you to visit our development sandbox to preview and test new and experimental features.",
-                    "links": [
-                        {
-                            "label": "Development Branches",
-                            "url": "/branches"
                         },
                         {
                             "label": "Issues, Bugs, and Feature Suggestions ",
                             "url": "https://github.com/cancerregulome/GeneSpot/issues"
-                        },
-                        {
-                            "label": "Feedback",
-                            "url": "mailto:info@csacr.org?subject=GeneSpot Feedback"
                         }
                     ]
                 }

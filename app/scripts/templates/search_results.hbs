@@ -1,0 +1,8 @@
+{{#each items}}
+    {{#if header}}
+        <li class="nav-header">{{header}}</li>
+    {{/if}}
+    {{#each items}}
+        <li {{#unless @index}}class="active"{{/unless}} data-value="{{uid}}"><a href="#">{{{label}}}{{#if belongs}} ({{belongs}}){{/if}}</a></li>
+    {{/each}}
+{{/each}}

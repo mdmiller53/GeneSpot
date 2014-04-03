@@ -11,13 +11,15 @@ define(["jquery", "underscore", "bootstrap",
                 this.__init_sign_in();
                 this.__init_error_handlers();
 
+                WebApp.Search.setElement(this.$(".search-box"));
+                WebApp.Search.render();
                 return this;
             },
 
             __init_about_menu: function () {
                 var aboutLinks = WebApp.Display.get("aboutLinks") || [];
                 if (!_.isEmpty(aboutLinks)) {
-                    this.$(".about-links").html(AboutLinksTpl(aboutLinks));
+                    this.$(".about-links").html(AboutLinksTpl({ "links": aboutLinks }));
                 }
             },
 

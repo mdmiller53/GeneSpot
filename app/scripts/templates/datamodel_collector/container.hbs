@@ -1,4 +1,4 @@
-<h4>Data Model</h4>
+<h4>Databases</h4>
 <div class="row">
     <div class="span7">
         <div class="accordion" id="accordion_container_datamodel">
@@ -11,13 +11,15 @@
                     </a>
                 </div>
 
-                <div id="collapse_section_{{datamodel_key}}"
-                     class="accordion-body collapse {{#unless @index}}in{{/unless}}">
+                <div id="collapse_section_{{datamodel_key}}" class="accordion-body collapse">
                     <div class="accordion-inner">
                         {{#unless by_tumor_type}}
                             {{#each items}}
                                 <div class="row" data-id="{{item_key}}">
                                     <div class="alert alert-info">
+                                        <div class="pull-right">
+                                            <a class="btn btn-mini" href="{{url}}" target="_blank">Web Service API</a>
+                                        </div>
                                         <h6>{{label}}</h6>
                                         <small>{{description}}</small>
                                     </div>
@@ -30,9 +32,11 @@
                                 {{#each items}}
                                     <div class="row" data-id="{{item_key}}">
                                         <div class="alert alert-info">
+                                            <div class="pull-right">
+                                                <a class="btn btn-mini" href="{{url}}" target="_blank">Web Service API</a>
+                                            </div>
                                             <h6>{{label}}</h6>
                                             <small>{{description}}</small>
-                                            {{#if active}}<span class="badge pull-right">active</span>{{/if}}
                                         </div>
                                     </div>
                                 {{/each}}
@@ -43,7 +47,7 @@
                 </div>
             </div>
         {{else}}
-            <p class="empty">No data models found :(</p>
+            <p class="empty">No databases found :(</p>
         {{/each}}
         </div>
     </div>

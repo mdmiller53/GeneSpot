@@ -108,8 +108,8 @@ define(["jquery", "underscore", "backbone",
                         return;
                     }
 
-                    genes_from_model.push(gene);
-                    gl_model.set("genes", genes_from_model);
+                    gl_model.set("genes", _.flatten([gene, genes_from_model]));
+                    WebApp.alert(this.$el.find(".gene-added-success"), 3000);
                 }, this);
             },
 

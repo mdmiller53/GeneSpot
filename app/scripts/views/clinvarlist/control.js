@@ -91,8 +91,8 @@ define(["jquery", "underscore", "backbone",
                         return;
                     }
 
-                    cv_from_model.push(clin);
-                    gl_model.set("clinical_variables", cv_from_model);
+                    gl_model.set("clinical_variables", _.flatten([clin, cv_from_model]));
+                    WebApp.alert(this.$el.find(".clinvar-added-success"), 3000);
                 }, this);
             },
 

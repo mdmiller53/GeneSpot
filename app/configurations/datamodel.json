@@ -24,149 +24,137 @@
             "label": "Feature Matrices",
             "by_tumor_type": "tumor_type",
             "catalog": {
-                "BLCA-20131223": {
+                "ACC-20140401": {
+                    "tumor_type": "ACC",
+                    "service": "datastores/20140401/ACC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "ACC dataset for April 2014"
+                },
+                "BLCA-20140401": {
                     "tumor_type": "BLCA",
-                    "service": "datastores/ds/blca-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "BLCA dataset for 20131223"
+                    "service": "datastores/20140401/BLCA",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "BLCA dataset for April 2014"
                 },
-                "BRCA-20131223": {
+                "BRCA-20140401": {
                     "tumor_type": "BRCA",
-                    "service": "datastores/ds/brca-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "BRCA dataset for 20131223"
+                    "service": "datastores/20140401/BRCA",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "BRCA dataset for April 2014"
                 },
-                "CESC-20131223": {
+                "CESC-20140401": {
                     "tumor_type": "CESC",
-                    "active": true,
-                    "service": "datastores/ds/cesc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "CESC dataset for 20131223"
+                    "service": "datastores/20140401/CESC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "CESC dataset for April 2014"
                 },
-                "CESC-20131223-B": {
-                    "tumor_type": "CESC",
-                    "service": "datastores/ds/cesc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "CESC dataset B for 20131223"
-                },
-                "COAD-20131223": {
+                "COAD-20140401": {
                     "tumor_type": "COAD",
-                    "active": true,
-                    "service": "datastores/ds/coad-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "COAD dataset for 20131223"
+                    "service": "datastores/20140401/COAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "COAD dataset for April 2014"
                 },
-                "GBM-20131223": {
+                "GBM-20140401": {
                     "tumor_type": "GBM",
-                    "active": true,
-                    "service": "datastores/ds/gbm-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "GBM dataset for 20131223"
+                    "service": "datastores/20140401/GBM",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "GBM dataset for April 2014"
                 },
-                "HNSC-20131223": {
+                "HNSC-20140401": {
                     "tumor_type": "HNSC",
-                    "active": true,
-                    "service": "datastores/ds/hnsc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "HNSC dataset for 20131223"
+                    "service": "datastores/20140401/HNSC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "HNSC dataset for April 2014"
                 },
-                "KIRC-20131223": {
+                "KIRC-20140401": {
                     "tumor_type": "KIRC",
-                    "active": true,
-                    "service": "datastores/ds/kirc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "KIRC dataset for 20131223"
+                    "service": "datastores/20140401/KIRC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "KIRC dataset for April 2014"
                 },
-                "KIRP-20131223": {
+                "KIRP-20140401": {
                     "tumor_type": "KIRP",
-                    "active": true,
-                    "service": "datastores/ds/kirp-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "KIRP dataset for 20131223"
+                    "service": "datastores/20140401/KIRP",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "KIRP dataset for April 2014"
                 },
-                "LAML-20131223": {
+                "LAML-20140401": {
                     "tumor_type": "LAML",
-                    "active": true,
-                    "service": "datastores/ds/laml-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "LAML dataset for 20131223"
+                    "service": "datastores/20140401/LAML",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LAML dataset for April 2014"
                 },
-                "LGG-20131223": {
+                "LGG-20140401": {
                     "tumor_type": "LGG",
-                    "active": true,
-                    "service": "datastores/ds/lgg-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "LGG dataset for 20131223"
+                    "service": "datastores/20140401/LGG",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LGG dataset for April 2014"
                 },
-                "LIHC-20131223": {
+                "LIHC-20140401": {
                     "tumor_type": "LIHC",
-                    "active": true,
-                    "service": "datastores/ds/lihc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "LIHC dataset for 20131223"
+                    "service": "datastores/20140401/LIHC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LIHC dataset for April 2014"
                 },
-                "LUAD-20131223": {
+                "LUAD-20140401": {
                     "tumor_type": "LUAD",
-                    "active": true,
-                    "service": "datastores/ds/luad-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "LUAD dataset for 20131223"
+                    "service": "datastores/20140401/LUAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LUAD dataset for April 2014"
                 },
-                "LUSC-20131223": {
+                "LUSC-20140401": {
                     "tumor_type": "LUSC",
-                    "active": true,
-                    "service": "datastores/ds/lusc-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "LUSC dataset for 20131223"
+                    "service": "datastores/20140401/LUSC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LUSC dataset for April 2014"
                 },
-                "OV-20131223": {
+                "OV-20140401": {
                     "tumor_type": "OV",
-                    "active": true,
-                    "service": "datastores/ds/ov-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "OV dataset for 20131223"
+                    "service": "datastores/20140401/OV",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "OV dataset for April 2014"
                 },
-                "PRAD-20131223": {
+                "PRAD-20140401": {
                     "tumor_type": "PRAD",
-                    "active": true,
-                    "service": "datastores/ds/prad-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "PRAD dataset for 20131223"
+                    "service": "datastores/20140401/PRAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "PRAD dataset for April 2014"
                 },
-                "READ-20131223": {
+                "READ-20140401": {
                     "tumor_type": "READ",
-                    "active": true,
-                    "service": "datastores/ds/read-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "READ dataset for 20131223"
+                    "service": "datastores/20140401/READ",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "READ dataset for April 2014"
                 },
-                "SKCM-20131223": {
+                "SARC-20140401": {
+                    "tumor_type": "SARC",
+                    "service": "datastores/20140401/SARC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "SARC dataset for April 2014"
+                },
+                "SKCM-20140401": {
                     "tumor_type": "SKCM",
-                    "active": true,
-                    "service": "datastores/ds/skcm-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "SKCM dataset for 20131223"
+                    "service": "datastores/20140401/SKCM",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "SKCM dataset for April 2014"
                 },
-                "STAD-20131223": {
+                "STAD-20140401": {
                     "tumor_type": "STAD",
-                    "active": true,
-                    "service": "datastores/ds/stad-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "STAD dataset for 20131223"
+                    "service": "datastores/20140401/STAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "STAD dataset for April 2014"
                 },
-                "THCA-20131223": {
+                "THCA-20140401": {
                     "tumor_type": "THCA",
-                    "active": true,
-                    "service": "datastores/ds/thca-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "THCA dataset for 20131223"
+                    "service": "datastores/20140401/THCA",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "THCA dataset for April 2014"
                 },
-                "UCEC-20131223": {
+                "UCEC-20140401": {
                     "tumor_type": "UCEC",
-                    "active": true,
-                    "service": "datastores/ds/ucec-20131223",
-                    "description": "This dataset was prepared from TCGA feature matrices produced by Firehose and aggregated at ISB",
-                    "label": "UCEC dataset for 20131223"
+                    "service": "datastores/20140401/UCEC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "UCEC dataset for April 2014"
                 }
             }
         },

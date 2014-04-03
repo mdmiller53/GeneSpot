@@ -26,12 +26,10 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
                     return "[" + header + "] " + label + " (" + kw + ")";
                 });
 
-                var uniqueId = "ii_" + Math.round(Math.random() * 10000); // TODO : Something better
-                var indexed_item = { "uid": uniqueId, "header": header, "label": label, "callback": callbackFn };
-
-                _.each(_.flatten([header, label, keywords]), function (kw) {
+                var uniqueId = Math.round(Math.random() * 10000);
+                _.each(_.flatten([label, keywords]), function (kw) {
                     var idxitms = this.indexed_by_keyword[kw] || [];
-                    idxitms.push(indexed_item);
+                    idxitms.push({ "uid": "ii_" + uniqueId++, "header": header, "label": kw, "callback": callbackFn });
                     this.indexed_by_keyword[kw] = idxitms;
                 }, this);
             },

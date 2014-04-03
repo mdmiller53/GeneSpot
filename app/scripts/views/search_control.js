@@ -29,7 +29,9 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
                 var uniqueId = Math.round(Math.random() * 10000);
                 _.each(_.flatten([label, keywords]), function (kw) {
                     var idxitms = this.indexed_by_keyword[kw] || [];
-                    idxitms.push({ "uid": "ii_" + uniqueId++, "header": header, "label": kw, "callback": callbackFn });
+                    var idxitm = { "uid": "ii_" + uniqueId++, "header": header, "label": kw, "callback": callbackFn };
+                    if (!_.isEqual(label, kw)) idxitm["belongs"] = label;
+                    idxitms.push(idxitm);
                     this.indexed_by_keyword[kw] = idxitms;
                 }, this);
             },

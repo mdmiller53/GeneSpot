@@ -1,6 +1,12 @@
 {
     "items": [
         {
+            "id": "ACC",
+            "label": "Adrenocortical carcinoma",
+            "description": "TODO",
+            "color": "#00008F"
+        },
+        {
             "id": "BLCA",
             "label": "Bladder Urothelial Carcinoma",
             "description": "TODO",
@@ -97,6 +103,12 @@
         {
             "id": "READ",
             "label": "Rectum adenocarcinoma",
+            "description": "TODO",
+            "color": "#87FF78"
+        },
+        {
+            "id": "SARC",
+            "label": "Sarcoma",
             "description": "TODO",
             "color": "#87FF78"
         },

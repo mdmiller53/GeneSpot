@@ -3,6 +3,6 @@
         <li class="nav-header">{{header}}</li>
     {{/if}}
     {{#each items}}
-        <li><a href="#">{{label}}</a></li>
+        <li {{#unless @index}}class="active"{{/unless}} data-value="{{uid}}"><a href="#">{{{label}}}</a></li>
     {{/each}}
 {{/each}}

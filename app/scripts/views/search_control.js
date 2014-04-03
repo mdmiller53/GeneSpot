@@ -1,8 +1,7 @@
 define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
     function ($, _, Backbone, Tpl) {
         return Backbone.View.extend({
-            "callbacks_by_keyword": {},
-            "indexed_items_by_keyword": {},
+            "indexed_by_keyword": {},
 
             initialize: function () {
                 console.debug("views/search_control.initialize");
@@ -15,7 +14,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
                     "source": this.__source,
                     "updater": this.__updater,
                     "autocomplete": "off",
-                    "indexed_items_by_keyword": this.indexed_items_by_keyword
+                    "indexed_by_keyword": this.indexed_by_keyword
                 });
                 this.$el.data("typeahead").render = this.__render;
                 return this;
@@ -31,55 +30,47 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
                 var indexed_item = { "uid": uniqueId, "header": header, "label": label, "callback": callbackFn };
 
                 _.each(_.flatten([header, label, keywords]), function (kw) {
-                    var idxitms = this.indexed_items_by_keyword[kw] || [];
+                    var idxitms = this.indexed_by_keyword[kw] || [];
                     idxitms.push(indexed_item);
-                    this.indexed_items_by_keyword[kw] = idxitms;
+                    this.indexed_by_keyword[kw] = idxitms;
                 }, this);
-
-//                _.each(kws, function (kw) {
-////                    this.callbacks_by_keyword[kw] = callbackFn;
-//                    this.callbacks_by_keyword[kw] = {
-//                        "header": header,
-//                        "label": label,
-//                        "keywords": keywords,
-//                        "callback": callbackFn
-//                    };
-//                }, this);
             },
 
             __source: function () {
-//                return _.map(this.callbacks_by_keyword, function(item) {
-//                    return { "header": item.}
-//                })
-                return _.keys(this.indexed_items_by_keyword);
+                return _.keys(this.indexed_by_keyword);
             },
 
-            __updater: function (item) {
-                console.debug("views/search_control.__updater(" + item + ")");
-                var callbackFn = this.callbacks_by_keyword[item];
-                if (_.isFunction(callbackFn)) callbackFn();
+            __updater: function (uid) {
+                console.debug("views/search_control.__updater(" + uid + ")");
+                var indexed_by_uid = _.indexBy(_.flatten(_.values(this.indexed_by_keyword)), "uid");
+                var indexed_item = indexed_by_uid[uid];
+                if (indexed_item && _.has(indexed_item, "callback")) {
+                    var callbackFn = indexed_item["callback"];
+                    if (_.isFunction(callbackFn)) callbackFn();
+                }
                 return null;
             },
 
             __render: function (items) {
                 console.debug("views/search_control.__render");
-//                var that = this;
                 var data_items = _.map(items, function (item) {
-                    return this.options.indexed_items_by_keyword[item];
+                    return this.options.indexed_by_keyword[item];
                 }, this);
 
+                if (_.isEmpty(data_items)) return this;
+
                 var indexed_items = _.map(_.groupBy(_.flatten(data_items), "header"), function (items, key) {
-                    return { "header": key, "items": items };
-                });
+                    if (!key) return null;
+                    return {
+                        "header": key,
+                        "items": _.map(items, function(it) {
+                            return _.extend({}, it, { "label": this.highlighter(it["label"]) });
+                        }, this)
+                    };
+                }, this);
 
-//                items = $(items).map(function (i, item) {
-//                    var itemClass = (item == "Sunday" || item == "Saturday") ? "weekend" : "weekday";
-//                    i = $(that.options.item).attr("data-value", item).attr("class", itemClass);
-//                    i.find("a").html(that.highlighter(item))
-//                    return i[0]
-//                })
+                if (_.isEmpty(_.compact(indexed_items))) return this;
 
-//                _.first(data_items).addClass("active")
                 this.$menu.html(Tpl({ "items": indexed_items }));
                 return this;
             }

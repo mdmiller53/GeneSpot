@@ -5,6 +5,7 @@
             "id": "graph_view",
             "label": "TCGA Feature Network",
             "description": "This map presents a network of all genomic and clinical TCGA features. The nodes are bio-entities (e.g. Genes, Methylation, Protein Expresion), and the edges represent associations found from Pair Wise associations.",
+            "keywords": ["Graph", "Pairwise", "CytoscapeJS"],
             "isOpen": false,
             "position": {
                 "top": 0,
@@ -44,6 +45,7 @@
             "id": "mutations_combo",
             "label": "Mutations",
             "description": "This map combines multiple mutation data types, including TCGA MutSig CV data produced by Firehose",
+            "keywords": ["Interpro", "Protein Mutations"],
             "position": {
                 "top": 0,
                 "left": 150
@@ -156,6 +158,7 @@
             "isPrimary": true,
             "order": 1,
             "isOpen": true,
+            "keywords": ["Help", "Report a Bug"],
             "position": {
                 "top": 10,
                 "left": 200

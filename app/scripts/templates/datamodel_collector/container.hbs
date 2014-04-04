@@ -22,13 +22,26 @@
                                         </div>
                                         <h6>{{label}}</h6>
                                         <small>{{description}}</small>
+                                        {{#if publications}}
+                                            <h6>Related Publications</h6>
+                                            <ul class="nav nav-list">
+                                                {{#each publications}}
+                                                    <li>
+                                                        <p>
+                                                            <small>
+                                                                <a href="{{url}}" target="_blank">{{label}}</a> {{#if published}}(Published on {{published}}){{/if}}
+                                                            </small>
+                                                        </p>
+                                                    </li>
+                                                {{/each}}
+                                            </ul>
+                                        {{/if}}
                                     </div>
                                 </div>
                             {{/each}}
                         {{/unless}}
                         {{#if by_tumor_type}}
                             {{#each by_tumor_type}}
-                                <h5>{{tumor_type}}</h5>
                                 {{#each items}}
                                     <div class="row" data-id="{{item_key}}">
                                         <div class="alert alert-info">
@@ -37,12 +50,25 @@
                                             </div>
                                             <h6>{{label}}</h6>
                                             <small>{{description}}</small>
+                                            {{#if publications}}
+                                                <h6>Related Publications</h6>
+                                                <ul class="nav nav-list">
+                                                {{#each publications}}
+                                                    <li>
+                                                        <p>
+                                                            <small>
+                                                                <a href="{{url}}" target="_blank">{{label}}</a> {{#if published}}(Published on {{published}}){{/if}}
+                                                            </small>
+                                                        </p>
+                                                    </li>
+                                                {{/each}}
+                                                </ul>
+                                            {{/if}}
                                         </div>
                                     </div>
                                 {{/each}}
                             {{/each}}
                         {{/if}}
-
                     </div>
                 </div>
             </div>

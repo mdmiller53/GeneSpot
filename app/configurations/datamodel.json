@@ -1,5 +1,159 @@
 {
     "datamodel": {
+        "feature_matrices": {
+            "label": "Feature Matrices",
+            "by_tumor_type": "tumor_type",
+            "catalog": {
+                "BLCA-20140401": {
+                    "tumor_type": "BLCA",
+                    "service": "datastores/20140401/BLCA",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "BLCA dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive molecular characterization of urothelial bladder carcinoma.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/24476821",
+                            "published": "3/20/2014"
+                        }
+                    ]
+                },
+                "BRCA-20140401": {
+                    "tumor_type": "BRCA",
+                    "service": "datastores/20140401/BRCA",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "BRCA dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive molecular portraits of human breast tumours.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/23000897",
+                            "published": "10/4/2012"
+                        }
+                    ]
+                },
+                "COAD-20140401": {
+                    "tumor_type": "COAD",
+                    "service": "datastores/20140401/COAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "COAD dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive molecular characterization of human colon and rectal cancer.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/22810696",
+                            "published": "7/18/2012"
+                        }
+                    ]
+                },
+                "GBM-20140401": {
+                    "tumor_type": "GBM",
+                    "service": "datastores/20140401/GBM",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "GBM dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive genomic characterization defines human glioblastoma genes and core pathways.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/18772890",
+                            "published": "10/23/2008"
+                        },
+                        {
+                            "label": "Identification of a CpG island methylator phenotype that defines a distinct subgroup of glioma.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/20399149",
+                            "published": "5/18/2010"
+                        }
+                    ]
+                },
+                "HNSC-20140401": {
+                    "tumor_type": "HNSC",
+                    "service": "datastores/20140401/HNSC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "HNSC dataset for April 2014"
+                },
+                "KIRC-20140401": {
+                    "tumor_type": "KIRC",
+                    "service": "datastores/20140401/KIRC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "KIRC dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive molecular characterization of clear cell renal cell carcinoma.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/23792563",
+                            "published": "7/4/2013"
+                        }
+                    ]
+                },
+                "LUAD-20140401": {
+                    "tumor_type": "LUAD",
+                    "service": "datastores/20140401/LUAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LUAD dataset for April 2014"
+                },
+                "LUSC-20140401": {
+                    "tumor_type": "LUSC",
+                    "service": "datastores/20140401/LUSC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "LUSC dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive genomic characterization of squamous cell lung cancers.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/22960745",
+                            "published": "9/27/2012"
+                        }
+                    ]
+                },
+                "OV-20140401": {
+                    "tumor_type": "OV",
+                    "service": "datastores/20140401/OV",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "OV dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Integrated genomic analyses of ovarian carcinoma.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/21720365",
+                            "published": "6/29/2011"
+                        }
+                    ]
+                },
+                "READ-20140401": {
+                    "tumor_type": "READ",
+                    "service": "datastores/20140401/READ",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "READ dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Comprehensive molecular characterization of human colon and rectal cancer.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/22810696",
+                            "published": "7/18/2012"
+                        }
+                    ]
+                },
+                "UCEC-20140401": {
+                    "tumor_type": "UCEC",
+                    "service": "datastores/20140401/UCEC",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "UCEC dataset for April 2014",
+                    "publications": [
+                        {
+                            "label": "Integrated genomic characterization of endometrial carcinoma.",
+                            "url": "http://www.ncbi.nlm.nih.gov/pubmed/23636398",
+                            "published": "5/2/2013"
+                        }
+                    ]
+                }
+            }
+        },
+        "copy_number": {
+            "label": "Copy Number Data",
+            "catalog": {
+                "copy_number_gistic2": {
+                    "label": "Copy Number Gistic (13sep)",
+                    "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
+                    "model": "models/gs/by_tumor_type"
+                },
+                "copy_number_qvalue": {
+                    "label": "Copy Number Q-Values",
+                    "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"
+                }
+            }
+        },
         "mutations": {
             "label": "Mutations",
             "catalog": {
@@ -17,158 +171,6 @@
                     "label": "MutSig Top20",
                     "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20",
                     "description": "This dataset is an aggregation of the TCGA MutSig 2.0 data, containing only the top 20 ranking genes across tumor types"
-                }
-            }
-        },
-        "feature_matrices": {
-            "label": "Feature Matrices",
-            "by_tumor_type": "tumor_type",
-            "catalog": {
-                "ACC-20140401": {
-                    "tumor_type": "ACC",
-                    "service": "datastores/20140401/ACC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "ACC dataset for April 2014"
-                },
-                "BLCA-20140401": {
-                    "tumor_type": "BLCA",
-                    "service": "datastores/20140401/BLCA",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "BLCA dataset for April 2014"
-                },
-                "BRCA-20140401": {
-                    "tumor_type": "BRCA",
-                    "service": "datastores/20140401/BRCA",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "BRCA dataset for April 2014"
-                },
-                "CESC-20140401": {
-                    "tumor_type": "CESC",
-                    "service": "datastores/20140401/CESC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "CESC dataset for April 2014"
-                },
-                "COAD-20140401": {
-                    "tumor_type": "COAD",
-                    "service": "datastores/20140401/COAD",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "COAD dataset for April 2014"
-                },
-                "GBM-20140401": {
-                    "tumor_type": "GBM",
-                    "service": "datastores/20140401/GBM",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "GBM dataset for April 2014"
-                },
-                "HNSC-20140401": {
-                    "tumor_type": "HNSC",
-                    "service": "datastores/20140401/HNSC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "HNSC dataset for April 2014"
-                },
-                "KIRC-20140401": {
-                    "tumor_type": "KIRC",
-                    "service": "datastores/20140401/KIRC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "KIRC dataset for April 2014"
-                },
-                "KIRP-20140401": {
-                    "tumor_type": "KIRP",
-                    "service": "datastores/20140401/KIRP",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "KIRP dataset for April 2014"
-                },
-                "LAML-20140401": {
-                    "tumor_type": "LAML",
-                    "service": "datastores/20140401/LAML",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LAML dataset for April 2014"
-                },
-                "LGG-20140401": {
-                    "tumor_type": "LGG",
-                    "service": "datastores/20140401/LGG",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LGG dataset for April 2014"
-                },
-                "LIHC-20140401": {
-                    "tumor_type": "LIHC",
-                    "service": "datastores/20140401/LIHC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LIHC dataset for April 2014"
-                },
-                "LUAD-20140401": {
-                    "tumor_type": "LUAD",
-                    "service": "datastores/20140401/LUAD",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LUAD dataset for April 2014"
-                },
-                "LUSC-20140401": {
-                    "tumor_type": "LUSC",
-                    "service": "datastores/20140401/LUSC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LUSC dataset for April 2014"
-                },
-                "OV-20140401": {
-                    "tumor_type": "OV",
-                    "service": "datastores/20140401/OV",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "OV dataset for April 2014"
-                },
-                "PRAD-20140401": {
-                    "tumor_type": "PRAD",
-                    "service": "datastores/20140401/PRAD",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "PRAD dataset for April 2014"
-                },
-                "READ-20140401": {
-                    "tumor_type": "READ",
-                    "service": "datastores/20140401/READ",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "READ dataset for April 2014"
-                },
-                "SARC-20140401": {
-                    "tumor_type": "SARC",
-                    "service": "datastores/20140401/SARC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "SARC dataset for April 2014"
-                },
-                "SKCM-20140401": {
-                    "tumor_type": "SKCM",
-                    "service": "datastores/20140401/SKCM",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "SKCM dataset for April 2014"
-                },
-                "STAD-20140401": {
-                    "tumor_type": "STAD",
-                    "service": "datastores/20140401/STAD",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "STAD dataset for April 2014"
-                },
-                "THCA-20140401": {
-                    "tumor_type": "THCA",
-                    "service": "datastores/20140401/THCA",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "THCA dataset for April 2014"
-                },
-                "UCEC-20140401": {
-                    "tumor_type": "UCEC",
-                    "service": "datastores/20140401/UCEC",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "UCEC dataset for April 2014"
-                }
-            }
-        },
-        "copy_number": {
-            "label": "Copy Number Data",
-            "catalog": {
-                "copy_number_gistic2": {
-                    "label": "Copy Number Gistic (13sep)",
-                    "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
-                    "model": "models/gs/by_tumor_type"
-                },
-                "copy_number_qvalue": {
-                    "label": "Copy Number Q-Values",
-                    "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"
                 }
             }
         },

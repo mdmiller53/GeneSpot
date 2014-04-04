@@ -1,12 +1,6 @@
 {
     "items": [
         {
-            "id": "ACC",
-            "label": "Adrenocortical carcinoma",
-            "description": "TODO",
-            "color": "#00008F"
-        },
-        {
             "id": "BLCA",
             "label": "Bladder Urothelial Carcinoma",
             "description": "TODO",
@@ -18,13 +12,6 @@
             "label": "Breast invasive carcinoma",
             "description": "TODO",
             "color": "#0000B9",
-            "isChecked": true
-        },
-        {
-            "id": "CESC",
-            "label": "Cervical squamous cell carcinoma and endocervical adenocarcinoma",
-            "description": "TODO",
-            "color": "#B1FF4E",
             "isChecked": true
         },
         {
@@ -52,30 +39,6 @@
             "color": "#0062FF"
         },
         {
-            "id": "KIPR",
-            "label": "Kidney renal papillary cell carcinoma",
-            "description": "TODO",
-            "color": "#FF7C00"
-        },
-        {
-            "id": "LAML",
-            "label": "Acute Myeloid Leukemia",
-            "description": "TODO",
-            "color": "#008BFF"
-        },
-        {
-            "id": "LGG",
-            "label": "Brain Lower Grade Glioma",
-            "description": "TODO",
-            "color": "#00B5FF"
-        },
-        {
-            "id": "LIHC",
-            "label": "Liver hepatocellular carcinoma",
-            "description": "TODO",
-            "color": "#D30000"
-        },
-        {
             "id": "LUAD",
             "label": "Lung adenocarcinoma",
             "description": "TODO",
@@ -95,40 +58,10 @@
             "isChecked": true
         },
         {
-            "id": "PRAD",
-            "label": "Prostate adenocarcinoma",
-            "description": "TODO",
-            "color": "#5EFFA1"
-        },
-        {
             "id": "READ",
             "label": "Rectum adenocarcinoma",
             "description": "TODO",
             "color": "#87FF78"
-        },
-        {
-            "id": "SARC",
-            "label": "Sarcoma",
-            "description": "TODO",
-            "color": "#87FF78"
-        },
-        {
-            "id": "SKCM",
-            "label": "Skin Cutaneous Melanoma",
-            "description": "TODO",
-            "color": "#FFA500"
-        },
-        {
-            "id": "STAD",
-            "label": "Stomach adenocarcinoma",
-            "description": "TODO",
-            "color": "#FF5200"
-        },
-        {
-            "id": "THCA",
-            "label": "Thyroid carcinoma",
-            "description": "TODO",
-            "color": "#FD0000"
         },
         {
             "id": "UCEC",

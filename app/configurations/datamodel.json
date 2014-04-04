@@ -1,25 +1,5 @@
 {
     "datamodel": {
-        "mutations": {
-            "label": "Mutations",
-            "catalog": {
-                "Mutations_Per_Tumor_Type": {
-                    "label": "Mutations per Tumor Type",
-                    "service": "datastores/mutations/qed_lookups/mutations_pancan",
-                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose"
-                },
-                "mutsig_rankings": {
-                    "label": "MutSig Rankings",
-                    "service": "datastores/mutations/qed_lookups/mutsig_rankings",
-                    "description": "This dataset was prepared from TCGA MutSig 2.0 data produced by Firehose"
-                },
-                "mutsig_top20": {
-                    "label": "MutSig Top20",
-                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20",
-                    "description": "This dataset is an aggregation of the TCGA MutSig 2.0 data, containing only the top 20 ranking genes across tumor types"
-                }
-            }
-        },
         "feature_matrices": {
             "label": "Feature Matrices",
             "by_tumor_type": "tumor_type",
@@ -171,6 +151,26 @@
                 "copy_number_qvalue": {
                     "label": "Copy Number Q-Values",
                     "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"
+                }
+            }
+        },
+        "mutations": {
+            "label": "Mutations",
+            "catalog": {
+                "Mutations_Per_Tumor_Type": {
+                    "label": "Mutations per Tumor Type",
+                    "service": "datastores/mutations/qed_lookups/mutations_pancan",
+                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose"
+                },
+                "mutsig_rankings": {
+                    "label": "MutSig Rankings",
+                    "service": "datastores/mutations/qed_lookups/mutsig_rankings",
+                    "description": "This dataset was prepared from TCGA MutSig 2.0 data produced by Firehose"
+                },
+                "mutsig_top20": {
+                    "label": "MutSig Top20",
+                    "service": "datastores/mutations/qed_lookups/mutsig_rankings_top20",
+                    "description": "This dataset is an aggregation of the TCGA MutSig 2.0 data, containing only the top 20 ranking genes across tumor types"
                 }
             }
         },

@@ -8,11 +8,12 @@ define([
     "views/gs/tumor_types_control",
     "views/datamodel_collector/control",
     "views/collected_maps/control",
-    "views/datasheets/control"
+    "views/datasheets/control",
+    "tour"
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
               GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl, CollectedMapsControl,
-              DatasheetsControl) {
+              DatasheetsControl, TourControl) {
 
         return Backbone.View.extend({
             "datasheetsControl": new DatasheetsControl({}),
@@ -23,6 +24,10 @@ define([
 
             events: {
                 "click .refresh-loaded": "__reload_all_maps",
+                "click .show-tour": function() {
+                    this.tourControl.start();
+                },
+
                 "click .list-controls li a": function(e) {
                     this.$el.find(".list-container.collapse.in").collapse("hide");
                 },
@@ -56,6 +61,7 @@ define([
                 this.model.on("load", this.__init_datamodel_collector, this);
                 this.model.on("load", this.__init_collected_maps_control, this);
                 this.model.on("load", this.__init_datasheets_control, this);
+                this.model.on("load", this.__init_tour, this);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;
             },
@@ -122,6 +128,18 @@ define([
                 var reloadFn = _.debounce(this.__reload_all_maps, 1000);
                 this.datamodelCollectorControl.on("updated", reloadFn, this);
                 this.$el.find(".datamodel-collector-container").html(this.datamodelCollectorControl.render().el);
+            },
+
+            __init_tour: function() {
+                var model = new Backbone.Model({}, { "url": "configurations/tour.json" });
+                model.fetch({
+                    "success": function() {
+                        model.trigger("load");
+                    }
+                });
+
+                this.tourControl = new TourControl({ "model": model, "el": this.$el });
+                this.tourControl.render();
             },
 
             __init_maps: function () {

@@ -1,0 +1,48 @@
+{
+    "steps": {
+        "visualizations": {
+            "title": "Visualizations",
+            "text": [
+                "This menu provides access to visualizations"
+            ],
+            "attachTo": ".linker-maps right",
+            "classes": "shepherd shepherd-open shepherd-theme-arrows"
+        },
+        "databases": {
+            "title": "Databases",
+            "text": [
+                "This menu provides access to databases"
+            ],
+            "attachTo": ".linker-datamodel right",
+            "classes": "shepherd shepherd-open shepherd-theme-arrows"
+        },
+        "tumortypes": {
+            "title": "Tumor Types",
+            "text": [
+                "This menu provides access to tumor types"
+            ],
+            "attachTo": ".linker-tumortypes right",
+            "classes": "shepherd shepherd-open shepherd-theme-arrows"
+        },
+        "genelists": {
+            "title": "Gene Lists",
+            "text": [
+                "This menu provides access to gene lists"
+            ],
+            "attachTo": ".linker-genelist right",
+            "classes": "shepherd shepherd-open shepherd-theme-arrows"
+        },
+        "clinvarlists": {
+            "title": "Clinical Variables",
+            "text": [
+                "This menu provides access to clinical variables"
+            ],
+            "attachTo": ".linker-clinvarlist right",
+            "classes": "shepherd shepherd-open shepherd-theme-arrows"
+        }
+    },
+    "defaults": {
+        "classes": "shepherd-element shepherd-open shepherd-theme-arrows",
+        "scrollTo": true
+    }
+}

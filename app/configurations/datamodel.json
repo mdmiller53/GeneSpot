@@ -4,9 +4,9 @@
             "label": "Feature Matrices",
             "by_tumor_type": "tumor_type",
             "catalog": {
-                "BLCA-20140401": {
+                "BLCA-20140404": {
                     "tumor_type": "BLCA",
-                    "service": "datastores/20140401/BLCA",
+                    "service": "datastores/20140404/BLCA",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "BLCA dataset for April 2014",
                     "publications": [
@@ -17,9 +17,9 @@
                         }
                     ]
                 },
-                "BRCA-20140401": {
+                "BRCA-20140404": {
                     "tumor_type": "BRCA",
-                    "service": "datastores/20140401/BRCA",
+                    "service": "datastores/20140404/BRCA",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "BRCA dataset for April 2014",
                     "publications": [
@@ -30,9 +30,9 @@
                         }
                     ]
                 },
-                "COAD-20140401": {
+                "COAD-20140404": {
                     "tumor_type": "COAD",
-                    "service": "datastores/20140401/COAD",
+                    "service": "datastores/20140404/COAD",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "COAD dataset for April 2014",
                     "publications": [
@@ -43,9 +43,9 @@
                         }
                     ]
                 },
-                "GBM-20140401": {
+                "GBM-20140404": {
                     "tumor_type": "GBM",
-                    "service": "datastores/20140401/GBM",
+                    "service": "datastores/20140404/GBM",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "GBM dataset for April 2014",
                     "publications": [
@@ -61,15 +61,15 @@
                         }
                     ]
                 },
-                "HNSC-20140401": {
+                "HNSC-20140404": {
                     "tumor_type": "HNSC",
-                    "service": "datastores/20140401/HNSC",
+                    "service": "datastores/20140404/HNSC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "HNSC dataset for April 2014"
                 },
-                "KIRC-20140401": {
+                "KIRC-20140404": {
                     "tumor_type": "KIRC",
-                    "service": "datastores/20140401/KIRC",
+                    "service": "datastores/20140404/KIRC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "KIRC dataset for April 2014",
                     "publications": [
@@ -80,15 +80,15 @@
                         }
                     ]
                 },
-                "LUAD-20140401": {
+                "LUAD-20140404": {
                     "tumor_type": "LUAD",
-                    "service": "datastores/20140401/LUAD",
+                    "service": "datastores/20140404/LUAD",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "LUAD dataset for April 2014"
                 },
-                "LUSC-20140401": {
+                "LUSC-20140404": {
                     "tumor_type": "LUSC",
-                    "service": "datastores/20140401/LUSC",
+                    "service": "datastores/20140404/LUSC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "LUSC dataset for April 2014",
                     "publications": [
@@ -99,9 +99,9 @@
                         }
                     ]
                 },
-                "OV-20140401": {
+                "OV-20140404": {
                     "tumor_type": "OV",
-                    "service": "datastores/20140401/OV",
+                    "service": "datastores/20140404/OV",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "OV dataset for April 2014",
                     "publications": [
@@ -112,9 +112,9 @@
                         }
                     ]
                 },
-                "READ-20140401": {
+                "READ-20140404": {
                     "tumor_type": "READ",
-                    "service": "datastores/20140401/READ",
+                    "service": "datastores/20140404/READ",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "READ dataset for April 2014",
                     "publications": [
@@ -125,9 +125,9 @@
                         }
                     ]
                 },
-                "UCEC-20140401": {
+                "UCEC-20140404": {
                     "tumor_type": "UCEC",
-                    "service": "datastores/20140401/UCEC",
+                    "service": "datastores/20140404/UCEC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "UCEC dataset for April 2014",
                     "publications": [

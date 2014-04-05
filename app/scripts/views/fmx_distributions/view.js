@@ -266,9 +266,8 @@ define(["jquery", "underscore", "backbone",
 
                 _.each(fd_by_gene, function (features, source) {
                     var collapserUL = $feature_selector.find("#tab-pane-" + fdefs_uid_by_source[source]);
-                    _.each(_.sortBy(features, "modifier"), function (feature) {
-                        var label = feature.modifier || "chr" + feature.chr + ":" + feature.start + ":" + feature.end + ":" + feature.strand;
-                        collapserUL.append(LineItemTpl({ "label": label, "id": feature.id, "a_class": "feature-selector-" + axis }));
+                    _.each(_.sortBy(features, "label"), function (feature) {
+                        collapserUL.append(LineItemTpl({ "label": feature["label"], "id": feature["id"], "a_class": "feature-selector-" + axis }));
                     });
                 });
 
@@ -450,8 +449,10 @@ define(["jquery", "underscore", "backbone",
             },
 
             __extract_label: function(feature) {
-                if (_.isEqual(feature.source, "CLIN")) return feature.label;
-                return feature.label + " : " + feature.source + " (" + feature.modifier + ")";
+                if (_.has(feature, "gene")) {
+                    return feature["gene"] + " : " + feature["source"] + " : " + feature["label"];
+                }
+                return feature["source"] + " : " + feature["label"];
             },
 
             __reset_highlight: function() {

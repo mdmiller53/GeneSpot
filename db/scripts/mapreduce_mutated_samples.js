@@ -19,7 +19,7 @@ Example of the type of features targeted for aggregation by this script. Must be
     "label" : "A1BG",
     "source" : "GNAB",
     "chr" : "19",
-    "modifier" : "y_n_somatic",
+    "label" : "y_n_somatic",
     "type" : "B"
 }
  */
@@ -57,7 +57,7 @@ var finalize = function(key, reducedValue) {
 
 var query = {
     "source":"GNAB",
-    "modifier":"y_n_somatic",
+    "label":"y_n_somatic",
     "type": "B",
     "gene": { "$exists": true }
 };

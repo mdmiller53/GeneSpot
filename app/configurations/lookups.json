@@ -14,7 +14,7 @@
             }
         },
         "clinical_variables": {
-            "url": "svc/datastores/ds/ffn/clinical_variables"
+            "url": "svc/datastores/20140404/LOOKUPS/clinical_variables"
         },
         "chromosomes": {
             "url": "svc/data/lookups/chromosomes",

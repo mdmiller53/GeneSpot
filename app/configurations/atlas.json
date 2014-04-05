@@ -62,8 +62,8 @@
                             "uri": "datamodel/feature_matrices",
                             "url_suffix": "/feature_matrix",
                             "base_query": {
-                                "source": "gnab",
-                                "modifier": "y_n_somatic"
+                                "source": "GNAB",
+                                "label": "y_n_somatic"
                             }
                         },
                         "mutated_samples": {

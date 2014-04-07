@@ -43,7 +43,7 @@ def extract_mutations(file_path, exception_uniprot_fail):
 
             if len(row) > num_col_uniprotfail and row[5] != "UNIPROT_FAIL":
                 mut_row["uniprot_id"] = row[5]
-                mut_row["amino_acid_mutation"] = row[6]
+                mut_row["amino_acid_mutation_detail"] = row[6]
                 mut_row["amino_acid_position"] = row[7]
                 mut_row["amino_acid_wildtype"] = row[8]
                 mut_row["amino_acid_mutation"] = row[9]

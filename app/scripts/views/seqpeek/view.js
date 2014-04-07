@@ -211,10 +211,10 @@ define([
 
                     var region_track_svg = track_elements_svg
                         .append("g")
-                        .attr("transform", "translate(0," + (current_y) + ")")
+                        //.attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
-                    seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg, {
+                    track_obj.track_info = seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg, {
                         guid: track_guid,
                         hovercard_content: {
                             "Location": function(d) {
@@ -235,6 +235,9 @@ define([
                         }
                     });
                     seqpeek.addRegionScaleTrackToElement(region_track_svg);
+
+                    track_obj.variant_track_svg = track_elements_svg;
+                    track_obj.region_track_svg = region_track_svg;
                 });
 
                 var tick_track_svg = d3.select(seqpeek_tick_track_element)
@@ -277,7 +280,22 @@ define([
                     }
                 });
 
-                seqpeek.draw();
+                seqpeek.createInstances();
+
+                _.each(mutation_data, function(track_obj) {
+                    var track_info = track_obj.track_info;
+                    var track_instance = track_info.track_instance;
+
+                    track_instance.setHeightFromStatistics();
+                    var variant_track_height = track_instance.getHeight();
+                    var total_track_height = variant_track_height + REGION_TRACK_HEIGHT;
+
+                    track_obj.variant_track_svg.attr("height", total_track_height);
+                    track_obj.region_track_svg
+                        .attr("transform", "translate(0," + (variant_track_height) + ")")
+                });
+
+                seqpeek.render();
             },
 
             __filter_data: function(data_by_tumor_type) {

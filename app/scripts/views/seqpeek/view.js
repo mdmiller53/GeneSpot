@@ -1,12 +1,13 @@
 define([
     "jquery", "underscore", "backbone", "d3", "vq",
     "models/gs/protein_domain_model",
+    "seqpeek/util/data_apapters",
     "seqpeek/builders/builder_for_existing_elements",
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table"
 ],
     function ($, _, Backbone, d3, vq,
-              ProteinDomainModel, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl) {
+              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl) {
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
@@ -192,7 +193,8 @@ define([
                 });
 
                 _.each(mutation_data, function(track_obj) {
-                    var current_y = 0;
+                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "location");
+                    DataAdapters.apply_statistics(grouped_data, function() {return 'all';});
 
                     var track_guid = "C" + vq.utils.VisUtils.guid();
                     var track_elements_svg = d3.select(track_obj.target_element)
@@ -207,11 +209,8 @@ define([
                         .attr("transform", "translate(0," + current_y + ")")
                         .style("pointer-events", "none");
 
-                    current_y = current_y + VARIANT_TRACK_MAX_HEIGHT;
-
                     var region_track_svg = track_elements_svg
                         .append("g")
-                        //.attr("transform", "translate(0," + (current_y) + ")")
                         .style("pointer-events", "none");
 
                     track_obj.track_info = seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg, {

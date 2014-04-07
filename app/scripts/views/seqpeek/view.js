@@ -80,7 +80,11 @@ define([
                     };
 
                     if (_.has(mutations, tumor_type)) {
-                        statistics.samples.numberOf = mutations[tumor_type].length;
+                        statistics.samples.numberOf = _.chain(mutations[tumor_type])
+                            .pluck('patient_id')
+                            .unique()
+                            .value()
+                            .length;
                     }
 
                     var by_tumor_type = this.model["mutated_samples"]["by_tumor_type"];
@@ -94,7 +98,7 @@ define([
                                     var total = stats_for_gene["numberOf"];
                                     if (_.isNumber(total)) {
                                         statistics.samples.totals = {
-                                            percentOf: formatter(100 * statistics.samples.numberOf / total)
+                                            percentOf: "NA"
                                         };
                                     }
                                 }
@@ -200,8 +204,6 @@ define([
                 });
 
                 _.each(mutation_data, function(track_obj) {
-
-
                     var track_guid = "C" + vq.utils.VisUtils.guid();
                     var track_elements_svg = d3.select(track_obj.target_element)
                         .append("svg")

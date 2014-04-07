@@ -136,11 +136,11 @@ define(["jquery", "underscore", "backbone", "stacksvis",
             __column_model: function (ttModel) {
                 var discretizeFn = function (val) {
                     if (_.isNumber(val)) {
-                        if (val < -1.5) return 4;
-                        if (val < -0.5) return 3;
-                        if (val < 0.5) return 2;
-                        if (val < 1.5) return 1;
-                        return 0;
+                        if (val < -1.5) return 4; // homozygous loss (less than -1.5)
+                        if (val < -0.5) return 3; // heterozygous loss (between -0.5 and -1.4999)
+                        if (val < 0.5) return 2; // diploid (between 0.5 and -0.4999)
+                        if (val < 1.5) return 1; // gain (between 1.5 and 0.49999)
+                        return 0; // amplification // greater than 1.5
                     }
                     return val;
                 };

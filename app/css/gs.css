@@ -597,3 +597,7 @@ td.vertical_cell {
 .cytoscape-container > div {
     height: 400px;
 }
+
+.q-values {
+    white-space: nowrap;
+}

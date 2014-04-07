@@ -39,11 +39,13 @@ define([
                 this.genes = this.options["genes"] || [];
                 if (!_.isEmpty(this.genes)) this.selected_gene = _.first(this.genes);
 
-                var renderFn = _.after(this.tumor_types.length + 2, this.__load_protein_domains);
+                var renderFn = _.after(1 + (2 * this.tumor_types.length), this.__load_protein_domains);
 
-                this.model["mutations"].on("load", renderFn, this);
                 this.model["mutsig"].on("load", renderFn, this);
 
+                _.each(this.model["mutations"]["by_tumor_type"], function(model) {
+                    model.on("load", renderFn, this);
+                }, this);
                 _.each(this.model["mutated_samples"]["by_tumor_type"], function(model) {
                     model.on("load", renderFn, this);
                 }, this);
@@ -109,7 +111,7 @@ define([
                     }
 
                     return {
-                        tumor_type_label: tumor_type.toUpperCase(),
+                        tumor_type_label: tumor_type,
                         tumor_type: tumor_type,
                         mutsig_rank: mutsig_rank,
                         statistics: statistics
@@ -120,7 +122,7 @@ define([
 
                 var seqpeek_data = [];
 
-                var uniprot_id = this.gene_to_uniprot_mapping[this.selected_gene.toLowerCase()];
+                var uniprot_id = this.gene_to_uniprot_mapping[this.selected_gene];
                 var protein_data = this.found_protein_domains[uniprot_id];
 
                 var region_data = [ { "type": "exon", "start": 0, "end": protein_data["length"] } ];
@@ -188,7 +190,7 @@ define([
                     variant_layout: {
                         variant_width: 5.0
                     },
-                    variant_data_location_field: "location",
+                    variant_data_location_field: "amino_acid_position",
                     variant_data_type_field: "mutation_type"
                 });
 
@@ -217,19 +219,19 @@ define([
                         guid: track_guid,
                         hovercard_content: {
                             "Location": function(d) {
-                                return d.location;
+                                return d["amino_acid_position"];
                             },
-                            "Protein change": function(d) {
-                                return d.mutation_id;
+                            "DNA change": function(d) {
+                                return d["dna_change"];
                             },
                             "Type": function(d) {
-                                return d.mutation_type;
+                                return d["mutation_type"];
                             },
                             "Patient ID": function(d) {
-                                return d.patient_id;
+                                return d["patient_id"];
                             },
                             "UniProt ID": function(d) {
-                                return d.uniprot_id;
+                                return d["uniprot_id"];
                             }
                         }
                     });
@@ -304,12 +306,12 @@ define([
                 var filtered = {};
                 _.each(data_by_tumor_type, function(data, tumor_type) {
                     if (_.isArray(data)) {
-                        filtered[tumor_type.toUpperCase()] = _.filter(data, function(item) {
-                            return (_.has(item, "gene") && _.isEqual(item["gene"], lowercase_gene));
+                        filtered[tumor_type] = _.filter(data, function(item) {
+                            return (_.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene));
                         }, this);
                     } else {
                         if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
-                            filtered[tumor_type.toUpperCase()] = data;
+                            filtered[tumor_type] = data;
                         }
                     }
                 });
@@ -318,10 +320,10 @@ define([
 
             __parse_mutations: function () {
                 console.debug("seqpeek/view.__parse_mutations");
-                var items = this.model["mutations"].get("items");
+
                 var data = {};
-                _.each(_.groupBy(items, "cancer"), function (items, tumor_type) {
-                    data[tumor_type.toLowerCase()] = items;
+                _.each(this.model["mutations"]["by_tumor_type"], function(model, tumor_type) {
+                    data[tumor_type] = model.get("items");
                 }, this);
                 return data;
             },
@@ -363,7 +365,9 @@ define([
 
             __find_protein_identifiers: function() {
                 console.debug("seqpeek/view.__find_protein_identifiers");
-                var items = this.model["mutations"].get("items");
+                var items = _.flatten(_.map(this.model["mutations"]["by_tumor_type"], function(model, tumor_type) {
+                    return model.get("items");
+                }));
 
                 var gene_to_uniprot_mapping = _.reduce(items, function(memo, item) {
                     var gene_label = item["gene"];

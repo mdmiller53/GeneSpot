@@ -1,7 +1,7 @@
 define([
     "jquery", "underscore", "backbone", "d3", "vq",
     "models/gs/protein_domain_model",
-    "seqpeek/util/data_apapters",
+    "seqpeek/util/data_adapters",
     "seqpeek/builders/builder_for_existing_elements",
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table"
@@ -147,6 +147,14 @@ define([
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {
                 console.debug("seqpeek/view.__render_tracks");
 
+                var mutation_type_color_map = {
+                    Nonsense_Mutation: "red",
+                    Silent: "green",
+                    Frame_Shift_Del: "gold",
+                    Frame_Shift_Ins: "gold",
+                    Missense_Mutation: "blue"
+                };
+
                 var seqpeek = SeqPeekBuilder.create({
                     region_data: region_array,
                     viewport: {
@@ -155,18 +163,15 @@ define([
                     bar_plot_tracks: {
                         bar_width: 5.0,
                         height: VARIANT_TRACK_MAX_HEIGHT,
-                        stem_height: 30
+                        stem_height: 30,
+                        color_scheme: function(category_name, type_name) {
+                            return mutation_type_color_map[type_name];
+                        }
                     },
                     sample_plot_tracks: {
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
-                        color_scheme: {
-                            Nonsense_Mutation: "red",
-                            Silent: "green",
-                            Frame_Shift_Del: "gold",
-                            Frame_Shift_Ins: "gold",
-                            Missense_Mutation: "blue"
-                        }
+                        color_scheme:mutation_type_color_map
                     },
                     region_track: {
                         height: REGION_TRACK_HEIGHT
@@ -195,8 +200,7 @@ define([
                 });
 
                 _.each(mutation_data, function(track_obj) {
-                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "location");
-                    DataAdapters.apply_statistics(grouped_data, function() {return 'all';});
+
 
                     var track_guid = "C" + vq.utils.VisUtils.guid();
                     var track_elements_svg = d3.select(track_obj.target_element)
@@ -206,40 +210,20 @@ define([
                         .attr("id", track_guid)
                         .style("pointer-events", "none");
 
-                    var sample_plot_track_svg = track_elements_svg
-                        .append("g")
-                        .attr("transform", "translate(0," + current_y + ")")
-                        .style("pointer-events", "none");
-
-                    var region_track_svg = track_elements_svg
+                    var sample_plot_track_g = track_elements_svg
                         .append("g")
                         .style("pointer-events", "none");
 
-                    track_obj.track_info = seqpeek.addSamplePlotTrackWithArrayData(track_obj.variants, sample_plot_track_svg, {
-                        guid: track_guid,
-                        hovercard_content: {
-                            "Location": function(d) {
-                                return d["amino_acid_position"];
-                            },
-                            "DNA change": function(d) {
-                                return d["dna_change"];
-                            },
-                            "Type": function(d) {
-                                return d["mutation_type"];
-                            },
-                            "Patient ID": function(d) {
-                                return d["patient_id"];
-                            },
-                            "UniProt ID": function(d) {
-                                return d["uniprot_id"];
-                            }
-                        }
-                    });
-                    seqpeek.addRegionScaleTrackToElement(region_track_svg);
+                    var region_track_g = track_elements_svg
+                        .append("g")
+                        .style("pointer-events", "none");
 
+                    track_obj.track_info = this.__get_data_track_by_sample_number(track_obj, seqpeek, track_guid, sample_plot_track_g);
                     track_obj.variant_track_svg = track_elements_svg;
-                    track_obj.region_track_svg = region_track_svg;
-                });
+
+                    seqpeek.addRegionScaleTrackToElement(region_track_g);
+                    track_obj.region_track_svg = region_track_g;
+                }, this);
 
                 var tick_track_svg = d3.select(seqpeek_tick_track_element)
                     .append("svg")
@@ -297,6 +281,56 @@ define([
                 });
 
                 seqpeek.render();
+            },
+
+            __get_data_track_by_sample_number: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
+                var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "amino_acid_position");
+                SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
+
+                var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
+                    return d3.max(data_by_location["types"], function(data_by_type) {
+                        return data_by_type.statistics.total;
+                    });
+                });
+
+                if (max_number_of_samples_in_position < this.options.bar_plot_threshold) {
+                     return seqpeek_builder.addSamplePlotTrackWithArrayData(track_obj.variants, track_target_svg, {
+                        guid: track_guid,
+                        hovercard_content: {
+                            "Location": function (d) {
+                                return d["amino_acid_position"];
+                            },
+                            "DNA change": function (d) {
+                                return d["dna_change"];
+                            },
+                            "Type": function (d) {
+                                return d["mutation_type"];
+                            },
+                            "Patient ID": function (d) {
+                                return d["patient_id"];
+                            },
+                            "UniProt ID": function (d) {
+                                return d["uniprot_id"];
+                            }
+                        }
+                    });
+                }
+                else {
+                    return seqpeek_builder.addBarPlotTrackWithArrayData(track_obj.variants, track_target_svg, {
+                        guid: track_guid,
+                        hovercard_content: {
+                            "Location": function (d) {
+                                return d["coordinate"];
+                            },
+                            "Type": function (d) {
+                                return d["type"];
+                            },
+                            "Number": function (d) {
+                                return d["statistics"]["total"];
+                            }
+                        }
+                    });
+                }
             },
 
             __filter_data: function(data_by_tumor_type) {

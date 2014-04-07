@@ -115,6 +115,7 @@ define(["jquery", "underscore", "backbone", "stacksvis",
                     }, this);
 
                     var vis = new StacksVis(this.$el, {
+                        "bar_width": 0.75,
                         "vertical_padding": 1,
                         "highlight_fill": colorbrewer.RdYlGn[3][2],
                         "columns_by_cluster": columns_by_cluster,

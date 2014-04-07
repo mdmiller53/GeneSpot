@@ -56,10 +56,13 @@
                     "label": "SeqPeek",
                     "protein_domains": "svc/datastores/interpro/interpro/interpro",
                     "datamodels": {
-                        "mutations": "datamodel/mutations/Mutations_Per_Tumor_Type",
+                        "mutations":  {
+                            "uri": "datamodel/tcga_datawarehouse",
+                            "url_suffix": "/mutation_summary"
+                        },
                         "mutsig": "datamodel/mutations/mutsig_rankings",
                         "features": {
-                            "uri": "datamodel/feature_matrices",
+                            "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/feature_matrix",
                             "base_query": {
                                 "source": "GNAB",
@@ -67,7 +70,7 @@
                             }
                         },
                         "mutated_samples": {
-                            "uri": "datamodel/feature_matrices",
+                            "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/mutated_samples"
                         }
                     }
@@ -116,11 +119,11 @@
                     "label": "Feature Selector",
                     "datamodels": {
                         "gene_features": {
-                            "uri": "datamodel/feature_matrices",
+                            "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/feature_matrix"
                         },
                         "clinical_features": {
-                            "uri": "datamodel/feature_matrices",
+                            "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/feature_matrix",
                             "query_clinical_variables": true
                         }
@@ -143,7 +146,7 @@
                         "copy_number": "datamodel/copy_number/copy_number_gistic2",
                         "q_value": "datamodel/copy_number/copy_number_qvalue",
                         "mutated_samples": {
-                            "uri": "datamodel/feature_matrices",
+                            "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/mutated_samples"
                         }
                     }

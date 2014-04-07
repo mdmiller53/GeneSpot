@@ -70,7 +70,7 @@ This project adds the following files into the [configurations directory](https:
                 {
                     "view": "views/fmx_distributions/view",
                     "label": "Feature Selector",
-                    "datamodel": "datamodel/feature_matrices",
+                    "datamodel": "datamodel/tcga_datawarehouse",
                     "url_suffix": "/feature_matrix",
                     "query_clinical_variables": true
                 }

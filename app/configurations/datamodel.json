@@ -1,6 +1,6 @@
 {
     "datamodel": {
-        "feature_matrices": {
+        "tcga_datawarehouse": {
             "label": "Feature Matrices",
             "by_tumor_type": "tumor_type",
             "catalog": {
@@ -157,11 +157,6 @@
         "mutations": {
             "label": "Mutations",
             "catalog": {
-                "Mutations_Per_Tumor_Type": {
-                    "label": "Mutations per Tumor Type",
-                    "service": "datastores/mutations/qed_lookups/mutations_pancan",
-                    "description": "This dataset was prepared from TCGA MAF files produced by Firehose"
-                },
                 "mutsig_rankings": {
                     "label": "MutSig Rankings",
                     "service": "datastores/mutations/qed_lookups/mutsig_rankings",

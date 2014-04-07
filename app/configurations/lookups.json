@@ -1,7 +1,7 @@
 {
     "lookups": {
         "sample_types": {
-            "datamodel": "datamodel/feature_matrices",
+            "datamodel": "datamodel/tcga_datawarehouse",
             "url_suffix": "/feature_matrix",
             "model": "models/gs/sample_types",
             "query": {

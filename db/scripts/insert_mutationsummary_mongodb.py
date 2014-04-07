@@ -6,8 +6,9 @@ import argparse
 import csv
 import os
 import pymongo
-import sys
 import logging
+
+from utilities import configure_logging
 
 
 # example data:
@@ -50,18 +51,6 @@ def extract_mutations(file_path, exception_uniprot_fail):
                 exception_uniprot_fail.write("\t".join(row) + "\n")
 
             yield mut_row
-
-def configure_logging(logging_level=logging.DEBUG):
-    root = logging.getLogger()
-    root.setLevel(logging_level)
-
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging_level)
-
-    formatter = logging.Formatter("[%(levelname)s] %(asctime)s - %(message)s")
-    ch.setFormatter(formatter)
-
-    root.addHandler(ch)
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to import TCGA mutation summaries to MongoDB")

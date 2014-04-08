@@ -1,7 +1,7 @@
 {
     "datamodel": {
         "tcga_datawarehouse": {
-            "label": "Feature Matrices",
+            "label": "Integrated Datasets per Tumor Type",
             "by_tumor_type": "tumor_type",
             "catalog": {
                 "BLCA-20140404": {
@@ -141,7 +141,7 @@
             }
         },
         "copy_number": {
-            "label": "Copy Number Data",
+            "label": "Copy Number Datasets",
             "catalog": {
                 "copy_number_gistic2": {
                     "label": "Copy Number Gistic (13sep)",
@@ -155,7 +155,7 @@
             }
         },
         "mutations": {
-            "label": "Mutations",
+            "label": "Mutation Datasets",
             "catalog": {
                 "mutsig_rankings": {
                     "label": "MutSig Rankings",
@@ -169,18 +169,8 @@
                 }
             }
         },
-        "graphs": {
-            "label": "Graph Database",
-            "catalog": {
-                "consolidated_20131223": {
-                    "label": "TCGA Network : Consolidated Tumor Types (23dec)",
-                    "service": "neo4jdb/data/transaction/commit",
-                    "model": "models/graphs/cypher"
-                }
-            }
-        },
         "reference_data": {
-            "label": "Reference Data",
+            "label": "Reference Databases",
             "catalog": {
                 "interpro": {
                     "label": "Interpro Database",

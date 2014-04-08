@@ -2,49 +2,9 @@
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "maps": [
         {
-            "id": "graph_view",
-            "label": "TCGA Feature Network",
-            "description": "This map presents a network of all genomic and clinical TCGA features. The nodes are bio-entities (e.g. Genes, Methylation, Protein Expresion), and the edges represent associations found from Pair Wise associations.",
-            "keywords": ["Graph", "Pairwise", "CytoscapeJS"],
-            "isOpen": false,
-            "position": {
-                "top": 0,
-                "left": 150
-            },
-            "views": [
-                {
-                    "view": "views/graphs/view",
-                    "label": "Network",
-                    "datamodels": {
-                        "graph_db": {
-                            "uri": "datamodel/graphs/consolidated_20131223"
-                        }
-                    },
-                    "linkouts": [
-                        { "label": "Neo4J", "url": "http://csacr.systemsbiology.net/staging/neo4j" }
-                    ]
-                },
-                {
-                    "view": "views/gs/atlas_maptext_view",
-                    "label": "Info",
-                    "text": "This map uses the Cytoscape.js visualization developed by the Cytoscape consortium.",
-                    "links": [
-                        {
-                            "label": "Cytoscape.js Home",
-                            "url": "http://cytoscape.github.io/cytoscape.js"
-                        },
-                        {
-                            "label": "Cytoscape.js Github",
-                            "url": "https://github.com/cytoscape/cytoscape.js"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "id": "mutations_combo",
             "label": "Mutations",
-            "description": "This map combines multiple mutation data types, including TCGA MutSig CV data produced by Firehose",
+            "description": "This visualization combines multiple mutation data types, including TCGA MutSig CV data produced by Firehose",
             "keywords": ["Interpro", "Protein Mutations"],
             "position": {
                 "top": 0,
@@ -87,21 +47,6 @@
                         "uri": "datamodel/mutations/mutsig_top20",
                         "query_all_genes": true
                     }
-                }
-            ]
-        },
-        {
-            "id": "pubcrawl_lit_search",
-            "label": "Pubcrawl Literature Search",
-            "links": {
-                "home": "http://pubcrawl.systemsbiology.net"
-            },
-            "disabled": true,
-            "views": [
-                {
-                    "view": "views/pubcrawl/view",
-                    "label": "Network",
-                    "source": "pubcrawl/search/graph"
                 }
             ]
         },

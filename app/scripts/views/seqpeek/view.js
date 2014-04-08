@@ -223,7 +223,21 @@ define([
                     track_obj.track_info = this.__get_data_track_by_sample_number(track_obj, seqpeek, track_guid, sample_plot_track_g);
                     track_obj.variant_track_svg = track_elements_svg;
 
-                    seqpeek.addRegionScaleTrackToElement(region_track_g);
+                    seqpeek.addRegionScaleTrackToElement(region_track_g, {
+                        guid: track_guid,
+                        hovercard_content: {
+                            "Protein length": function () {
+                                return protein_data["length"];
+                            },
+                            "Name": function () {
+                                return protein_data["name"];
+                            },
+                            "UniProt ID": function () {
+                                return protein_data["uniprot_id"];
+                            }
+                        }
+                    });
+
                     track_obj.region_track_svg = region_track_g;
                 }, this);
 

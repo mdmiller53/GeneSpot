@@ -155,10 +155,8 @@ define(["jquery", "underscore", "backbone",
 
             __init_sample_types: function() {
                 console.debug("fmx-dist.__init_sample_types");
-                var sample_type_models = WebApp.Lookups.get("sample_types") || {};
-                var models = _.values(sample_type_models) || [];
-                var firstModel = _.first(models) || new Backbone.Model();
-                this.sample_types = _.map(firstModel.get("definitions"), function(label, key) {
+                var model = WebApp.Lookups.get("sample_types") || new Backbone.Model();
+                this.sample_types = _.map(model.get("definitions"), function(label, key) {
                     return { "label": label, "key": key };
                 });
             },
@@ -227,15 +225,16 @@ define(["jquery", "underscore", "backbone",
             __aggregate_sample_types: function(tumor_type) {
                 if (this.sample_types_lookup[tumor_type]) return;
 
-                var sampleTypes = WebApp.Lookups.get("sample_types");
+                var model = WebApp.Lookups.get("sample_types") || new Backbone.Model();
+                var sampleTypes = _.indexBy(model.get("items") || [], "tumor_type");
                 if (sampleTypes && _.has(sampleTypes, tumor_type)) {
                     console.debug("fmx-dist.__aggregate_sample_types(" + tumor_type + ")");
-                    this.sample_types_lookup[tumor_type] = {};
-                    _.each(sampleTypes[tumor_type].get("by_sample_type"), function(samples, sample_type) {
-                        _.each(samples, function(sample) {
-                            this.sample_types_lookup[tumor_type][sample] = sample_type;
+                    if (_.has(sampleTypes[tumor_type], "values")) {
+                        this.sample_types_lookup[tumor_type] = {};
+                        _.each(sampleTypes[tumor_type]["values"], function(sample_type, sample_id) {
+                            this.sample_types_lookup[tumor_type][sample_id] = sample_type;
                         }, this);
-                    }, this);
+                    }
                 }
             },
 

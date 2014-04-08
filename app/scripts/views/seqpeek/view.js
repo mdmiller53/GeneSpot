@@ -56,9 +56,6 @@ define([
                     this.selected_gene = $(e.target).data("id");
                     this.$el.find(".selected-gene").html(this.selected_gene);
 
-                    this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
-                    this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
-
                     this.__render();
                 },
 
@@ -88,6 +85,9 @@ define([
             initialize: function () {
                 this.model = this.options["models"];
 
+                this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
+                this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
+
                 this.sample_track_type = "sample_plot";
             },
 
@@ -97,7 +97,6 @@ define([
                 this.tumor_types = this.options["tumor_types"];
                 this.genes = this.options["genes"] || [];
                 if (!_.isEmpty(this.genes)) this.selected_gene = _.first(this.genes);
-                this.selected_group_by = _.first(_.values(GROUP_BY_CATEGORIES));
 
                 var renderFn = _.after(1 + (2 * this.tumor_types.length), this.__load_protein_domains);
 

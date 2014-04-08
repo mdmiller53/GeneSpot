@@ -30,6 +30,8 @@ define([
 
             initialize: function () {
                 this.model = this.options["models"];
+
+                this.sample_track_type = "sample_plot";
             },
 
             render: function() {
@@ -145,6 +147,11 @@ define([
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element"));
                 var seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
 
+                var maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
+                if (maximum_samples_in_location >= this.options.bar_plot_threshold) {
+                    this.sample_track_type = "bar_plot";
+                }
+
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
             },
 
@@ -220,7 +227,7 @@ define([
                         .append("g")
                         .style("pointer-events", "none");
 
-                    track_obj.track_info = this.__get_data_track_by_sample_number(track_obj, seqpeek, track_guid, sample_plot_track_g);
+                    track_obj.track_info = this.__add_data_track(track_obj, seqpeek, track_guid, sample_plot_track_g);
                     track_obj.variant_track_svg = track_elements_svg;
 
                     seqpeek.addRegionScaleTrackToElement(region_track_g, {
@@ -299,17 +306,26 @@ define([
                 seqpeek.render();
             },
 
-            __get_data_track_by_sample_number: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
-                var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "amino_acid_position");
-                SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
+            __find_maximum_samples_in_location: function(mutation_data) {
+                var track_maximums = [];
+                _.each(mutation_data, function(track_obj) {
+                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "amino_acid_position");
+                    SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
 
-                var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
-                    return d3.max(data_by_location["types"], function(data_by_type) {
-                        return data_by_type.statistics.total;
+                    var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
+                        return d3.max(data_by_location["types"], function(data_by_type) {
+                            return data_by_type.statistics.total;
+                        });
                     });
+
+                    track_maximums.push(max_number_of_samples_in_position);
                 });
 
-                if (max_number_of_samples_in_position < this.options.bar_plot_threshold) {
+                return d3.max(track_maximums);
+            },
+
+            __add_data_track: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
+                if (this.sample_track_type == "sample_plot") {
                      return seqpeek_builder.addSamplePlotTrackWithArrayData(track_obj.variants, track_target_svg, {
                         guid: track_guid,
                         hovercard_content: {

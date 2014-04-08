@@ -302,6 +302,13 @@ define([
                             "UniProt ID": function () {
                                 return protein_data["uniprot_id"];
                             }
+                        },
+                        hovercard_links: {
+                            "UniProt": {
+                                label: "UniProt",
+                                url: '/',
+                                href: "http://www.uniprot.org/uniprot/" + protein_data["uniprot_id"]
+                            }
                         }
                     });
 
@@ -344,6 +351,16 @@ define([
                         },
                         "LOC": function(d) {
                             return d.start + " - " + d.end;
+                        }
+                    },
+                    hovercard_links: {
+                        "InterPro Domain Entry": {
+                            label: 'InterPro',
+                            url: '/',
+                            href: function(param) {
+                                var ipr_id = param["ipr"]["id"];
+                                return "http://www.ebi.ac.uk/interpro/entry/" + ipr_id;
+                            }
                         }
                     }
                 });

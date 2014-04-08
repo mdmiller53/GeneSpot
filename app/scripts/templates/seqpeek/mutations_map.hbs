@@ -6,4 +6,12 @@
         {{/each}}
     </ul>
 </div>
+<div class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><h4><span class="selected-group-by">{{selected_group_by}}</span> <b class="caret"></b></h4></a>
+    <ul class="dropdown-menu seqpeek-group-by-selector">
+        {{#each group_by_categories}}
+            <li><a href="#" onclick="return false;" data-id="{{.}}" title="{{.}}">{{.}}</a></li>
+        {{/each}}
+    </ul>
+</div>
 <div class="mutations_map_table"></div>

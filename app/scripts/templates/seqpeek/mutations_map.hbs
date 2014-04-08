@@ -6,12 +6,26 @@
         {{/each}}
     </ul>
 </div>
-<div class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><h4><span class="selected-group-by">{{selected_group_by}}</span> <b class="caret"></b></h4></a>
-    <ul class="dropdown-menu seqpeek-group-by-selector">
-        {{#each group_by_categories}}
-            <li><a href="#" onclick="return false;" data-id="{{.}}" title="{{.}}">{{.}}</a></li>
-        {{/each}}
-    </ul>
-</div>
+<ul class="nav nav-tabs">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" onclick="return false;">
+            <i class="icon-filter"></i>Group By<b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu group_by_selector" role="menu">
+            {{#each group_by_categories}}
+                <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+            {{/each}}
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a href="#" onclick="return false;" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="icon-tint"></i> Color By <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu color_by_selector" role="menu">
+            {{#each color_by_categories}}
+                <li><a href="#" onclick="return false;" data-id="{{.}}">{{.}}</a></li>
+            {{/each}}
+        </ul>
+    </li>
+</ul>
 <div class="mutations_map_table"></div>

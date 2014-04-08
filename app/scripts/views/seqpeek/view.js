@@ -55,14 +55,32 @@ define([
                     console.debug("seqpeek/gene-selector:" + $(e.target).data("id"));
                     this.selected_gene = $(e.target).data("id");
                     this.$el.find(".selected-gene").html(this.selected_gene);
+
+                    this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
+                    this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
+
                     this.__render();
                 },
 
-                "click .seqpeek-group-by-selector li a": function(e) {
-                    console.debug("seqpeek/group-by-selector:" + $(e.target).data("id"));
-                    var selected_value = $(e.target).data("id");
-                    this.selected_group_by = GROUP_BY_CATEGORIES[selected_value];
-                    this.$el.find(".selected-group-by").html(selected_value);
+                "click .dropdown-menu.group_by_selector a": function(e) {
+                    var group_by = $(e.target).data("id");
+                    this.selected_group_by = GROUP_BY_CATEGORIES[group_by];
+                    console.debug("seqpeek/group-by-selector:" + group_by);
+
+                    this.$(".dropdown-menu.group_by_selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
+
+                    this.__render();
+                },
+
+                "click .dropdown-menu.color_by_selector a": function(e) {
+                    var color_by = $(e.target).data("id");
+                    this.selected_color_by = COLOR_BY_CATEGORIES[color_by];
+                    console.debug("seqpeek/color-by-selector:" + color_by);
+
+                    this.$(".dropdown-menu.color_by_selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
+
                     this.__render();
                 }
             },
@@ -96,7 +114,9 @@ define([
                     "selected_gene": this.selected_gene,
                     "genes": this.genes,
                     "selected_group_by": "Mutation Type",
-                    "group_by_categories": _.keys(GROUP_BY_CATEGORIES)}));
+                    "group_by_categories": _.keys(GROUP_BY_CATEGORIES),
+                    "color_by_categories": _.keys(COLOR_BY_CATEGORIES)
+                }));
 
                 this.$(".mutations_map_table").html(MutationsMapTableTpl({
                     "items": _.map(this.tumor_types, function (tumor_type) {
@@ -206,8 +226,6 @@ define([
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {
                 console.debug("seqpeek/view.__render_tracks");
 
-
-
                 var seqpeek = SeqPeekBuilder.create({
                     region_data: region_array,
                     viewport: {
@@ -224,9 +242,7 @@ define([
                     sample_plot_tracks: {
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
-                        color_scheme: function(data_point) {
-                            return MUTATION_TYPE_COLOR_MAP[data_point["mutation_type"]];
-                        }
+                        color_scheme: this.selected_color_by
                     },
                     region_track: {
                         height: REGION_TRACK_HEIGHT

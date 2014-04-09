@@ -1,12 +1,7 @@
 {
     "lookups": {
         "sample_types": {
-            "datamodel": "datamodel/tcga_datawarehouse",
-            "url_suffix": "/feature_matrix",
-            "model": "models/gs/sample_types",
-            "query": {
-                "id": "C:SAMP:TNtype:::::"
-            },
+            "url": "svc/datastores/20140404/LOOKUPS/sample_types",
             "definitions": {
                 "Tumor": "Tumor",
                 "Normal": "Normal",

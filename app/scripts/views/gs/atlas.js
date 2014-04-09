@@ -54,7 +54,7 @@ define([
                 this.model.on("load", this.__init_clinicallist_control, this);
                 this.model.on("load", this.__init_tumortypes_control, this);
                 this.model.on("load", this.__init_datamodel_collector, this);
-                this.model.on("load", this.__init_collected_maps_control, this);
+//                this.model.on("load", this.__init_collected_maps_control, this);
                 this.model.on("load", this.__init_datasheets_control, this);
 
                 WebApp.Sessions.Producers["atlas_maps"] = this;

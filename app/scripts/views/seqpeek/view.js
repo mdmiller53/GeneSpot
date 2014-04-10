@@ -14,6 +14,37 @@ define([
         var PROTEIN_DOMAIN_TRACK_HEIGHT = 40;
         var VIEWPORT_WIDTH = 1000;
 
+        var GROUP_BY_CATEGORIES = {
+            "Mutation Type": "mutation_type",
+            "DNA Change": "dna_change",
+            "Protein Change": function(data_row) {
+                return data_row["amino_acid_mutation"] + "-" + data_row["amino_acid_wildtype"];
+            }
+        };
+
+        var MUTATION_TYPE_COLOR_MAP = {
+            Nonsense_Mutation: "red",
+            Silent: "green",
+            Frame_Shift_Del: "gold",
+            Frame_Shift_Ins: "gold",
+            Missense_Mutation: "blue"
+        };
+
+        var LOLLIPOP_COLOR_SCALE = d3.scale.category20();
+
+        var COLOR_BY_CATEGORIES = {
+            "Mutation Type": function(data_point) {
+                return MUTATION_TYPE_COLOR_MAP[data_point["mutation_type"]];
+            },
+            "DNA Change": function(data_point) {
+                return LOLLIPOP_COLOR_SCALE(data_point["dna_change"]);
+            },
+            "Protein Change": function(data_point) {
+                var id = data_point["amino_acid_mutation"] + "-" + data_point["amino_acid_wildtype"];
+                return LOLLIPOP_COLOR_SCALE(id);
+            }
+        };
+
         return Backbone.View.extend({
             "genes": [],
             "tumor_types": [],
@@ -24,12 +55,38 @@ define([
                     console.debug("seqpeek/gene-selector:" + $(e.target).data("id"));
                     this.selected_gene = $(e.target).data("id");
                     this.$el.find(".selected-gene").html(this.selected_gene);
+
+                    this.__render();
+                },
+
+                "click .dropdown-menu.group_by_selector a": function(e) {
+                    var group_by = $(e.target).data("id");
+                    this.selected_group_by = GROUP_BY_CATEGORIES[group_by];
+                    console.debug("seqpeek/group-by-selector:" + group_by);
+
+                    this.$(".dropdown-menu.group_by_selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
+
+                    this.__render();
+                },
+
+                "click .dropdown-menu.color_by_selector a": function(e) {
+                    var color_by = $(e.target).data("id");
+                    this.selected_color_by = COLOR_BY_CATEGORIES[color_by];
+                    console.debug("seqpeek/color-by-selector:" + color_by);
+
+                    this.$(".dropdown-menu.color_by_selector").find(".active").removeClass("active");
+                    $(e.target).parent("li").addClass("active");
+
                     this.__render();
                 }
             },
 
             initialize: function () {
                 this.model = this.options["models"];
+
+                this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
+                this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
             },
@@ -52,7 +109,14 @@ define([
                     model.on("load", renderFn, this);
                 }, this);
 
-                this.$el.html(MutationsMapTpl({ "selected_gene": this.selected_gene, "genes": this.genes }));
+                this.$el.html(MutationsMapTpl({
+                    "selected_gene": this.selected_gene,
+                    "genes": this.genes,
+                    "selected_group_by": "Mutation Type",
+                    "group_by_categories": _.keys(GROUP_BY_CATEGORIES),
+                    "color_by_categories": _.keys(COLOR_BY_CATEGORIES)
+                }));
+
                 this.$(".mutations_map_table").html(MutationsMapTableTpl({
                     "items": _.map(this.tumor_types, function (tumor_type) {
                         return { "tumor_type_label": tumor_type };
@@ -65,12 +129,15 @@ define([
             __render: function () {
                 console.debug("seqpeek/view.__render");
 
+                this.$(".mutations_map_table").html("");
+
                 var mutations = this.__filter_data(this.__parse_mutations());
                 var mutsig_ranks = this.__filter_data(this.__parse_mutsig());
 
                 var formatter = function (value) {
                     return parseInt(value) + "%";
                 };
+
                 var data_items = _.map(this.tumor_types, function (tumor_type) {
                     var statistics = {
                         samples: {
@@ -158,14 +225,6 @@ define([
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {
                 console.debug("seqpeek/view.__render_tracks");
 
-                var mutation_type_color_map = {
-                    Nonsense_Mutation: "red",
-                    Silent: "green",
-                    Frame_Shift_Del: "gold",
-                    Frame_Shift_Ins: "gold",
-                    Missense_Mutation: "blue"
-                };
-
                 var seqpeek = SeqPeekBuilder.create({
                     region_data: region_array,
                     viewport: {
@@ -176,13 +235,13 @@ define([
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
                         color_scheme: function(category_name, type_name) {
-                            return mutation_type_color_map[type_name];
+                            return MUTATION_TYPE_COLOR_MAP[type_name];
                         }
                     },
                     sample_plot_tracks: {
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
-                        color_scheme:mutation_type_color_map
+                        color_scheme: this.selected_color_by
                     },
                     region_track: {
                         height: REGION_TRACK_HEIGHT
@@ -207,7 +266,7 @@ define([
                         variant_width: 5.0
                     },
                     variant_data_location_field: "amino_acid_position",
-                    variant_data_type_field: "mutation_type"
+                    variant_data_type_field: this.selected_group_by
                 });
 
                 _.each(mutation_data, function(track_obj) {
@@ -241,6 +300,13 @@ define([
                             },
                             "UniProt ID": function () {
                                 return protein_data["uniprot_id"];
+                            }
+                        },
+                        hovercard_links: {
+                            "UniProt": {
+                                label: "UniProt",
+                                url: '/',
+                                href: "http://www.uniprot.org/uniprot/" + protein_data["uniprot_id"]
                             }
                         }
                     });
@@ -284,6 +350,16 @@ define([
                         },
                         "LOC": function(d) {
                             return d.start + " - " + d.end;
+                        }
+                    },
+                    hovercard_links: {
+                        "InterPro Domain Entry": {
+                            label: 'InterPro',
+                            url: '/',
+                            href: function(param) {
+                                var ipr_id = param["ipr"]["id"];
+                                return "http://www.ebi.ac.uk/interpro/entry/" + ipr_id;
+                            }
                         }
                     }
                 });
@@ -331,6 +407,12 @@ define([
                         hovercard_content: {
                             "Location": function (d) {
                                 return d["amino_acid_position"];
+                            },
+                            "Amino Acid Mutation": function (d) {
+                                return d["amino_acid_mutation"];
+                            },
+                            "Amino Acid Wildtype": function (d) {
+                                return d["amino_acid_wildtype"];
                             },
                             "DNA change": function (d) {
                                 return d["dna_change"];

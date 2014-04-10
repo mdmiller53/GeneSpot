@@ -42,11 +42,12 @@ define([
                     }
 
                     $target.css("z-index", this.__next_z_index());
-                }
+                },
+                "click": "__init_welcomes"
             },
 
             initialize: function () {
-                _.bindAll(this, "__append_atlasmap", "__reload_all_maps");
+                _.bindAll(this, "__append_atlasmap", "__reload_all_maps", "__init_maps");
 
                 this.model = this.options.model;
                 this.model.set("atlas_map_views", []);
@@ -67,7 +68,7 @@ define([
 
             __init_genelist_control: function() {
                 this.genelistControl = new GenelistControl({ "default_genelist": this.model.get("default_genelist") });
-                this.genelistControl.on("ready", this.__init_maps, this);
+                this.genelistControl.on("ready", this.__init_welcomes, this);
                 this.genelistControl.on("updated", function (ev) {
                     console.debug("atlas.__init_genelist_control:updated:" + JSON.stringify(ev));
                     if (ev["reorder"]) {
@@ -79,6 +80,11 @@ define([
                 }, this);
 
                 this.$el.find(".genelist-container").html(this.genelistControl.render().el);
+            },
+
+            __init_welcomes: function() {
+                var welcomeModel = new Backbone.Model({}, {"url": "configurations/welcomes.json"});
+                welcomeModel.fetch({ "success": this.__init_maps });
             },
 
             __init_clinicallist_control: function() {
@@ -124,8 +130,12 @@ define([
                 this.$el.find(".datamodel-collector-container").html(this.datamodelCollectorControl.render().el);
             },
 
-            __init_maps: function () {
-                var maps = _.map(this.model.get("map_templates").values(), function(map_template) {
+            __init_maps: function (welcomeModel) {
+                var welcomes = _.map(welcomeModel.get("welcomes"), function(welcome) {
+                    return new Backbone.Model(welcome);
+                });
+                var templates = _.flatten([welcomes, this.model.get("map_templates").values()]);
+                var maps = _.map(templates, function(map_template) {
                     if (map_template.get("isOpen")) _.defer(this.__append_atlasmap, map_template);
 
                     if (!map_template.get("disabled")) {

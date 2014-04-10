@@ -1,0 +1,47 @@
+{
+    "welcomes": [
+        {
+            "id": "quick_tutorial",
+            "label": "Welcome to GeneSpot",
+            "description": "This application allows users to view a variety of interactive visualizations of TCGA data.  Each particular 'open' button will activate the specified analysis.",
+            "buttonLabel": "Quick Guide",
+            "isPrimary": true,
+            "order": 1,
+            "isOpen": true,
+            "keywords": ["Help", "Report a Bug"],
+            "position": {
+                "top": 10,
+                "left": 200
+            },
+            "views": [
+                {
+                    "view": "views/gs/atlas_quick_tutorial",
+                    "label": "Quick Guide"
+                },
+                {
+                    "view": "views/gs/atlas_maptext_view",
+                    "label": "Overview",
+                    "text": "This tool provides a way to view TCGA data from a gene-centric point-of-view. It includes a number of interactive visualizations, and allows the user to save their current exploration. This application also enables the user to select specific tumor types and genes of interest, and load data that is generated from a variety of TCGA analysis.",
+                    "links": [
+                        {
+                            "label": "TCGA Home",
+                            "url": "http://cancergenome.nih.gov"
+                        },
+                        {
+                            "label": "Cancer Regulome Home",
+                            "url": "http://www.cancerregulome.org"
+                        },
+                        {
+                            "label": "Contact Us",
+                            "url": "mailto:info@csacr.org?subject=GeneSpot Questions"
+                        },
+                        {
+                            "label": "Issues, Bugs, and Feature Suggestions ",
+                            "url": "https://github.com/cancerregulome/GeneSpot/issues"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

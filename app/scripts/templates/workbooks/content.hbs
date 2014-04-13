@@ -1,0 +1,11 @@
+{{#if items}}
+    {{#each items}}
+        <div class="tab-pane" id="workbook-tab-{{id}}">
+            <ul class="nav nav-list">
+            {{#each ../genes}}
+                <li>{{.}}</li>
+            {{/each}}
+            </ul>
+        </div>
+    {{/each}}
+{{/if}}

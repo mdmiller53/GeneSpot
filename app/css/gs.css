@@ -601,3 +601,23 @@ td.vertical_cell {
 .q-values {
     white-space: nowrap;
 }
+
+.workdesk {
+    background-color: #E6E5E6;
+    background-image: url(https://www.systemsbiology.org/sites/all/themes/isb/images/bg.png);
+    background-position-x: 50%;
+    background-position-y: 0%;
+    background-size: initial;
+
+    position: fixed;
+    padding: 10px;
+    top: 40px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.worktabs {
+    /*width: !important;*/
+    /*height: 100%;*/
+}

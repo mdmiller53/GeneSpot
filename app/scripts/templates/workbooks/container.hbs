@@ -1,0 +1,15 @@
+{{#if items}}
+<ul class="nav nav-list">
+    {{#each items}}
+        <li>
+            {{title}}
+            <a href="#wb/{{id}}"><small>open</small></a>
+            <a href="#" onclick="return false;" class="delete-workbook" data-id="{{id}}"><small>delete</small></a>
+        </li>
+    {{/each}}
+</ul>
+{{/if }}
+<hr/>
+<input type="text" class="workbook-new-title" placeholder="Enter workbook title here...">
+<a href="#" onclick="return false;" class="create-workbook">Create New Workbook</a>
+<a href="#" onclick="return false;" class="refresh-workbooks">Refresh</a>

@@ -109,6 +109,7 @@ define(["jquery", "underscore", "backbone",
                     }
 
                     gl_model.set("genes", _.flatten([gene, genes_from_model]));
+                    this.trigger("updated", gl_model.get("genes"));
                     WebApp.alert(this.$el.find(".gene-added-success"), 3000);
                 }, this);
             },

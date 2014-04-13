@@ -1,5 +1,5 @@
 define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
-    "views/gs/atlas", "models/atlas/map_factory", "views/workdesk"],
+    "views/gs/atlas", "models/atlas/map_factory", "views/workbooks/workdesk"],
     function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, WorkdeskView) {
 
         return Backbone.Router.extend({
@@ -106,34 +106,28 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
             load_workbook: function(workbook_id) {
                 console.debug("load_workbook:" + workbook_id);
-                var map_factory = new MapFactory({}, {
-                    "url": "configurations/atlas.json"
-                });
-                var active_workbook = new Backbone.Model({}, {
-                    "url": "svc/auth/providers/google_apis/drive/v2/files/" + workbook_id
-                });
+                var map_factory = new MapFactory({}, { "url": "configurations/atlas.json" });
+                var view = new WorkdeskView({ "map_factory": map_factory, "active_workbook_id": workbook_id });
 
-                var view = new WorkdeskView({ "map_factory": map_factory, "active_workbook": active_workbook });
-
-                var _this = this;
-                var callbackFn = _.after(2, function() {
-                    _this.$el.html(view.render().el);
-                    map_factory.trigger("load");
-                    active_workbook.trigger("load");
-                    _this.$el.fadeIn();
-                });
-
-                var errorFn = function(e,o) {
-                    console.debug("error:" + e + ":" + o);
-                };
+                map_factory.on("load", function() {
+                    this.$el.html(view.render().el);
+                    this.$el.fadeIn();
+                }, this);
 
                 this.$el.fadeOut({
                     "always": function() {
-                        var instructions = { "contentType": "application/json", "success": callbackFn, "error": errorFn };
-                        map_factory.fetch(instructions);
-                        active_workbook.fetch(instructions);
+                        map_factory.fetch({
+                            "contentType": "application/json",
+                            "success": function() {
+                                map_factory.trigger("load");
+                            },
+                            "error": function(e,o) {
+                                console.debug("error:" + e + ":" + o);
+                            }
+                        });
                     }
                 });
+
                 return view;
             },
 

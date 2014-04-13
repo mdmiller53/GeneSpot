@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+    {{#each items}}
+        <li><a href="#workbook-tab-{{id}}" data-id="{{id}}" data-toggle="tab">{{label}}</a></li>
+    {{/each}}
+</ul>
+<div class="tab-content">
+    {{#each items}}
+        <div class="tab-pane{{#unless @index}} active{{/unless}}" id="workbook-tab-{{id}}">
+            <h4>{{label}}</h4>
+            <ul class="nav nav-list">
+            {{#each ../genes}}
+                <li>{{.}}</li>
+            {{/each}}
+            </ul>
+        </div>
+    {{/each}}
+</div>

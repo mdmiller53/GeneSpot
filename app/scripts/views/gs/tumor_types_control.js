@@ -2,15 +2,26 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/tumor_types_contai
     function ($, _, Backbone, Tpl) {
         return Backbone.View.extend({
 
+            events: {
+                "click a.apply": function() {
+                    WebApp.Router.atlas();
+                }
+            },
+
             initialize: function () {
                 _.bindAll(this, "mark_selected", "change_selected");
 
                 this.tumor_types = _.sortBy(_.extend([], WebApp.Lookups.get("tumor_types").get("items")), "id");
                 this.tumor_types_by_id = _.indexBy(this.tumor_types, "id");
 
-                if (_.findWhere(this.tumor_types, { "isChecked": true })) _.first(this.tumor_types).isChecked = true;
+                var stored_tumor_types = (localStorage.getItem("selected-tumor-types") || "").split(",");
+                if (!_.isEmpty(_.compact(stored_tumor_types))) {
+                    _.each(this.tumor_types, function(tumor_type) {
+                        tumor_type.isChecked = _.contains(stored_tumor_types, tumor_type.id);
+                    });
+                }
 
-                // TODO : Remember in localStorage
+                localStorage.setItem("selected-tumor-types", _.where(this.tumor_types, { "isChecked": true }).join(","));
             },
 
             render: function () {
@@ -32,6 +43,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/gs/tumor_types_contai
                     var id = $(checkbox).data("id");
                     return this.tumor_types_by_id[id];
                 }, this);
+                localStorage.setItem("selected-tumor-types", _.pluck(selected_tumor_types, "id").join(","));
                 WebApp.UserPreferences.set("selected_tumor_types", selected_tumor_types);
                 return selected_tumor_types;
             }

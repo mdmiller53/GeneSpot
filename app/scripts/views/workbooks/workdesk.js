@@ -52,7 +52,7 @@ define(["jquery", "underscore", "backbone",
                         "el": this.$(".workbook").el
                     });
                     wbModel.fetch({
-                        "url": "svc/auth/providers/google_download?forwardUrl=" + this["downloadUrl"],
+                        "url": "svc/auth/providers/google_download?forwardUrl=" + item["downloadUrl"],
                         "contentType": "application/json",
                         "success": function() {
                             wbModel.trigger("load");

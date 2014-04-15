@@ -1,91 +1,94 @@
 define(["jquery", "underscore", "backbone",
         "hbs!templates/workbooks/workdesk", "hbs!templates/line_item",
-        "models/workbooks/workbook",
-        "views/workbooks/control", "views/workbooks/workbook",
+        "models/workbooks/drive_api", "views/workbooks/workbook",
         "views/genes/control", "views/clinvarlist/control", "views/datamodel_collector/control"
-],
-    function ($, _, Backbone, Tpl, LineItemTpl,
-              WorkbookModel, WorkbooksControl, WorkbookView,
-              GenelistControl, ClinicalListControl, DatamodelControl) {
+    ],
+    function ($, _, Backbone, Tpl, LineItemTpl, DriveApiModel, WorkbookView, GenelistControl, ClinicalListControl, DatamodelControl) {
         return Backbone.View.extend({
-            "initialize": function() {
-                _.bindAll(this, "__initialize_workdesk");
-//                this.options.active_workbook.on("load", this.__load_active_workbook, this);
-
-                this.workbooksControl = new WorkbooksControl({ "active_workbook_id": this.options.active_workbook_id });
-
-//                this.options.map_factory.on("load", this.__load_genelist, this);
-
-                this.workdesk = new Backbone.Model(
-                    {
-                        "title": "GeneSpot Workdesk",
-                        "parents": [ {"id": "root"} ],
-                        "mimeType": "application/vnd.google-apps.folder"
-                    },
-                    {
-                        "url": "svc/auth/providers/google_apis/drive/v2/files"
-                    }
-                );
-                this.workdesk.on("load", this.__render, this);
-                this.workdesk.fetch({ "success": function(m) { m.trigger("load"); }, "error": this.__initialize_workdesk });
-            },
-
             "events": {
-                "click a.select-workbook": function(e) {
+                "click a.select-workbook": function (e) {
                     WebApp.Router.navigate("wb/" + $(e.target).data("id"));
-                }
+                },
+                "click a.create-workbook": "__create_workbook"
             },
 
-            "__initialize_workdesk": function(e, o) {
-                console.debug("views/workbooks/workdesk.__initialize_workdesk");
-//                this.workdesk.save();
+            "initialize": function () {
+                this.__load_workdesk();
             },
 
-            "__render": function() {
-                var genespot_workbooks = _.where(this.workdesk.get("items"), { "mimeType": "application/vnd.genespot.workbook" });
-                var tpls = _.map(genespot_workbooks, function(item) {
-                    var wbModel = new WorkbookModel({}, { "workbookId": item["id"] });
-                    wbModel.on("change", wbModel.save, wbModel);
-
-                    var wbView = new WorkbookView({
-                        "model": wbModel,
-                        "el": this.$(".workbook").el
-                    });
-                    wbModel.fetch({
-                        "url": "svc/auth/providers/google_download?forwardUrl=" + item["downloadUrl"],
-                        "contentType": "application/json",
-                        "success": function() {
-                            wbModel.trigger("load");
-                        }
-                    });
-
-                    var isActive = _.isEqual(this.options.active_workbook_id, item["id"]);
-                    return {
-                        "a_class": "select-workbook",
-                        "id": item["id"],
-                        "label": item["title"],
-                        "title": item["title"],
-                        "li_class": isActive ? "active": "",
-                        "isActive": isActive,
-                        "view": wbView
-                    };
-                }, this);
-
-                var active_workbook;
-                _.each(tpls, function(tpl) {
-                    this.$(".workbooks-list").append(LineItemTpl(tpl));
-                    if (tpl["isActive"]) view = tpl["view"];
-                }, this);
-                if (active_workbook) _.defer(active_workbook.render); // TODO: race condition?
-            },
-
-            "render": function() {
+            "render": function () {
                 this.$el.html(Tpl({}));
-                this.$("#tab-workbooks").html(this.workbooksControl.render().el);
                 return this;
             },
 
-            "__load_genelist": function() {
+            "__load_workdesk": function () {
+                var files = new DriveApiModel();
+                files.on("load", function () {
+                    var folderInfo = _.findWhere(files.get("items"), { "title": "GeneSpot Workdesk" });
+                    if (folderInfo) {
+                        console.debug("views/workbooks/workdesk.__load_workdesk:existing:" + folderInfo["id"]);
+                        this.model = new DriveApiModel(folderInfo);
+                        this.model.fetch({
+                            "url": "svc/auth/providers/google_apis/drive/v2/files/" + this.model.get("id") + "/children"
+                        });
+                        this.model.on("load", this.__render_workbooks, this);
+                    } else {
+                        console.debug("views/workbooks/workdesk.__load_workdesk:create");
+                        this.model = new DriveApiModel({
+                            "title": "GeneSpot Workdesk",
+                            "parents": [
+                                {"id": "root"}
+                            ],
+                            "mimeType": "application/vnd.google-apps.folder"
+                        });
+                        this.model.on("saved", this.__render_workbooks, this);
+                        this.model.save();
+                    }
+                }, this);
+                files.fetch({ "url": "svc/auth/providers/google_apis/drive/v2/files" });
+            },
+
+            "__render_workbooks": function () {
+                _.each(this.model.get("items"), function (item) {
+                    var wbModel = new DriveApiModel(item);
+                    var wbView = new WorkbookView({
+                        "model": wbModel,
+                        "el": this.$(".workbook")
+                    });
+
+                    var isActive = _.isEqual(this.options.active_workbook_id, wbModel.get("id"));
+
+                    wbModel.on("load", function() {
+                        this.$(".workbooks-list").append(LineItemTpl({
+                            "a_class": "select-workbook",
+                            "id": wbModel.get("id"),
+                            "label": wbModel.get("title"),
+                            "title": wbModel.get("title"),
+                            "li_class": isActive ? "active" : ""
+                        }));
+
+                        if (isActive) wbView.render();
+                    }, this);
+                    wbModel.fetch();
+                }, this);
+            },
+
+            "__create_workbook": function() {
+                var new_workbook = new DriveApiModel({
+                    "title": "Untitled Workbook",
+                    "parents": [
+                        {
+                            "id": this.model.get("id"),
+                            "kind": "drive#fileLink"
+                        }
+                    ],
+                    "mimeType": "application/vnd.genespot.workbook"
+                });
+                new_workbook.save();
+                new_workbook.on("saved", this.model.fetch, this);
+            },
+
+            "__load_genelist": function () {
                 console.log("workdesk.__load_genelist");
                 this.genelistControl = new GenelistControl({ "default_genelist": this.options.map_factory.get("default_genelist") });
                 this.genelistControl.on("updated", function (current_list) {
@@ -93,34 +96,6 @@ define(["jquery", "underscore", "backbone",
                 }, this);
 
                 this.$(".genelist-container").html(this.genelistControl.render().el);
-            },
-
-            "__load_active_workbook": function() {
-                console.log("__load_active_workbook");
-
-                var model = new WorkbookModel({}, { "workbookId": this.options.active_workbook.get("id") });
-                model.on("change", function() {
-                    model.save();
-                });
-                model.on("load", function() {
-                    console.log("workbookmodel.load");
-                });
-                var view = new WorkbookView({ "model": model, "el": ".worktabs" });
-                model.fetch({
-                    "url": "svc/auth/providers/google_download",
-                    "data": {
-                        "forwardUrl": this.options.active_workbook.get("downloadUrl")
-                    },
-                    "contentType": "application/json",
-                    "success": function() {
-                        model.trigger("load");
-                    }
-                });
-                this.active_workbook_model = model;
-                if (_.isEmpty(this.active_workbook_model.get("items"))) {
-                    this.active_workbook_model.set("items", [ {"id":"firstOne","title": "First One"}]);
-                }
-                view.render();
             }
         });
     });

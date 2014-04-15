@@ -1,10 +1,15 @@
 define(["jquery", "underscore", "backbone",
-        "hbs!templates/workbooks/workbook"],
-    function ($, _, Backbone, Tpl, TabTpl) {
+        "hbs!templates/workbooks/worktabs", "hbs!templates/workbooks/bookinfo"],
+    function ($, _, Backbone, Tpl, BookInfoTpl) {
         return Backbone.View.extend({
             "initialize": function () {
                 this.model = this.options.model;
-                this.model.on("load", function() {}, this);
+                this.model.on("load", function() {
+                    this.$(".bookinfo").html(BookInfoTpl(this.model.toJSON()));
+                }, this);
+                this.model.on("load:payload", function() {
+                    this.$(".worktabs").html(Tpl(this.model.get("payload")));
+                }, this);
             },
 
             "events": {
@@ -24,18 +29,17 @@ define(["jquery", "underscore", "backbone",
                         var previous_tab = this.workbook_tabs[$(e.relatedTarget).data("id")];
                         if (previous_tab && previous_tab.shadow) _.defer(previous_tab.shadow);
                     }
+                },
+                "click a.append-body": function(e) {
+                    console.log("append-body=" + $(e.target).data("id"));
+                    this.model.set("payload", {
+                        "items": [
+                            {"id": "1", "label": "Title 1"},
+                            {"id": "2", "label": "Title 2"},
+                            {"id": "3", "label": "Title 3"}
+                        ]
+                    });
                 }
-            },
-
-            "render": function () {
-//                if (!_isEmpty(this.shadow_DOM)) {
-//                    this.$el.html(this.shadow_DOM);
-//                    return this;
-//                }
-
-//                this.$(".worktabs").html(Tpl());
-                this.$el.html(Tpl(this.model.toJSON()));
-                return this;
             },
 
             "shadow": function() {

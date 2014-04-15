@@ -2,11 +2,12 @@ define(["jquery", "underscore", "backbone"],
     function ($, _, Backbone) {
         return Backbone.Model.extend({
             initialize: function () {
-                _.bindAll(this, "fetch", "save", "__after_fetch", "__after_saved");
+                _.bindAll(this, "fetch", "__after_fetch", "__load_payload");
+                _.bindAll(this, "save", "__after_saved", "__save_filemeta", "__save_payload");
 
                 this.on({
-                    "change:title": this.__save_filemeta,
-                    "change:description": this.__save_filemeta,
+//                    "change:title": this.__save_filemeta,
+//                    "change:description": this.__save_filemeta,
                     "change:payload": this.__save_payload,
                     "load": this.__load_payload
                 }, this);
@@ -88,7 +89,7 @@ define(["jquery", "underscore", "backbone"],
                     "method": "PUT",
                     "contentType": "application/json",
                     "dataType": "json",
-                    "data": JSON.stringify(this.get("payload"))
+                    "data": JSON.stringify(this.get("payload"), undefined, 5)
                 }));
             }
         });

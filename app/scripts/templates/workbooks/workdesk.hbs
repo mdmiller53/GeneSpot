@@ -1,59 +1,66 @@
 <div class="workdesk">
-    <div class="row">
-        <div class="span3 well">
-            <ul class="nav nav-list">
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#workbooks-collapser">Workbooks <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-                <li class="divider"/>
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#maps-collapser">Visualizations <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#datamodel-collapser">Databases <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-                <li class="divider"/>
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser">Gene Lists <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#clinvarlist-collapser">Clinical Variables <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-                <li class="divider"/>
-                <li>
-                    <a href="#" onclick="return false;" data-toggle="collapse" data-target="#datasheets-collapser">Data Sheets <i class="pull-right icon-chevron-right"></i></a>
-                </li>
-            </ul>
-            <div class="well">
-                <div id="datamodel-collapser" class="list-container-b collapse">
-                    <div class="datamodel-collector-container"></div>
-                </div>
-                <div id="maps-collapser" class="list-container-b collapse">
-                    <div class="maps-list-container"></div>
-                </div>
-                <div id="tumor-types-collapser" class="list-container-b collapse">
-                    <div class="tumor-types-container"></div>
-                </div>
-                <div id="genelist-collapser" class="list-container-b collapse">
-                    <div class="genelist-container"></div>
-                </div>
-                <div id="clinvarlist-collapser" class="list-container-b collapse">
-                    <div class="clinvarlist-container"></div>
-                </div>
-                <div id="workbooks-collapser" class="list-container-b collapse in">
-                    <div class="workbooks-container"></div>
-                </div>
-                <div id="datasheets-collapser" class="list-container-b collapse">
-                    <div class="datasheets-container"></div>
-                </div>
+    <div class="workbook">
+        <div class="row">
+            <div class="span3">
+                <a href="#" onclick="return false;" class="create-workbook btn btn-info btn-mini">Create Workbook</a>
+                <h4>Your Saved Workbooks</h4>
+                <ul class="workbooks-list nav nav-list"></ul>
+                <hr/>
+                <h4>Workbooks Shared with You</h4>
+                <ul class="shared-workbooks-list nav nav-list"></ul>
+                <hr/>
+                <div class="bookinfo"></div>
             </div>
-        </div>
-        <div class="workbook span9">
-            <a href="#" onclick="return false;" class="create-workbook btn btn-info btn-mini">Create Workbook</a>
-            <ul class="workbooks-list nav nav-list">
-            </ul>
-            <div class="bookinfo"></div>
-            <div class="worktabs"></div>
+            <div class="worktabs span9"></div>
         </div>
     </div>
 </div>
+    <!--<div class="row">-->
+        <!--<div class="span3 well">-->
+            <!--<ul class="nav nav-list">-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#workbooks-collapser">Workbooks <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+                <!--<li class="divider"/>-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#maps-collapser">Visualizations <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#datamodel-collapser">Databases <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+                <!--<li class="divider"/>-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#genelist-collapser">Gene Lists <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#clinvarlist-collapser">Clinical Variables <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+                <!--<li class="divider"/>-->
+                <!--<li>-->
+                    <!--<a href="#" onclick="return false;" data-toggle="collapse" data-target="#datasheets-collapser">Data Sheets <i class="pull-right icon-chevron-right"></i></a>-->
+                <!--</li>-->
+            <!--</ul>-->
+            <!--<div id="datamodel-collapser" class="list-container-b collapse">-->
+                <!--<div class="datamodel-collector-container"></div>-->
+            <!--</div>-->
+            <!--<div id="maps-collapser" class="list-container-b collapse">-->
+                <!--<div class="maps-list-container"></div>-->
+            <!--</div>-->
+            <!--<div id="tumor-types-collapser" class="list-container-b collapse">-->
+                <!--<div class="tumor-types-container"></div>-->
+            <!--</div>-->
+            <!--<div id="genelist-collapser" class="list-container-b collapse">-->
+                <!--<div class="genelist-container"></div>-->
+            <!--</div>-->
+            <!--<div id="clinvarlist-collapser" class="list-container-b collapse">-->
+                <!--<div class="clinvarlist-container"></div>-->
+            <!--</div>-->
+            <!--<div id="workbooks-collapser" class="list-container-b collapse in">-->
+                <!--<div class="workbooks-container"></div>-->
+            <!--</div>-->
+            <!--<div id="datasheets-collapser" class="list-container-b collapse">-->
+                <!--<div class="datasheets-container"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->

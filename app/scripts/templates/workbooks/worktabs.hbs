@@ -1,17 +1,102 @@
-<ul class="nav nav-tabs">
-    {{#each items}}
-        <li><a href="#workbook-tab-{{id}}" data-id="{{id}}" data-toggle="tab">{{label}}</a></li>
-    {{/each}}
-</ul>
-<div class="tab-content">
-    {{#each items}}
-        <div class="tab-pane{{#unless @index}} active{{/unless}}" id="workbook-tab-{{id}}">
-            <h4>{{label}}</h4>
-            <ul class="nav nav-list">
-            {{#each ../genes}}
-                <li>{{.}}</li>
-            {{/each}}
-            </ul>
+<h5>{{title}}</h5>
+<a href="#" onclick="return false;" class="save-workbook btn">Save this Workbook</a>
+
+<div>
+    <ul class="nav nav-tabs">
+        {{#each items}}
+            <li class="{{#unless @index}}active{{/unless}}"><a href="#workbook-tab-{{id}}" data-id="{{id}}" data-toggle="tab">{{label}}</a></li>
+        {{/each}}
+        <li><a href="#workbook-tab-create" data-toggle="tab"><i class="icon-plus-sign"></i> New Worksheet</a></li>
+    </ul>
+    <div class="tab-content">
+        {{#each items}}
+            <div class="tab-pane{{#unless @index}} active{{/unless}}" id="workbook-tab-{{id}}">
+                <div>
+                    <a href="#" onclick="return false;" class="hide-datapanel">Hide Data Panel</a>
+                    <a href="#" onclick="return false;" class="hide-datapanel hide">Show Data Panel</a>
+                </div>
+                <div class="datapanel">
+                    <div class="side-a">
+                        <h5>Data Sets</h5>
+                        <a href="#" onclick="return false;" class="btn btn-mini">Change</a>
+
+                        <h5>Data Sources</h5>
+                        <ul class="nav nav-list">
+                            {{#each ../datamodels}}
+                                <li>{{label}}</li>
+                                {{#if tumor_types}}
+                                    {{#each tumor_types}}
+                                        <li>{{.}}</li>
+                                    {{/each}}
+                                {{/if}}
+                            {{/each}}
+                        </ul>
+
+                        <h5>Genes</h5>
+                        <ul class="nav nav-list">
+                            {{#each ../genes}}
+                                <li>{{.}}</li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                    <div class="side-b">
+                        <h5>Visualizations</h5>
+                        <ul class="nav nav-list">
+                            {{#each ../visualizations}}
+                                <li>
+                                    <h6>{{label}}</h6>
+                                    <img class="img-polaroid" width="100" height="100" src="{{iconUrl}}"/>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h4>{{label}}</h4>
+                </div>
+            </div>
+        {{/each}}
+        <div class="tab-pane" id="workbook-tab-create">
+            <h4>Create Workbook</h4>
+            <div>
+                <div class="side-a">
+                    <h5>Data Sets</h5>
+                    <a href="#" onclick="return false;" class="btn btn-mini">Change</a>
+
+                    <h5>Data Sources</h5>
+                    <ul class="nav nav-list">
+                        {{#each datamodels}}
+                            <li>{{label}}</li>
+                            {{#if tumor_types}}
+                                {{#each tumor_types}}
+                                    <li>{{.}}</li>
+                                {{/each}}
+                            {{/if}}
+                        {{/each}}
+                    </ul>
+
+                    <h5>Genes</h5>
+                    <ul class="nav nav-list">
+                        {{#each genes}}
+                            <li>{{.}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                <div class="side-b">
+                    <h5>Visualizations</h5>
+                    <ul class="nav nav-list">
+                        {{#each visualizations}}
+                            <li>
+                                <h6>{{label}}</h6>
+                                <img class="img-polaroid" width="100" height="100" src="{{iconUrl}}"/>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+            <div>
+                Create Workbook
+            </div>
         </div>
-    {{/each}}
+    </div>
 </div>

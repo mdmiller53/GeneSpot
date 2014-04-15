@@ -13,7 +13,8 @@ define(["jquery", "underscore", "backbone",
             },
 
             "initialize": function () {
-                this.__load_workdesk();
+                this.options.map_factory.on("load", this.__load_genelist, this);
+                this.options.map_factory.on("load", this.__load_workdesk, this);
             },
 
             "render": function () {
@@ -53,7 +54,9 @@ define(["jquery", "underscore", "backbone",
                     var wbModel = new DriveApiModel(item);
                     var wbView = new WorkbookView({
                         "model": wbModel,
-                        "el": this.$(".workbook")
+                        "el": this.$(".workbook"),
+                        "genes": this.genelistControl.get_current(),
+                        "map_templates": this.options.map_factory.get("map_templates")
                     });
 
                     var isActive = _.isEqual(this.options.active_workbook_id, wbModel.get("id"));
@@ -91,9 +94,9 @@ define(["jquery", "underscore", "backbone",
             "__load_genelist": function () {
                 console.log("workdesk.__load_genelist");
                 this.genelistControl = new GenelistControl({ "default_genelist": this.options.map_factory.get("default_genelist") });
-                this.genelistControl.on("updated", function (current_list) {
-                    this.active_workbook_model.set("genes", current_list);
-                }, this);
+//                this.genelistControl.on("updated", function (current_list) {
+//                    this.active_workbook_model.set("genes", current_list);
+//                }, this);
 
                 this.$(".genelist-container").html(this.genelistControl.render().el);
             }

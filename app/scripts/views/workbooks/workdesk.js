@@ -7,7 +7,7 @@ define(["jquery", "underscore", "backbone",
         return Backbone.View.extend({
             "events": {
                 "click a.select-workbook": function (e) {
-                    WebApp.Router.navigate("wb/" + $(e.target).data("id"));
+                    WebApp.Router.navigate("wb/" + $(e.target).data("id"), {"trigger": true});
                 },
                 "click a.create-workbook": "__create_workbook"
             },

@@ -385,7 +385,7 @@ define([
             __find_maximum_samples_in_location: function(mutation_data) {
                 var track_maximums = [];
                 _.each(mutation_data, function(track_obj) {
-                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "amino_acid_position");
+                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, this.selected_group_by, "amino_acid_position");
                     SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
 
                     var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
@@ -395,7 +395,7 @@ define([
                     });
 
                     track_maximums.push(max_number_of_samples_in_position);
-                });
+                }, this);
 
                 return d3.max(track_maximums);
             },

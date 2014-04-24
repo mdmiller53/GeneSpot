@@ -11,7 +11,7 @@
                 {{/each}}
                 {{#if clinical_variables}}
                     <li class="divider"></li>
-                    <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
+                    <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical and Sample Variables</a></li>
                 {{/if}}
             </ul>
         </div>
@@ -28,7 +28,7 @@
                 {{/each}}
                 {{#if clinical_variables}}
                     <li class="divider"></li>
-                    <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical Variables</a></li>
+                    <li><a href="#" onclick="return false;" data-id="clinical-variables">Clinical and Sample Variables</a></li>
                 {{/if}}
             </ul>
         </div>
@@ -74,7 +74,7 @@
                         <li><a href="#" onclick="return false;" data-id="sample_type">Sample Type</a></li>
                     {{/if}}
                     {{#if clinical_variables}}
-                        <li class="nav-header">Clinical Variables</li>
+                        <li class="nav-header">Clinical and Sample Variables</li>
                         {{#each clinical_variables}}
                             <li><a href="#" onclick="return false;" data-id="{{id}}">{{label}}</a></li>
                         {{/each}}

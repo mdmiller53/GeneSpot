@@ -6,7 +6,11 @@ define([ "jquery", "underscore", "backbone", "hbs!templates/gs/atlas_map", "hbs!
                     this.$(".download-links").empty();
                     this.trigger("refresh", this);
                 },
-                "click .close": function() {
+                "click .close": function(e) {
+                    var map_id = $(e.target).data("id");
+                    var openMaps = (localStorage.getItem("open-maps") || "").split(",");
+                    localStorage.setItem("open-maps", _.unique(_.without(openMaps, map_id)));
+
                     this.$el.hide({ "always": this.__close });
                 },
                 "click .collect-me": function() {

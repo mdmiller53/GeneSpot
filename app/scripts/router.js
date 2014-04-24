@@ -105,18 +105,19 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
             atlas: function () {
                 var model = new MapFactory();
+                model.on("load", function(){
+                    this.$el.html(view.render().el);
+                    this.$el.fadeIn();
+                }, this);
+
                 var view = new AtlasView({ "model": model });
 
-                var _this = this;
                 this.$el.fadeOut({
                     "always": function() {
                         model.fetch({
                             "url": "configurations/atlas.json",
                             "success": function () {
-                                _this.$el.html(view.render().el);
                                 model.trigger("load");
-
-                                _this.$el.fadeIn();
                             }
                         });
                     }

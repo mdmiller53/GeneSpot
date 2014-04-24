@@ -32,6 +32,10 @@ define([
                     var map_id = $(e.target).data("id");
                     var map_template = this.model.get("map_templates").get(map_id);
                     this.__append_atlasmap(map_template);
+
+                    var openMaps = (localStorage.getItem("open-maps") || "").split(",");
+                    openMaps.push(map_id);
+                    localStorage.setItem("open-maps", _.unique(openMaps));
                 },
                 "click div.atlas-map": function (e) {
                     this.$el.find(".list-container.collapse.in").collapse("hide");
@@ -110,9 +114,6 @@ define([
 
             __init_tumortypes_control: function() {
                 this.tumorTypesControl = new TumorTypesControl({});
-
-                var reloadFn = _.debounce(this.__reload_all_maps, 1000);
-                this.tumorTypesControl.on("updated", reloadFn, this);
                 this.$el.find(".tumor-types-container").html(this.tumorTypesControl.render().el);
             },
 
@@ -125,7 +126,15 @@ define([
             },
 
             __init_maps: function () {
-                var maps = _.map(this.model.get("map_templates").values(), function(map_template) {
+                var open_maps = this.model.get("map_templates").values();
+
+                var remembered_open = _.compact((localStorage.getItem("open-maps") || "").split(","));
+
+                var maps = _.map(open_maps, function(map_template) {
+                    if (!_.isEmpty(remembered_open)) {
+                        map_template.set("isOpen", _.contains(remembered_open, map_template.get("id")));
+                    }
+
                     if (map_template.get("isOpen")) _.defer(this.__append_atlasmap, map_template);
 
                     if (!map_template.get("disabled")) {
@@ -139,6 +148,9 @@ define([
                     }
                     return map_template.toJSON();
                 }, this);
+
+                var marked_open = _.where(maps, { "isOpen": true });
+                localStorage.setItem("open-maps", _.unique(_.pluck(marked_open, "id")));
 
                 this.$el.find(".maps-list-container").html(MapsListContainerTpl({ "maps": _.sortBy(_.sortBy(maps, "label"), "order") }));
             },

@@ -1,7 +1,7 @@
 {
     "lookups": {
         "sample_types": {
-            "url": "svc/datastores/20140404/LOOKUPS/sample_types",
+            "url": "svc/datastores/FFN/LOOKUPS/sample_types",
             "definitions": {
                 "Tumor": "Tumor",
                 "Normal": "Normal",
@@ -9,7 +9,7 @@
             }
         },
         "clinical_variables": {
-            "url": "svc/datastores/20140404/LOOKUPS/clinical_variables"
+            "url": "svc/datastores/FFN/LOOKUPS/clinical_variables"
         },
         "chromosomes": {
             "url": "svc/data/lookups/chromosomes",

@@ -137,6 +137,12 @@
                             "published": "5/2/2013"
                         }
                     ]
+                },
+                "STAD-20140404": {
+                    "tumor_type": "STAD",
+                    "service": "datastores/20140123/STAD",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "label": "STAD dataset for January 2014"
                 }
             }
         },

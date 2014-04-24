@@ -64,6 +64,13 @@
             "color": "#87FF78"
         },
         {
+            "id": "STAD",
+            "label": "Stomach adenocarcinoma",
+            "description": "TODO",
+            "color": "#FF5200",
+            "isChecked": true
+        },
+        {
             "id": "UCEC",
             "label": "Uterine Corpus Endometrial Carcinoma",
             "description": "TODO",

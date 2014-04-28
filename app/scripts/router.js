@@ -1,13 +1,15 @@
 define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
-    "views/gs/atlas", "models/atlas/map_factory", "views/workbooks/workdesk"],
-    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, WorkdeskView) {
+        "views/gs/atlas", "models/atlas/map_factory", "models/gdriveapi_backbone_model", "views/workbooks/workdesk", "views/workbooks/workbook"],
+    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, GDriveApiBackboneModel, WorkdeskView, WorkbookView) {
 
         return Backbone.Router.extend({
             targetEl: "#main-container",
             navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",
-                "wb/:workbook_id": "load_workbook",
+                "wd": "workdesk",
+                "wd/:workdesk_id": "workdesk",
+                "wb/:workbook_id": "workbook",
                 "cm/:cm_id": "load_collected_map",
                 "v/*uri/:view_name": "viewsByUri",
                 "s/*sessionId": "loadSessionById"
@@ -19,6 +21,15 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 _.bindAll(this, "start", "loadSessionById");
                 this.$el = $(this.targetEl);
                 this.$nav = $(this.navigationEl);
+
+                this.workdesk_model = new GDriveApiBackboneModel({
+                    "title": "GeneSpot Workdesk",
+                    "parents": [
+                        { "id": "root" }
+                    ],
+                    "mimeType": "application/vnd.google-apps.folder"
+                });
+                this.workdesk_view = new WorkdeskView({ "model": this.workdesk_model });
             },
 
             start: function () {
@@ -104,31 +115,29 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 }
             },
 
-            load_workbook: function(workbook_id) {
-                console.debug("load_workbook:" + workbook_id);
-                var map_factory = new MapFactory({}, { "url": "configurations/atlas.json" });
-                var view = new WorkdeskView({ "map_factory": map_factory, "active_workbook_id": workbook_id });
+            "workdesk": function (workdesk_id) {
+                var options = {
+                    "success": function () {
+                        this.$el.html(this.workdesk_view.render().el);
+                        this.$el.fadeIn();
+                    },
+                    "error": function () {
+                        this.$(".alert.workdesk-not-found").show();
+                    },
+                    "context": this
+                };
 
-                map_factory.on("load", function() {
-                    this.$el.html(view.render().el);
-                    this.$el.fadeIn();
-                }, this);
+                if (workdesk_id) {
+                    this.workdesk_model.set("id", workdesk_id);
+                    this.workdesk_model.drive_get(options);
+                    return;
+                }
 
-                this.$el.fadeOut({
-                    "always": function() {
-                        map_factory.fetch({
-                            "contentType": "application/json",
-                            "success": function() {
-                                map_factory.trigger("load");
-                            },
-                            "error": function(e,o) {
-                                console.debug("error:" + e + ":" + o);
-                            }
-                        });
-                    }
-                });
+                this.workdesk_model.find_insert({ "title": this.workdesk_model.get("title") }, options);
+            },
 
-                return view;
+            "workbook": function (workbook_id) {
+                this.workdesk_view.render_workbook(workbook_id);
             },
 
             atlas: function () {

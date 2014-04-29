@@ -5,7 +5,8 @@ define(["jquery", "underscore", "backbone"],
             "payload_mimeTypes": ["application/json", "application/vnd.genespot.workbook"],
 
             "initialize": function () {
-                _.bindAll(this, "fetch", "get", "set", "__after_fetch");
+                _.bindAll(this, "fetch", "fetch_payload", "__after_fetch");
+                _.bindAll(this, "get", "set");
                 _.bindAll(this, "__local_set", "__local_rm");
 
                 this.on("change:largestChangeId", this.__trigger_file_changes, this);
@@ -54,10 +55,12 @@ define(["jquery", "underscore", "backbone"],
 
                 var url = this.url();
                 if (!this.__is_kind("drive#about")) url += "/" + this.get("id");
+                if (this.__local_load(url)) {
+                    _.defer(this.__after_fetch);
+                    return this.__success_handler(options)();
+                }
 
-                if (this.__local_load(url)) return;
-
-                return this.fetch(_.extend({}, options, { "url": url }));
+                return this.fetch(_.extend({ "url": url }, options));
             },
 
             "insert": function (options) {
@@ -356,8 +359,8 @@ define(["jquery", "underscore", "backbone"],
             /*
              * These functions are internal to this model, and not meant to be accessed externally
              */
-            "__after_fetch": function (options) {
-                _.defer(this.__local_set, "gdriveapi:" + this.url(), this.toJSON());
+            "__after_fetch": function () {
+                _.defer(this.__local_set, this.url(), this.toJSON());
                 this.trigger("load");
             },
 
@@ -402,6 +405,8 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__payload_handler": function (options) {
+                options = options || {};
+
                 var payloadFn = _.bind(function (json) {
                     if (this.update_payload(options)) {
                         this.set(json);
@@ -415,6 +420,8 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__list_handler": function (options) {
+                options = options || {};
+
                 var _this = this;
                 var url = _this.url();
                 var successFn = this.__success_handler(options);
@@ -427,6 +434,9 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__updating_handler": function (options, url) {
+                options = options || {};
+                url = url || this.url();
+
                 var updateFn = this.set;
                 var updateLocalFn = this.__local_set;
                 var successFn = this.__success_handler(options);
@@ -438,6 +448,7 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__success_handler": function (options) {
+                options = options || {};
                 if (_.isFunction(options["success"])) {
                     return options["success"];
                 }
@@ -445,6 +456,7 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__error_handler": function (options) {
+                options = options || {};
                 if (_.isFunction(options["error"])) return options["error"];
                 return function () {
                 };
@@ -461,7 +473,9 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__local_set": function (url, json) {
-                localStorage.setItem("gdriveapi:" + (url || this.url()), JSON.stringify(json || {}));
+                if (_.isObject(json)) {
+                    localStorage.setItem("gdriveapi:" + url, JSON.stringify(json));
+                }
             },
 
             "__local_load": function(url) {

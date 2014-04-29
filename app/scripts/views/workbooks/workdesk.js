@@ -28,18 +28,18 @@ define(["jquery", "underscore", "backbone",
                     if (this.active_workbook.get("id")) {
                         this.active_workbook.update();
                     } else {
+                        var actwbk = this.active_workbook;
                         this.active_workbook.insert({
                             "success": function () {
-                                WebApp.Router.navigate("wb/" + this.active_workbook.get("id"));
-                            },
-                            "context": this
+                                WebApp.Router.navigate("wb/" + actwbk.get("id"));
+                            }
                         });
                     }
                 }
             },
 
             "initialize": function () {
-                _.bindAll(this, "render");
+                _.bindAll(this, "render", "__render_workbooks");
 
                 this.workdesk_model = this.options.model;
                 this.workdesk_model.on("load", this.__list_workbooks, this);
@@ -61,15 +61,14 @@ define(["jquery", "underscore", "backbone",
             "render_workbook": function (workbook_id) {
                 var model = new GDriveApiBackboneModel({ "id": workbook_id, "kind": "drive#file" });
                 this.active_workbook = new WorkbookView({ "model": model });
-                model.drive_get({
-                    "success": function () {
-                        this.$(".container.workbook").html(this.active_workbook.render().el);
-                    },
-                    "error": function () {
-                        this.$(".alert.workbook-not-found").show();
-                    },
-                    "context": this
-                });
+
+                var successFn = _.bind(function() {
+                    this.$(".container.workbook").html(this.active_workbook.render().el);
+                }, this);
+                var errorFn = _.bind(function() {
+                    this.$(".alert.workbook-not-found").show();
+                }, this);
+                model.drive_get({ "success": successFn, "error": errorFn });
 
                 this.changes_model.on("change", function (file) {
                     if (_.isEqual(file["id"], workbook_id)) {
@@ -82,28 +81,31 @@ define(["jquery", "underscore", "backbone",
             },
 
             "__list_workbooks": function () {
-                this.workdesk_model.childReferences.list({
+                console.debug("views/workdesk:__list_workbooks");
+
+                this.workdesk_model.childReferences().list({
                     "query": { "q": "mimeType='application/vnd.genespot.workbook'" },
-                    "success": function () {
-                        var active_workbook_id = null;
-                        if (this.active_workbook && this.active_workbook.get("id")) {
-                            active_workbook_id = this.active_workbook.get("id");
-                        }
-
-                        _.each(this.workdesk_model.childReferences.listed, function (model) {
-                            var isActive = _.isEqual(active_workbook_id, model.get("id"));
-
-                            this.$(".workbooks-list").append(LineItemTpl({
-                                "a_class": "select-workbook",
-                                "id": model.get("id"),
-                                "label": model.get("title"),
-                                "title": model.get("title"),
-                                "li_class": isActive ? "active" : ""
-                            }));
-                        }, this);
-                    },
-                    "context": this
+                    "success": this.__render_workbooks
                 });
+            },
+
+            "__render_workbooks": function() {
+                var active_workbook_id = null;
+                if (this.active_workbook && this.active_workbook.get("id")) {
+                    active_workbook_id = this.active_workbook.get("id");
+                }
+
+                _.each(this.workdesk_model.childReferences().get("items"), function (item) {
+                    var isActive = _.isEqual(active_workbook_id, item["id"]);
+
+                    this.$(".workbooks-list").append(LineItemTpl({
+                        "a_class": "select-workbook",
+                        "id": item["id"],
+                        "label": item["title"],
+                        "title": item["title"],
+                        "li_class": isActive ? "active" : ""
+                    }));
+                }, this);
             },
 
             "__load_genelist": function () {

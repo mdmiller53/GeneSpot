@@ -116,24 +116,27 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
             },
 
             "workdesk": function (workdesk_id) {
-                var options = {
-                    "success": function () {
-                        this.$el.html(this.workdesk_view.render().el);
-                        this.$el.fadeIn();
-                    },
-                    "error": function () {
-                        this.$(".alert.workdesk-not-found").show();
-                    },
-                    "context": this
-                };
+                console.debug("workdesk:" + workdesk_id);
+
+                var renderFn = _.bind(function() {
+                    this.$el.html(this.workdesk_view.render().el);
+                    this.$el.fadeIn();
+                    this.workdesk_model.trigger("load");
+                }, this);
+                var errorFn = _.bind(function() {
+                    this.$(".alert.workdesk-not-found").show();
+                }, this);
 
                 if (workdesk_id) {
                     this.workdesk_model.set("id", workdesk_id);
-                    this.workdesk_model.drive_get(options);
+                    this.workdesk_model.drive_get({ "success": renderFn, "error": errorFn });
                     return;
                 }
 
-                this.workdesk_model.find_insert({ "title": this.workdesk_model.get("title") }, options);
+                this.workdesk_model.find_insert(
+                    { "title": this.workdesk_model.get("title") },
+                    { "success": renderFn, "error": errorFn }
+                );
             },
 
             "workbook": function (workbook_id) {

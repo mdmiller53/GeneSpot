@@ -41,6 +41,10 @@ define(["jquery", "underscore", "backbone",
                         "label": item["title"],
                         "title": item["title"]
                     }));
+
+                    WebApp.Search.add_callback("Workbooks", item["title"], _.flatten([item["title"], item["description"], item["keywords"]]), function() {
+                        WebApp.Router.navigate("#wb/" + item["id"], { "trigger": true });
+                    });
                 }, this);
             }
         });

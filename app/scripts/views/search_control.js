@@ -4,12 +4,12 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
             "indexed_by_keyword": {},
 
             initialize: function () {
-                console.debug("views/search_control.initialize");
+                // console.debug("views/search_control.initialize");
                 _.bindAll(this, "__source", "__updater");
             },
 
             render: function () {
-                console.debug("views/search_control.render");
+                // console.debug("views/search_control.render");
                 this.$el.typeahead({
                     "source": this.__source,
                     "updater": this.__updater,
@@ -21,7 +21,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
             },
 
             add_callback: function (header, label, keywords, callbackFn) {
-                console.debug("views/search_control.add_callback(" + header + "," + label + "," + keywords.length + ")");
+                // console.debug("views/search_control.add_callback(" + header + "," + label + "," + keywords.length + ")");
                 var kws = _.map(keywords, function (kw) {
                     return "[" + header + "] " + label + " (" + kw + ")";
                 });
@@ -41,7 +41,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
             },
 
             __updater: function (uid) {
-                console.debug("views/search_control.__updater(" + uid + ")");
+                // console.debug("views/search_control.__updater(" + uid + ")");
                 var indexed_by_uid = _.indexBy(_.flatten(_.values(this.indexed_by_keyword)), "uid");
                 var indexed_item = indexed_by_uid[uid];
                 if (indexed_item && _.has(indexed_item, "callback")) {
@@ -52,7 +52,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/search_results"],
             },
 
             __render: function (items) {
-                console.debug("views/search_control.__render");
+                // console.debug("views/search_control.__render");
                 var data_items = _.map(items, function (item) {
                     return this.options.indexed_by_keyword[item];
                 }, this);

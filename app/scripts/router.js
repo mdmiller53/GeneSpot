@@ -149,7 +149,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 }, this);
 
                 this.workdesk_model.set("id", workdesk_id);
-                this.workdesk_model.drive_get({ "success": renderFn });
+                this.workdesk_model.drive_get({ "success": renderFn, "error": renderFn });
             },
 
             "new_workbook": function(workdesk_id) {

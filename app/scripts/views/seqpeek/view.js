@@ -85,6 +85,18 @@ define([
                     $(e.target).parent("li").addClass("active");
 
                     this.__render();
+                },
+
+                "click .btn.seqpeek-zoom-enable": function(e) {
+                    this.__enable_seqpeek_zoom();
+                },
+
+                "click .btn.seqpeek-selection-enable": function(e) {
+                    this.__enable_seqpeek_selection();
+                },
+
+                "click .btn.seqpeek-print-ids": function(e) {
+                    this.__print_selected_samples();
                 }
             },
 
@@ -95,6 +107,8 @@ define([
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
+
+                this.selected_patient_ids = [];
             },
 
             render: function() {
@@ -272,7 +286,9 @@ define([
                         variant_width: 5.0
                     },
                     variant_data_location_field: POSITION_FIELD_NAME,
-                    variant_data_type_field: this.selected_group_by
+                    variant_data_type_field: this.selected_group_by,
+                    variant_data_source_field: "patient_id",
+                    selection_handler: _.bind(this.__seqpeek_selection_handler, this)
                 });
 
                 _.each(mutation_data, function(track_obj) {
@@ -386,6 +402,8 @@ define([
                 });
 
                 seqpeek.render();
+
+                this.seqpeek = seqpeek;
             },
 
             __find_maximum_samples_in_location: function(mutation_data) {
@@ -537,6 +555,22 @@ define([
                 }, {});
 
                 return gene_to_uniprot_mapping;
+            },
+
+            __enable_seqpeek_zoom: function() {
+                this.seqpeek.toggleZoomMode();
+            },
+
+            __enable_seqpeek_selection: function() {
+                this.seqpeek.toggleSelectionMode();
+            },
+
+            __seqpeek_selection_handler: function(id_list) {
+                this.selected_patient_ids = id_list;
+            },
+
+            __print_selected_samples: function() {
+                console.log(this.selected_patient_ids);
             }
         });
     });

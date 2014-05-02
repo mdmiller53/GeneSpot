@@ -1,8 +1,9 @@
-define(["jquery", "underscore", "backbone",
-    "router",
-    "models/sessions", "models/datamodel", "models/lookups",
-    "views/items_grid_view", "views/pivot_data_view", "views/search_control"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView, SearchControl) {
+define(["jquery", "underscore", "backbone", "backbone-poller",
+        "router",
+        "models/sessions", "models/datamodel", "models/lookups", "backbone_gdrive", "models/workdesk_model",
+        "views/items_grid_view", "views/pivot_data_view", "views/search_control"],
+    function ($, _, Backbone, Poller, AppRouter, SessionsCollection, Datamodel, LookupsModel,
+              BackboneGDrive, WorkdeskModel, ItemGridView, PivotDataView, SearchControl) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
@@ -23,7 +24,11 @@ define(["jquery", "underscore", "backbone",
             },
             LocalSession: new Backbone.Model(), // TODO : Add Sync
             UserPreferences: new Backbone.Model(),
-            Search: new SearchControl()
+            Search: new SearchControl(),
+            GDrive: {
+                Workdesk: new WorkdeskModel(),
+                Changes: new BackboneGDrive.Collection({ "kind": "drive#changeList"})
+            }
         };
 
         WebApp.initialize = function () {
@@ -44,38 +49,53 @@ define(["jquery", "underscore", "backbone",
             WebApp.Display.fetch({
                 url: "configurations/display.json",
                 success: function () {
-                    document.title = (WebApp.Display.get("title") || "Web App Base");
+                    document.title = (WebApp.Display.get("title") || "GeneSpot");
                     WebApp.Events.trigger("webapp:ready:display");
                 }
             });
 
             // 3. Fetch and prep datamodel
-            WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
+//            WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
 
             // 4. Fetch and prep lookups
-            WebApp.Events.on("webapp:ready:datamodel", function () {
-                WebApp.Lookups.fetch({ "url": "configurations/lookups.json" });
-            });
+//            WebApp.Events.on("webapp:ready:datamodel", function () {
+//                WebApp.Lookups.fetch({ "url": "configurations/lookups.json" });
+//            });
 
             // 5. Start router
-            WebApp.Events.on("webapp:ready:lookups", WebApp.Router.start);
+//            WebApp.Events.on("webapp:ready:lookups", WebApp.Router.start);
+            _.defer(WebApp.Router.start);
 
             // 6. Start sessions
-            WebApp.Sessions.All.fetch({
-                "url": "svc/storage/sessions",
-                "success": function (json) {
-                    // Is this necessary?
-                    WebApp.Sessions.All = new SessionsCollection(json.items);
-                    WebApp.Events.trigger("webapp:ready:sessions");
-                }
-            });
+//            WebApp.Sessions.All.fetch({
+//                "url": "svc/storage/sessions",
+//                "success": function (json) {
+//                    // Is this necessary?
+//                    WebApp.Sessions.All = new SessionsCollection(json.items);
+//                    WebApp.Events.trigger("webapp:ready:sessions");
+//                }
+//            });
+//
+//            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
 
-            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
+            var poller = Poller.get(WebApp.GDrive.Changes, { "delay": 10000 });
+            _.defer(_.bind(poller.start, poller));
+
+            WebApp.GDrive.Changes.on("change:items", function () {
+                _.each(WebApp.GDrive.Changes.get("items"), function(item) {
+                    if (_.has(item, "file")) {
+                        var file = item["file"];
+                        if (_.isEqual(file["id"], WebApp.GDrive.Workdesk.get("id"))) {
+                            WebApp.GDrive.Workdesk.set(file);
+                        }
+                    }
+                }, this);
+            }, this);
         };
 
-        WebApp.alert = function(alertEl, timeout) {
+        WebApp.alert = function (alertEl, timeout) {
             $(alertEl).show();
-            _.delay(function() {
+            _.delay(function () {
                 $(alertEl).hide({ "effect": "fade" });
             }, timeout || 2000);
         };

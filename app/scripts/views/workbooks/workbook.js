@@ -9,7 +9,7 @@ define(["jquery", "underscore", "backbone",
                     _.each(payload["worktabs"], function (tab) {
                         tab["active"] = _.isEqual(tab["id"], tab_id);
                     }, this);
-                    this.model.update_payload();
+                    this.set("payload", payload);
                 },
                 "click a.append-body": function (e) {
                     console.log("append-body=" + $(e.target).data("id"));
@@ -23,13 +23,12 @@ define(["jquery", "underscore", "backbone",
                 },
                 "click a.save-workbook": function () {
                     if (this.get("id")) {
-                        this.update();
+                        _.defer(this.update);
                     } else {
-                        this.insert({
-                            "success": _.bind(function () {
-                                WebApp.Router.navigate("#wb/" + this.get("id"), { "trigger": true });
-                            }, this)
-                        });
+                        this.once("inserted", function() {
+                            WebApp.Router.navigate("#wb/" + this.get("id"), { "trigger": true });
+                        }, this);
+                        _.defer(this.insert);
                     }
                 },
                 "click a.open-workbook": function(e) {
@@ -40,7 +39,6 @@ define(["jquery", "underscore", "backbone",
 
             "initialize": function () {
                 this.model = this.options.model;
-                this.model.on("load", this.model.fetch_payload, this.model);
                 this.model.on("change", this.__render_bookinfo, this);
                 this.model.on("change:payload", this.__render_worktabs, this);
             },

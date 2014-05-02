@@ -23,7 +23,8 @@ require.config({
         "seqpeek": "../bower_components/seqpeek/src",
         "xml2json" : "../bower_components/x2js/xml2json",
         "base64" : "../bower_components/base64/jquery.base64.min",
-        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min"
+        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min",
+        "backbone-poller": "../bower_components/backbone-poller/backbone.poller"
     },
     "shim": {
         "underscore" : {

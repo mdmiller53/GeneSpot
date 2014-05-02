@@ -9,18 +9,27 @@ define(["jquery", "underscore", "backbone", "hbs!templates/google_sign_in"],
                         "success": function() {
                             _.defer(function() {
                                 document.location = document.location.href;
+
+                                localStorage.clear();
                             });
                         }
                     });
                 }
             },
 
+            "initialize": function() {
+                this.model = this.options.user;
+                this.model.on("change", this.__load, this);
+            },
+
             render: function() {
                 this.$el.html(Tpl({}));
-                this.options.user.on("load", function() {
-                    this.$el.html(Tpl(this.options.user.toJSON()));
-                }, this);
                 return this;
+            },
+
+            "__load": function() {
+                this.$el.html(Tpl(this.model.toJSON()));
+                WebApp.GDrive.Workdesk.find();
             }
         });
     });

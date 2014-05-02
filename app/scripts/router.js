@@ -1,13 +1,13 @@
 define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
-        "views/gs/atlas", "models/atlas/map_factory", "models/gdriveapi_backbone_model", "views/workbooks/workdesk", "views/workbooks/workbook"],
-    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, GDriveApiBackboneModel, WorkdeskView, WorkbookView) {
+        "views/gs/atlas", "models/atlas/map_factory", "backbone_gdrive", "views/workbooks/workdesk", "views/workbooks/workbook"],
+    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, BackboneGDrive, WorkdeskView, WorkbookView) {
 
         return Backbone.Router.extend({
             targetEl: "#main-container",
             navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",
-                "wd": "new_workdesk",
+                "wd": "empty_workdesk",
                 "wd/:workdesk_id": "workdesk",
                 "wd/:workdesk_id/new": "new_workbook",
                 "wb/:workbook_id": "workbook",
@@ -22,23 +22,6 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 _.bindAll(this, "start", "loadSessionById");
                 this.$el = $(this.targetEl);
                 this.$nav = $(this.navigationEl);
-
-                this.workdesk_model = new GDriveApiBackboneModel({
-                    "title": "GeneSpot Workdesk",
-                    "kind": "drive#file",
-                    "parents": [
-                        { "id": "root" }
-                    ],
-                    "mimeType": "application/vnd.google-apps.folder"
-                });
-
-                this.changes_model = new GDriveApiBackboneModel({ "kind": "drive#change"});
-                this.changes_model.monitor();
-                this.changes_model.on("change", function (file) {
-                    if (_.isEqual(file["id"], this.workdesk_model.get("id"))) {
-                        this.workdesk_model.set(file);
-                    }
-                }, this);
             },
 
             start: function () {
@@ -124,42 +107,39 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 }
             },
 
-            "new_workdesk": function () {
-                console.debug("router.new_workdesk");
-
-                var renderFn = _.bind(function () {
-                    this.navigate("#wd/" + this.workdesk_model.get("id"), { "trigger": true });
+            "empty_workdesk": function () {
+                var WGW = WebApp.GDrive.Workdesk;
+                WGW.once("change:id", function() {
+                    WebApp.Router.navigate("#wd/" + WGW.get("id"), { "trigger": true });
                 }, this);
-
-                this.workdesk_model.find_insert(
-                    { "title": this.workdesk_model.get("title") },
-                    { "success": renderFn }
-                );
+                WGW.find();
             },
 
             "workdesk": function (workdesk_id) {
                 console.debug("router.workdesk:" + workdesk_id);
 
-                var view = new WorkdeskView({ "model": this.workdesk_model });
+                var WGW = WebApp.GDrive.Workdesk;
+                if (workdesk_id) WGW.set("id", workdesk_id);
 
-                var renderFn = _.bind(function () {
-                    this.$el.html(view.render().el);
+                var view = new WorkdeskView({ "model": WGW });
+                this.$el.html(view.render().el);
+
+                WGW.once("change", function () {
                     this.$el.fadeIn();
-                    this.workdesk_model.trigger("load");
                 }, this);
 
-                this.workdesk_model.set("id", workdesk_id);
-                this.workdesk_model.drive_get({ "success": renderFn, "error": renderFn });
+                WGW.fetch();
             },
 
-            "new_workbook": function(workdesk_id) {
+            "new_workbook": function (workdesk_id) {
                 console.debug("router.new_workbook:" + workdesk_id);
 
-                var model = new GDriveApiBackboneModel({
+                var model = new BackboneGDrive.JsonPayloadModel({
                     "title": "Untitled Workbook",
-                    "kind": "drive#file",
                     "mimeType": "application/vnd.genespot.workbook",
-                    "parents": [ { "id": workdesk_id, "kind": "drive#fileLink" } ]
+                    "parents": [
+                        { "id": workdesk_id, "kind": "drive#fileLink" }
+                    ]
                 });
 
                 var view = new WorkbookView({ "model": model });
@@ -176,24 +156,22 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                     return _.defer(this.new_workbook);
                 }
 
-                var model = new GDriveApiBackboneModel({ "id": workbook_id, "kind": "drive#file" });
+                var model = new BackboneGDrive.JsonPayloadModel({ "id": workbook_id });
                 var view = new WorkbookView({ "model": model });
                 this.$el.html(view.render().el);
 
-                model.drive_get({
-                    "success": _.bind(function() {
-                        this.$el.fadeIn();
-                    }, this),
-                    "error": _.bind(function(){
-                        this.$(".alert.workbook-not-found").show();
-                    }, this)
-                });
+                model.once("change", function() {
+                    this.$el.fadeIn();
+                }, this);
+                model.fetch();
 
-                this.changes_model.on("change", function (file) {
-                    if (_.isEqual(file["id"], model.get("id"))) {
-                        model.set(file);
-                        _.defer(model.fetch_payload);
-                    }
+                WebApp.GDrive.Changes.on("change", function () {
+                    _.each(WebApp.GDrive.Changes.get("items"), function(item) {
+                        if (_.has(item, "file")) {
+                            var file = item["file"];
+                            if (_.isEqual(file["id"], model.get("id"))) model.set(file);
+                        }
+                    }, this);
                 }, this);
             },
 

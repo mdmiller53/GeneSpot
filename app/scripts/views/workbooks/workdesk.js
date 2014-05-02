@@ -1,6 +1,6 @@
-define(["jquery", "underscore", "backbone",
+define(["jquery", "underscore", "backbone", "backbone_gdrive",
         "hbs!templates/workbooks/workdesk", "hbs!templates/line_item"],
-    function ($, _, Backbone, Tpl, LineItemTpl) {
+    function ($, _, Backbone, BackboneGDrive, Tpl, LineItemTpl) {
         return Backbone.View.extend({
             "events": {
                 "click a.open-workbook": function (e) {
@@ -13,10 +13,12 @@ define(["jquery", "underscore", "backbone",
             },
 
             "initialize": function () {
-                _.bindAll(this, "__render_workbooks");
-
                 this.model = this.options.model;
-                this.model.on("load", this.__list_workbooks, this);
+                this.folder = this.model.childReferences();
+
+                this.model.on("change", this.folder.list, this);
+                this.folder.on("add", this.__render_workbooks, this);
+                this.folder.on("change:items", this.__render_workbooks, this);
             },
 
             "render": function () {
@@ -24,28 +26,26 @@ define(["jquery", "underscore", "backbone",
                 return this;
             },
 
-            "__list_workbooks": function () {
-                console.debug("views/workdesk:__list_workbooks");
-
-                this.model.childReferences().list({
-                    "query": { "q": "mimeType='application/vnd.genespot.workbook'" },
-                    "success": this.__render_workbooks
-                });
-            },
-
             "__render_workbooks": function () {
-                _.each(this.model.childReferences().get("items"), function (item) {
-                    this.$(".workbooks-list").append(LineItemTpl({
-                        "a_class": "open-workbook",
-                        "id": item["id"],
-                        "label": item["title"],
-                        "title": item["title"]
-                    }));
+                var lineItems = this.folder.map(function (model) {
+                    model.on("change", function () {
+                        var id = model.get("id");
+                        var title = model.get("title");
+                        var keywords = _.flatten([title, model.get("description"), model.get("keywords")]);
+                        WebApp.Search.add_callback("Workbooks", title, keywords, function () {
+                            WebApp.Router.navigate("#wb/" + id, { "trigger": true });
+                        });
 
-                    WebApp.Search.add_callback("Workbooks", item["title"], _.flatten([item["title"], item["description"], item["keywords"]]), function() {
-                        WebApp.Router.navigate("#wb/" + item["id"], { "trigger": true });
-                    });
+                        return LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title });
+                    }, this);
+                    model.fetch();
+
                 }, this);
+
+                if (!_.isEmpty(lineItems)) {
+                    var $wblEl = this.$(".workbooks-list").empty();
+                    _.each(lineItems, $wblEl.append, $wblEl);
+                }
             }
         });
     });

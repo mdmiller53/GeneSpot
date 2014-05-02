@@ -71,6 +71,7 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "setLocal": function (options) {
+                options = options || {};
                 if (options["is_change_from_load"]) return;
                 if (__is_kind(this, ["drive#change", "drive#changeList"])) return;
                 localStorage.setItem("backbone_gdrive:" + this.url(), JSON.stringify(this.toJSON()));

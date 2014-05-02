@@ -9,7 +9,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 "": "atlas",
                 "wd": "empty_workdesk",
                 "wd/:workdesk_id": "workdesk",
-                "wd/:workdesk_id/new": "new_workbook",
+                "wb/new": "new_workbook",
                 "wb/:workbook_id": "workbook",
                 "cm/:cm_id": "load_collected_map",
                 "v/*uri/:view_name": "viewsByUri",
@@ -137,16 +137,26 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 WGW.fetch();
             },
 
-            "new_workbook": function (workdesk_id) {
-                console.debug("router.new_workbook:" + workdesk_id);
+            "new_workbook": function () {
+                console.debug("router.new_workbook");
 
                 var model = new BackboneGDrive.FileModel({
                     "title": "Untitled Workbook",
-                    "mimeType": "application/vnd.genespot.workbook",
-                    "parents": [
-                        { "id": workdesk_id, "kind": "drive#fileLink" }
-                    ]
+                    "mimeType": "application/vnd.genespot.workbook"
                 });
+
+                var setParent = function() {
+                    var id = WebApp.GDrive.Workdesk.get("id");
+                    if (_.isEmpty(id)) return;
+
+                    model.set({
+                        "parents": [
+                            { "id": WebApp.GDrive.Workdesk.get("id"), "kind": "drive#fileLink" }
+                        ]
+                    });
+                };
+                WebApp.GDrive.Workdesk.on("change:id", setParent);
+                _.defer(setParent);
 
                 var view = new WorkbookView({ "model": model });
                 this.$el.html(view.render().el);

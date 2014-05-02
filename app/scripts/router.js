@@ -115,7 +115,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
                 if (_.isEmpty(WGW.get("id"))) {
                     WGW.once("change", carryOn, this);
-                    return _.defer(WGW.find);
+                    return WGW.find();
                 }
 
                 _.defer(carryOn);

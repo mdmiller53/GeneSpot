@@ -5,10 +5,11 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive"],
                 "title": "GeneSpot Workdesk"
             },
 
-            "initialize": function() {
+            "initialize": function(attributes, options) {
+                BackboneGDrive.FolderModel.prototype.initialize.call(this, attributes, options);
+
                 _.bindAll(this, "find");
                 this.once("change:id", this.__register_search_items, this);
-                this.defer(this.find);
             },
 
             "find": function() {
@@ -37,19 +38,21 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive"],
             },
 
             "__register_search_by_section": function(mimeType, section_title, anchor) {
-                var filtered = _.findWhere(this.childReferences().get("items"), { "mimeType": mimeType });
-                return _.map(filtered, function(item) {
+                return _.map(this.childReferences().get("items"), function(item) {
                     var model = new BackboneGDrive.FileModel(item);
                     model.once("change", function() {
-                        var id = model.get("id");
-                        var title = model.get("title");
-                        var keywords = _.flatten([title, model.get("description"), model.get("keywords")]);
+                        if (_.isEqual(model.get("mimeType"), mimeType)) {
+                            var id = model.get("id");
+                            var title = model.get("title");
+                            var keywords = _.flatten([title, model.get("description"), model.get("keywords")]);
 
-                        WebApp.Search.add_callback(section_title, title, keywords, function () {
-                            WebApp.Router.navigate("#" + anchor + "/" + id, { "trigger": true });
-                        });
+                            WebApp.Search.add_callback(section_title, title, keywords, function () {
+                                WebApp.Router.navigate("#" + anchor + "/" + id, { "trigger": true });
+                            });
+                        }
                     }, this);
                     _.defer(model.fetch);
+                    return model;
                 }, this);
             },
 

@@ -446,7 +446,9 @@ define(["jquery", "underscore", "backbone"],
                 "mimeType": "application/vnd.google-apps.folder"
             },
 
-            "initialize": function() {
+            "initialize": function(attributes, options) {
+                BackboneGDrive.FileModel.prototype.initialize.call(this, attributes, options);
+
                 this.files = new BackboneGDrive.List({ "kind": "drive#fileList" });
             }
         });

@@ -29,7 +29,7 @@ define(["jquery", "underscore", "backbone", "hbs!templates/google_sign_in"],
 
             "__load": function() {
                 this.$el.html(Tpl(this.model.toJSON()));
-                _.defer(WebApp.GDrive.Workdesk.find);
+                WebApp.GDrive.Workdesk.find();
             }
         });
     });

@@ -1,9 +1,7 @@
-define(["jquery", "underscore", "backbone", "backbone-poller",
-        "router",
+define(["jquery", "underscore", "backbone", "router",
         "models/sessions", "models/datamodel", "models/lookups", "backbone_gdrive", "models/workdesk_model",
         "views/items_grid_view", "views/pivot_data_view", "views/search_control"],
-    function ($, _, Backbone, Poller, AppRouter, SessionsCollection, Datamodel, LookupsModel,
-              BackboneGDrive, WorkdeskModel, ItemGridView, PivotDataView, SearchControl) {
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, BackboneGDrive, WorkdeskModel, ItemGridView, PivotDataView, SearchControl) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
@@ -27,7 +25,7 @@ define(["jquery", "underscore", "backbone", "backbone-poller",
             Search: new SearchControl(),
             GDrive: {
                 Workdesk: new WorkdeskModel(),
-                Changes: new BackboneGDrive.Collection({ "kind": "drive#changeList"})
+                Changes: new BackboneGDrive.List({ "kind": "drive#changeList", "active": true })
             }
         };
 
@@ -78,19 +76,20 @@ define(["jquery", "underscore", "backbone", "backbone-poller",
 //
 //            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
 
-            var poller = Poller.get(WebApp.GDrive.Changes, { "delay": 10000 });
-            _.defer(_.bind(poller.start, poller));
-
+            WebApp.GDrive.Changes.on("error", function(a,b,c) {
+                console.debug("WebApp.GDrive.Changes.error:" + a + "," + b + "," + c);
+            });
+            WebApp.GDrive.Changes.on("complete", function() {
+                _.delay(WebApp.GDrive.Changes.fetch, 3000);
+            }, this);
             WebApp.GDrive.Changes.on("change:items", function () {
-                _.each(WebApp.GDrive.Changes.get("items"), function(item) {
-                    if (_.has(item, "file")) {
-                        var file = item["file"];
-                        if (_.isEqual(file["id"], WebApp.GDrive.Workdesk.get("id"))) {
-                            WebApp.GDrive.Workdesk.set(file);
-                        }
+                _.each(WebApp.GDrive.Changes.get("items"), function (item) {
+                    if (_.isEqual(item["fileId"], WebApp.GDrive.Workdesk.get("id"))) {
+                        _.defer(WebApp.GDrive.Workdesk.fetch);
                     }
                 }, this);
             }, this);
+            WebApp.GDrive.Changes.list();
         };
 
         WebApp.alert = function (alertEl, timeout) {

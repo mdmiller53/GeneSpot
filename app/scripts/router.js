@@ -134,7 +134,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
             "new_workbook": function (workdesk_id) {
                 console.debug("router.new_workbook:" + workdesk_id);
 
-                var model = new BackboneGDrive.JsonPayloadModel({
+                var model = new BackboneGDrive.FileModel({
                     "title": "Untitled Workbook",
                     "mimeType": "application/vnd.genespot.workbook",
                     "parents": [
@@ -156,20 +156,20 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                     return _.defer(this.new_workbook);
                 }
 
-                var model = new BackboneGDrive.JsonPayloadModel({ "id": workbook_id });
+                var model = new BackboneGDrive.FileModel({ "id": workbook_id });
                 var view = new WorkbookView({ "model": model });
                 this.$el.html(view.render().el);
 
+                _.defer(model.payload);
                 model.once("change", function() {
                     this.$el.fadeIn();
                 }, this);
                 model.fetch();
 
-                WebApp.GDrive.Changes.on("change", function () {
+                WebApp.GDrive.Changes.on("change:items", function () {
                     _.each(WebApp.GDrive.Changes.get("items"), function(item) {
-                        if (_.has(item, "file")) {
-                            var file = item["file"];
-                            if (_.isEqual(file["id"], model.get("id"))) model.set(file);
+                        if (_.has(item, "fileId")) {
+                            if (_.isEqual(item["fileId"], model.get("id"))) _.defer(model.fetch);
                         }
                     }, this);
                 }, this);

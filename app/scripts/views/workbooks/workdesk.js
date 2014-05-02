@@ -8,7 +8,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                     if (workbook_id) WebApp.Router.navigate("#wb/" + workbook_id, { "trigger": true });
                 },
                 "click a.new-workbook": function () {
-                    WebApp.Router.navigate("#wd/" + this.model.get("id") + "/new", { "trigger": true });
+                    WebApp.Router.navigate("#wb/new", { "trigger": true });
                 }
             },
 
@@ -16,8 +16,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                 this.model = this.options.model;
                 this.folder = this.model.childReferences();
 
-                this.model.on("change", this.folder.list, this);
-                this.folder.on("add", this.__render_workbooks, this);
+                this.model.on("change", this.folder.list, this.folder);
                 this.folder.on("change:items", this.__render_workbooks, this);
             },
 
@@ -27,7 +26,9 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             },
 
             "__render_workbooks": function () {
-                var lineItems = this.folder.map(function (model) {
+                var $wblEl = this.$(".workbooks-list").empty();
+                _.each(this.folder.get("items"), function (item) {
+                    var model = new BackboneGDrive.FileModel(item);
                     model.on("change", function () {
                         var id = model.get("id");
                         var title = model.get("title");
@@ -36,16 +37,10 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                             WebApp.Router.navigate("#wb/" + id, { "trigger": true });
                         });
 
-                        return LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title });
+                        $wblEl.append(LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title }));
                     }, this);
-                    model.fetch();
-
+                    _.defer(model.fetch);
                 }, this);
-
-                if (!_.isEmpty(lineItems)) {
-                    var $wblEl = this.$(".workbooks-list").empty();
-                    _.each(lineItems, $wblEl.append, $wblEl);
-                }
             }
         });
     });

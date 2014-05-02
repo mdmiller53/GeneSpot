@@ -24,10 +24,9 @@ define(["jquery", "underscore", "backbone"],
          *
          * - Subclasses
          *   - FileModel: "copy", "insert", "update", "touch", "trash", "untrash"
-         *      - extensions: "childReferences", "parentReferences", "permissions", "revisions",
-         *                    "comments", "replies"
-         *   - JsonPayloadModel: "upload", "download"
-         *   - Comment: "replies"
+         *      - extensions: "childReferences", "parentReferences", "permissions", "revisions", "comments"
+         *          - "payload": "upload", "download"
+         *   - CommentModel: "replies"
          *
          * Events:
          * - Model
@@ -45,7 +44,6 @@ define(["jquery", "underscore", "backbone"],
          *    - touched
          *    - trashed
          *    - untrashed
-         * - JsonPayloadModel
          *    - change:payload
          */
         var BackboneGDrive = {
@@ -58,7 +56,7 @@ define(["jquery", "underscore", "backbone"],
          * loadLocal loads from localStorage and triggers events
          */
         var BGLocal = {
-            "initLocal": function() {
+            "initLocal": function () {
                 _.bindAll(this, "removeLocal", "setLocal", "loadLocal");
 
                 this.on("destroy", this.removeLocal, this);
@@ -74,20 +72,24 @@ define(["jquery", "underscore", "backbone"],
 
             "setLocal": function (options) {
                 if (options["is_change_from_load"]) return;
+                if (__is_kind(this, ["drive#change", "drive#changeList"])) return;
                 localStorage.setItem("backbone_gdrive:" + this.url(), JSON.stringify(this.toJSON()));
             },
 
             "loadLocal": function () {
-                return false;
-//                        var strjson = localStorage.getItem("backbone_gdrive:" + this.url());
-//                        if (_.isEmpty(strjson) || !_.isString(strjson)) return false;
+//                if (__is_kind(this, ["drive#change", "drive#changeList"])) return false;
 //
-//                        var local = JSON.parse(strjson);
-//                        if (local) {
-//                            this.set(local, { "silent": true });
-//                            this.trigger("change", { "is_change_from_load": true });
-//                        }
-//                        return local;
+//                var strjson = localStorage.getItem("backbone_gdrive:" + this.url());
+//                if (_.isEmpty(strjson) || !_.isString(strjson)) return false;
+//
+//                var local = JSON.parse(strjson);
+//                if (local) {
+//                    this.set(local, { "silent": true });
+//                    this.trigger("change", { "is_change_from_load": true });
+//                }
+//                return local;
+
+                return false;
             }
         };
 
@@ -98,28 +100,25 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "url": function () {
-                var kind = this.get("kind");
-                if (_.isEmpty(kind)) return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
-
-                if (kind === "drive#about") return BackboneGDrive.DRIVE_API_BASE_URL + "/about";
+                if (_.isEmpty(this.get("kind"))) return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
+                if (__is_kind(this, "drive#about")) return BackboneGDrive.DRIVE_API_BASE_URL + "/about";
 
                 var id = this.get("id");
-                if (kind === "drive#app") return BackboneGDrive.DRIVE_API_BASE_URL + "/apps/" + id;
-                if (kind === "drive#change") return BackboneGDrive.DRIVE_API_BASE_URL + "/changes/" + id;
-
+                if (__is_kind(this, "drive#app")) return BackboneGDrive.DRIVE_API_BASE_URL + "/apps/" + id;
+                if (__is_kind(this, "drive#change")) return BackboneGDrive.DRIVE_API_BASE_URL + "/changes/" + id;
 
                 var baseUrl = BackboneGDrive.DRIVE_API_BASE_URL + "/files/" + this.get("fileId");
-                if (kind === "drive#childReference") return baseUrl + "/children/" + id;
-                if (kind === "drive#parentReference") return baseUrl + "/parents/" + id;
-                if (kind === "drive#permission") return baseUrl + "/permissions/" + id;
-                if (kind === "drive#revision") return baseUrl + "/revisions/" + id;
-                if (kind === "drive#property") {
+                if (__is_kind(this, "drive#childReference")) return baseUrl + "/children/" + id;
+                if (__is_kind(this, "drive#parentReference")) return baseUrl + "/parents/" + id;
+                if (__is_kind(this, "drive#permission")) return baseUrl + "/permissions/" + id;
+                if (__is_kind(this, "drive#revision")) return baseUrl + "/revisions/" + id;
+                if (__is_kind(this, "drive#property")) {
                     var propertyKey = this.get("propertyKey");
                     return baseUrl + "/properties/" + propertyKey;
                 }
 
-                if (kind === "drive#comment") return baseUrl + "/comments/" + id;
-                if (kind === "drive#commentReply") {
+                if (__is_kind(this, "drive#comment")) return baseUrl + "/comments/" + id;
+                if (__is_kind(this, "drive#commentReply")) {
                     var cId = this.get("commentId");
                     return baseUrl + "/comments/" + cId + "/replies/" + id;
                 }
@@ -159,7 +158,7 @@ define(["jquery", "underscore", "backbone"],
             "insert": function (options) {
                 options = options || {};
 
-                if (__is_kind(this, ["drive#permission", "drive#comment", "drive#commentReply"])) {
+                if (__is_kind(this, this, ["drive#permission", "drive#comment", "drive#commentReply"])) {
                     return Backbone.sync("create", this, {
                         "url": this.url(),
                         "method": "POST",
@@ -168,18 +167,18 @@ define(["jquery", "underscore", "backbone"],
                     });
                 }
 
-                if (__is_kind(this, ["drive#childReference", "drive#parentReference", "drive#property"])) {
+                if (__is_kind(this, this, ["drive#childReference", "drive#parentReference", "drive#property"])) {
                     return Backbone.sync("create", this, { "url": this.url(), "method": "POST" });
                 }
             },
 
             "patch": function (options) {
                 var url = this.url();
-                if (__is_kind(this, "drive#permission")) {
+                if (__is_kind(this, this, "drive#permission")) {
                     url += "?transferOwnership=" + (options["transferOwnership"] || false);
-                } else if (_.has(options, "visibility") && __is_kind(this, "drive#property")) {
+                } else if (_.has(options, "visibility") && __is_kind(this, this, "drive#property")) {
                     url += "?visibility=" + options["visibility"];
-                } else if (__is_kind(this, ["drive#file", "drive#revision", "drive#comment", "drive#commentReply"])) {
+                } else if (__is_kind(this, this, ["drive#file", "drive#revision", "drive#comment", "drive#commentReply"])) {
                     // other supported types
                 } else {
                     return null;
@@ -202,13 +201,13 @@ define(["jquery", "underscore", "backbone"],
 
             "update": function (options) {
                 var url = this.url();
-                if (__is_kind(this, "drive#permission")) {
+                if (__is_kind(this, this, "drive#permission")) {
                     url += "?transferOwnership=" + (options["transferOwnership"] || false);
 
-                } else if (_.has(options, "visibility") && __is_kind(this, "drive#property")) {
+                } else if (_.has(options, "visibility") && __is_kind(this, this, "drive#property")) {
                     url += "?visibility=" + options["visibility"];
 
-                } else if (__is_kind(this, ["drive#revision", "drive#comment", "drive#commentReply"])) {
+                } else if (__is_kind(this, this, ["drive#revision", "drive#comment", "drive#commentReply"])) {
                     // other supported basic types
 
                 } else {
@@ -229,6 +228,18 @@ define(["jquery", "underscore", "backbone"],
                     },
                     "context": this
                 });
+            }
+        }));
+
+        BackboneGDrive.CommentModel = BackboneGDrive.Model.extend({
+            "defaults": {
+                "kind": "drive#comment"
+            },
+
+            "url": function () {
+                var id = this.get("id");
+                var fileId = this.get("fileId");
+                return BackboneGDrive.DRIVE_API_BASE_URL + "/files/" + fileId + "/comments/" + id;
             },
 
             "replies": function () {
@@ -237,14 +248,15 @@ define(["jquery", "underscore", "backbone"],
                 if (this.loadLocal()) return this;
 
                 if (!this.comment_replies) {
-                    this.comment_replies = new BackboneGDrive.Collection({
-                        "fileId": this.get("id"),
+                    this.comment_replies = new BackboneGDrive.List({
+                        "fileId": this.get("fileId"),
+                        "commentId": this.get("id"),
                         "kind": "drive#commentReplyList"
                     });
                 }
                 return this.comment_replies;
             }
-        }));
+        });
 
         BackboneGDrive.FileModel = BackboneGDrive.Model.extend({
             "initialize": function (attributes, options) {
@@ -252,6 +264,7 @@ define(["jquery", "underscore", "backbone"],
                 _.bindAll(this, "touch", "trash", "untrash", "__simple_post");
                 _.bindAll(this, "childReferences", "parentReferences");
                 _.bindAll(this, "permissions", "revisions", "comments");
+                _.bindAll(this, "payload", "upload", "download");
 
                 BackboneGDrive.Model.prototype.initialize.call(this, attributes, options);
             },
@@ -290,9 +303,8 @@ define(["jquery", "underscore", "backbone"],
                 return Backbone.sync("create", this, {
                     "url": this.url(),
                     "method": "POST",
-                    "data": _.extend({ "uploadType": "media" }, options["arguments"]),
-                    "traditional": true,
-                    "error": this.__error_handler(options)
+                    "data": JSON.stringify(_.extend({ "uploadType": "media" }, options["arguments"])),
+                    "traditional": true
                 });
             },
 
@@ -329,23 +341,23 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "childReferences": function () {
-                return this.__collections_by_kind("drive#childList");
+                return this.__list_references_by_kind("drive#childList");
             },
 
             "parentReferences": function () {
-                return this.__collections_by_kind("drive#parentList");
+                return this.__list_references_by_kind("drive#parentList");
             },
 
             "permissions": function () {
-                return this.__collections_by_kind("drive#permissionList");
+                return this.__list_references_by_kind("drive#permissionList");
             },
 
             "revisions": function () {
-                return this.__collections_by_kind("drive#revisionList");
+                return this.__list_references_by_kind("drive#revisionList");
             },
 
             "comments": function () {
-                return this.__collections_by_kind("drive#commentList");
+                return this.__list_references_by_kind("drive#commentList");
             },
 
             "__simple_post": function (options, verb) {
@@ -362,36 +374,35 @@ define(["jquery", "underscore", "backbone"],
                 });
             },
 
-            "__collected_by_kind": {},
+            "__references_by_kind": {},
 
-            "__collections_by_kind": function (kind) {
+            "__list_references_by_kind": function (kind) {
                 if (!_.isEmpty(this.get("id"))) {
-                    var collection = this.__collected_by_kind[kind];
-                    if (!collection) {
-                        collection = new BackboneGDrive.Collection({ "fileId": this.get("id"), "kind": kind });
-                        this.__collected_by_kind[kind] = collection;
+                    var ref_list = this.__references_by_kind[kind] || [];
+                    if (_.isEmpty(ref_list)) {
+                        ref_list = new BackboneGDrive.List({ "fileId": this.get("id"), "kind": kind });
+                        this.__references_by_kind[kind] = ref_list;
                     }
-                    return collection;
+                    return ref_list;
                 }
                 return null;
-            }
-        });
+            },
 
-        BackboneGDrive.JsonPayloadModel = BackboneGDrive.FileModel.extend({
-            "initialize": function (attributes, options) {
-                _.bindAll(this, "initialize", "upload", "download");
-                this.on("change:payload", this.upload, this);
-                this.on("change:fileSize", this.download, this);
-                _.defer(this.download);
-
-                BackboneGDrive.Model.prototype.initialize.call(this, attributes, options);
+            "payload": function () {
+                if (!this.payloadEnabled) {
+                    this.on("change:payload", this.upload, this);
+                    this.on("change:fileSize", this.download, this);
+                    _.defer(this.download);
+                    this.payloadEnabled = true;
+                }
+                return this;
             },
 
             "upload": function (options) {
                 options = options || {};
                 if (options["is_change_from_download"]) return false;
 
-                if (!__is_kind(this, "drive#file")) return false;
+                if (!__is_kind(this, this, "drive#file")) return false;
                 if (_.isEmpty(this.get("payload"))) return false;
 
                 return $.ajax(_.extend({}, {
@@ -426,10 +437,10 @@ define(["jquery", "underscore", "backbone"],
             }
         });
 
-        BackboneGDrive.Collection = Backbone.Collection.extend(_.extend(BGLocal, {
+        BackboneGDrive.List = Backbone.Model.extend({
             "initialize": function () {
                 _.bindAll(this, "initialize", "list", "fetch", "url");
-                _.defer(_.bind(this.initLocal, this));
+//                _.defer(_.bind(this.initLocal, this));
             },
 
             "fetch": function () {
@@ -439,23 +450,19 @@ define(["jquery", "underscore", "backbone"],
             "list": function (options) {
                 options = options || {};
 
-                if (this.loadLocal()) return this;
-
-                this.once("listed", function (json) {
-                    if (_.has(json, "items")) {
-                        this.add(_.map(json["items"], function(item) {
-                            if (_.isEqual(item["kind"], "drive#file")) return new BackboneGDrive.FileModel(item);
-                            return new BackboneGDrive.Model(item);
-                        }, this));
-                    }
-                }, this);
+//                if (this.loadLocal()) return this;
 
                 var payload = {
                     "url": this.url(),
                     "method": "GET",
+                    "contentType": "application/json",
                     "dataType": "json",
-                    "success": function (json) {
-                        this.trigger("listed", json);
+                    "success": function(json) {
+                        this.set(json);
+                        this.trigger("complete");
+                    },
+                    "error": function() {
+                        this.trigger("complete");
                     },
                     "context": this
                 };
@@ -467,7 +474,7 @@ define(["jquery", "underscore", "backbone"],
                         "drive#parentList",
                         "drive#permissionList"
                     ];
-                    if (__is_kind(this, queryable)) {
+                    if (__is_kind(this, this, queryable)) {
                         _.extend(payload, {
                             "data": _.extend({}, options["query"]),
                             "traditional": true
@@ -480,37 +487,34 @@ define(["jquery", "underscore", "backbone"],
 
             "url": function () {
                 if (_.isEmpty(this.get("kind"))) return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
-
-                var kind = this.get("kind");
-                if (kind === "drive#appList") return BackboneGDrive.DRIVE_API_BASE_URL + "/apps";
-
-                if (kind === "drive#changeList") {
+                if (__is_kind(this, "drive#appList")) return BackboneGDrive.DRIVE_API_BASE_URL + "/apps";
+                if (__is_kind(this, "drive#changeList")) {
                     var largestChangeId = parseInt(this.get("largestChangeId"));
                     if (!_.isNaN(largestChangeId)) {
-                        return this.DRIVE_API_BASE_URL + "/changes?startChangeId=" + (largestChangeId + 1);
+                        return BackboneGDrive.DRIVE_API_BASE_URL + "/changes?startChangeId=" + (largestChangeId + 1);
                     }
-                    return this.DRIVE_API_BASE_URL + "/changes";
+                    return BackboneGDrive.DRIVE_API_BASE_URL + "/changes";
                 }
 
-                if (kind === "drive#fileList") return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
-                if (kind === "drive#appList") return BackboneGDrive.DRIVE_API_BASE_URL + "/apps";
+                if (__is_kind(this, "drive#fileList")) return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
+                if (__is_kind(this, "drive#appList")) return BackboneGDrive.DRIVE_API_BASE_URL + "/apps";
 
                 var baseUrl = BackboneGDrive.DRIVE_API_BASE_URL + "/files/" + this.get("fileId");
-                if (kind === "drive#childList") return baseUrl + "/children";
-                if (kind === "drive#parentList") return baseUrl + "/parents";
-                if (kind === "drive#permissionList") return baseUrl + "/permissions";
-                if (kind === "drive#revisionList") return baseUrl + "/revisions";
-                if (kind === "drive#propertyList") return baseUrl + "/properties";
+                if (__is_kind(this, "drive#childList")) return baseUrl + "/children";
+                if (__is_kind(this, "drive#parentList")) return baseUrl + "/parents";
+                if (__is_kind(this, "drive#permissionList")) return baseUrl + "/permissions";
+                if (__is_kind(this, "drive#revisionList")) return baseUrl + "/revisions";
+                if (__is_kind(this, "drive#propertyList")) return baseUrl + "/properties";
 
-                if (kind === "drive#commentList") return baseUrl + "/comments";
-                if (kind === "drive#commentReplyList") {
+                if (__is_kind(this, "drive#commentList")) return baseUrl + "/comments";
+                if (__is_kind(this, "drive#commentReplyList")) {
                     var cId = this.get("commentId");
                     return baseUrl + "/comments/" + cId + "/replies";
                 }
 
                 return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
             }
-        }));
+        });
 
         return BackboneGDrive;
     });

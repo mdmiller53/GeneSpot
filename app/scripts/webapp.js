@@ -82,7 +82,11 @@ define(["jquery", "underscore", "backbone", "router",
             WebApp.GDrive.Changes.on("change:items", function () {
                 _.each(WebApp.GDrive.Changes.get("items"), function (item) {
                     if (_.isEqual(item["fileId"], WebApp.GDrive.Workdesk.get("id"))) {
-                        _.defer(WebApp.GDrive.Workdesk.fetch);
+                        if (_.has(item, "file")) {
+                            WebApp.GDrive.Workdesk.set(item["file"]);
+                        } else {
+                            _.defer(WebApp.GDrive.Workdesk.fetch);
+                        }
                     }
                 }, this);
             }, this);

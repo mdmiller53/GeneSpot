@@ -125,7 +125,10 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 console.debug("router.workdesk:" + workdesk_id);
 
                 var WGW = WebApp.GDrive.Workdesk;
-                if (workdesk_id) WGW.set("id", workdesk_id);
+                if (!_.isEqual(WGW.get("id"), workdesk_id)) {
+                    WGW.clear();
+                    WGW.set("id", workdesk_id);
+                }
 
                 var view = new WorkdeskView({ "model": WGW });
                 this.$el.html(view.render().el);
@@ -184,8 +187,12 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
                 WebApp.GDrive.Changes.on("change:items", function () {
                     _.each(WebApp.GDrive.Changes.get("items"), function(item) {
-                        if (_.has(item, "fileId")) {
-                            if (_.isEqual(item["fileId"], model.get("id"))) _.defer(model.fetch);
+                        if (_.isEqual(item["fileId"], model.get("id")))  {
+                            if (_.has(item, "file")) {
+                                model.set(item["file"]);
+                            } else {
+                                _.defer(model.fetch);
+                            }
                         }
                     }, this);
                 }, this);

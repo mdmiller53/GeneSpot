@@ -53,51 +53,65 @@ define(["jquery", "underscore", "backbone"],
         /**
          * Provides support for local storage
          * listens to CRUD events to update localStorage
-         * loadLocal loads from localStorage and triggers events
+         * init_from_local loads from localStorage and triggers events
          */
         var BGLocal = {
-            "initLocal": function () {
-                _.bindAll(this, "removeLocal", "setLocal", "loadLocal");
+            "init_from_local": function () {
+                _.bindAll(this, "__remove_local", "__set_local", "load_from_local");
 
-                this.on("destroy", this.removeLocal, this);
-                this.on("remove", this.removeLocal, this);
-                this.on("change", this.setLocal, this);
-                this.on("reset", this.setLocal, this);
-                this.on("sync", this.setLocal, this);
+                if (__is_kind(this, ["drive#change", "drive#changeList"])) return;
+
+                if (!this.hasLocalListeners) {
+                    this.on("destroy", this.__remove_local, this);
+                    this.on("remove", this.__remove_local, this);
+                    this.on("change", this.__set_local, this);
+//                this.on("reset", this.__set_local, this);
+//                this.on("sync", this.__set_local, this);
+                    this.hasLocalListeners = true;
+                }
             },
 
-            "removeLocal": function () {
+            "load_from_local": function() {
+                if (__is_kind(this, ["drive#change", "drive#changeList"])) return false;
+
+                var url = this.url();
+                if (!_.isEmpty(url)) {
+//                    console.debug("BbGd.BGLocal.load_from_local:>>>" + this.url() + "<<<");
+
+                    var strjson = localStorage.getItem("backbone_gdrive:" + url);
+                    if (_.isEmpty(strjson) || !_.isString(strjson)) return false;
+
+                    var local = JSON.parse(strjson);
+                    if (local) {
+                        this.set(local, { "ignore_this_change": true });
+                    }
+//                    console.debug("BbGd.BGLocal.load_from_local:>>>" + url + "<<<:" + _.isObject(local));
+                    return local;
+                }
+                return false;
+            },
+
+            "__remove_local": function () {
                 localStorage.removeItem("backbone_gdrive:" + this.url());
             },
 
-            "setLocal": function (options) {
+            "__set_local": function (model, options) {
                 options = options || {};
-                if (options["is_change_from_load"]) return;
+
+                if (options["ignore_this_change"]) return;
                 if (__is_kind(this, ["drive#change", "drive#changeList"])) return;
-                localStorage.setItem("backbone_gdrive:" + this.url(), JSON.stringify(this.toJSON()));
-            },
 
-            "loadLocal": function () {
-//                if (__is_kind(this, ["drive#change", "drive#changeList"])) return false;
-//
-//                var strjson = localStorage.getItem("backbone_gdrive:" + this.url());
-//                if (_.isEmpty(strjson) || !_.isString(strjson)) return false;
-//
-//                var local = JSON.parse(strjson);
-//                if (local) {
-//                    this.set(local, { "silent": true });
-//                    this.trigger("change", { "is_change_from_load": true });
-//                }
-//                return local;
-
-                return false;
+                var url = this.url();
+                var json = this.toJSON();
+                console.debug("BbGd.BGLocal.__set_local:>>>" + url + "<<<:" + _.isObject(json));
+                localStorage.setItem("backbone_gdrive:" + url, JSON.stringify(json, undefined, 2));
             }
         };
 
         BackboneGDrive.Model = Backbone.Model.extend(_.extend(BGLocal, {
             "initialize": function () {
                 _.bindAll(this, "initialize", "url", "fetch", "delete", "insert", "patch", "update");
-                _.defer(_.bind(this.initLocal, this));
+                _.defer(_.bind(this.init_from_local, this));
             },
 
             "url": function () {
@@ -129,7 +143,7 @@ define(["jquery", "underscore", "backbone"],
             "fetch": function (options) {
                 options = options || {};
 
-                if (this.loadLocal()) return this;
+                if (this.load_from_local()) return this;
 
                 return Backbone.Model.prototype.fetch.call(this, _.extend({
                     "url": this.url(),
@@ -246,7 +260,7 @@ define(["jquery", "underscore", "backbone"],
             "replies": function () {
                 if (_.isEmpty(this.get("id"))) return null;
 
-                if (this.loadLocal()) return this;
+                if (this.load_from_local()) return this;
 
                 if (!this.comment_replies) {
                     this.comment_replies = new BackboneGDrive.List({
@@ -411,7 +425,7 @@ define(["jquery", "underscore", "backbone"],
                     "method": "PUT",
                     "contentType": "application/json",
                     "dataType": "json",
-                    "data": JSON.stringify(this.get("payload")),
+                    "data": JSON.stringify(this.get("payload"), undefined, 2),
                     "success": this.set,
                     "context": this
                 }));
@@ -454,10 +468,10 @@ define(["jquery", "underscore", "backbone"],
             }
         });
 
-        BackboneGDrive.List = Backbone.Model.extend({
+        BackboneGDrive.List = Backbone.Model.extend(_.extend(BGLocal, {
             "initialize": function () {
                 _.bindAll(this, "initialize", "list", "fetch", "url");
-//                _.defer(_.bind(this.initLocal, this));
+                _.defer(_.bind(this.init_from_local, this));
             },
 
             "fetch": function () {
@@ -467,7 +481,7 @@ define(["jquery", "underscore", "backbone"],
             "list": function (options) {
                 options = options || {};
 
-//                if (this.loadLocal()) return this;
+                if (this.load_from_local()) return this;
 
                 var payload = {
                     "url": this.url(),
@@ -531,7 +545,7 @@ define(["jquery", "underscore", "backbone"],
 
                 return BackboneGDrive.DRIVE_API_BASE_URL + "/files";
             }
-        });
+        }));
 
         return BackboneGDrive;
     });

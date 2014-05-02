@@ -32,11 +32,6 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                     model.on("change", function () {
                         var id = model.get("id");
                         var title = model.get("title");
-                        var keywords = _.flatten([title, model.get("description"), model.get("keywords")]);
-                        WebApp.Search.add_callback("Workbooks", title, keywords, function () {
-                            WebApp.Router.navigate("#wb/" + id, { "trigger": true });
-                        });
-
                         $wblEl.append(LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title }));
                     }, this);
                     _.defer(model.fetch);

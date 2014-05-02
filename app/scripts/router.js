@@ -109,10 +109,16 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
             "empty_workdesk": function () {
                 var WGW = WebApp.GDrive.Workdesk;
-                WGW.once("change:id", function() {
+                var carryOn = function() {
                     WebApp.Router.navigate("#wd/" + WGW.get("id"), { "trigger": true });
-                }, this);
-                WGW.find();
+                };
+
+                if (_.isEmpty(WGW.get("id"))) {
+                    WGW.once("change", carryOn, this);
+                    return _.defer(WGW.find);
+                }
+
+                _.defer(carryOn);
             },
 
             "workdesk": function (workdesk_id) {

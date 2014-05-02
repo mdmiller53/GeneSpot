@@ -437,6 +437,20 @@ define(["jquery", "underscore", "backbone"],
             }
         });
 
+        BackboneGDrive.FolderModel = BackboneGDrive.FileModel.extend({
+            "defaults": {
+                "kind": "drive#file",
+                "parents": [
+                    { "id": "root" }
+                ],
+                "mimeType": "application/vnd.google-apps.folder"
+            },
+
+            "initialize": function() {
+                this.files = new BackboneGDrive.List({ "kind": "drive#fileList" });
+            }
+        });
+
         BackboneGDrive.List = Backbone.Model.extend({
             "initialize": function () {
                 _.bindAll(this, "initialize", "list", "fetch", "url");

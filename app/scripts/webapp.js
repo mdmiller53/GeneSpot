@@ -76,11 +76,8 @@ define(["jquery", "underscore", "backbone", "router",
 //
 //            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
 
-            WebApp.GDrive.Changes.on("error", function(a,b,c) {
-                console.debug("WebApp.GDrive.Changes.error:" + a + "," + b + "," + c);
-            });
             WebApp.GDrive.Changes.on("complete", function() {
-                _.delay(WebApp.GDrive.Changes.fetch, 3000);
+                _.delay(WebApp.GDrive.Changes.list, 5000);
             }, this);
             WebApp.GDrive.Changes.on("change:items", function () {
                 _.each(WebApp.GDrive.Changes.get("items"), function (item) {

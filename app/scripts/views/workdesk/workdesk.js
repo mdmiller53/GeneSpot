@@ -1,5 +1,5 @@
 define(["jquery", "underscore", "backbone", "backbone_gdrive",
-        "hbs!templates/workbooks/workdesk", "hbs!templates/line_item"],
+        "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
     function ($, _, Backbone, BackboneGDrive, Tpl, LineItemTpl) {
         return Backbone.View.extend({
             "events": {
@@ -9,6 +9,13 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                 },
                 "click a.new-workbook": function () {
                     WebApp.Router.navigate("#wb/new", { "trigger": true });
+                },
+                "click a.open-dataset": function (e) {
+                    var dataset_id = $(e.target).data("id");
+                    if (dataset_id) WebApp.Router.navigate("#dataset/" + dataset_id, { "trigger": true });
+                },
+                "click a.new-dataset": function () {
+                    WebApp.Router.navigate("#dataset/new", { "trigger": true });
                 }
             },
 

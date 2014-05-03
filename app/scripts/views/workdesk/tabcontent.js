@@ -1,5 +1,5 @@
 define(["jquery", "underscore", "backbone",
-        "hbs!templates/workbooks/tab", "hbs!templates/workbooks/pane", "hbs!templates/workbooks/content"],
+        "hbs!templates/workdesk/tab", "hbs!templates/workdesk/pane", "hbs!templates/workdesk/content"],
     function ($, _, Backbone, TabTpl, TabPaneTpl, TabContentTpl) {
         return Backbone.View.extend({
             "initialize": function () {

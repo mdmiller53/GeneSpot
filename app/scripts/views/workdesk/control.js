@@ -1,4 +1,4 @@
-define(["jquery", "underscore", "backbone", "hbs!templates/workbooks/container"],
+define(["jquery", "underscore", "backbone", "hbs!templates/workdesk/container"],
     function ($, _, Backbone, Tpl) {
         return Backbone.View.extend({
             workbooks: new Backbone.Model({}, {

@@ -1,5 +1,5 @@
 define(["jquery", "underscore", "backbone",
-        "hbs!templates/workbooks/workbook", "hbs!templates/workbooks/worktabs", "hbs!templates/workbooks/bookinfo"],
+        "hbs!templates/workdesk/workbook", "hbs!templates/workdesk/worktabs", "hbs!templates/workdesk/bookinfo"],
     function ($, _, Backbone, Tpl, WorkTabsTpl, BookInfoTpl) {
         return Backbone.View.extend({
             "events": {
@@ -22,18 +22,14 @@ define(["jquery", "underscore", "backbone",
                     });
                 },
                 "click a.save-workbook": function () {
-                    if (this.get("id")) {
-                        _.defer(this.update);
+                    if (this.model.get("id")) {
+                        _.defer(this.model.update);
                     } else {
-                        this.once("inserted", function() {
-                            WebApp.Router.navigate("#wb/" + this.get("id"), { "trigger": true });
+                        this.model.once("change", function() {
+                            WebApp.Router.navigate("#wb/" + this.model.get("id"), { "trigger": true });
                         }, this);
-                        _.defer(this.insert);
+                        _.defer(this.model.insert);
                     }
-                },
-                "click a.open-workbook": function(e) {
-                    var workbook_id = $(e.target).data("id");
-                    if (workbook_id) WebApp.Router.navigate("#wb/" + workbook_id, { "trigger": true });
                 }
             },
 

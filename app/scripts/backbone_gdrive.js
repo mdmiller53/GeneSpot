@@ -39,7 +39,6 @@ define(["jquery", "underscore", "backbone"],
          *    - error
          * - File
          *    - copied
-         *    - inserted
          *    - updated
          *    - touched
          *    - trashed
@@ -310,22 +309,26 @@ define(["jquery", "underscore", "backbone"],
             "insert": function (options) {
                 options = options || {};
 
-                this.once("sync", function () {
-                    console.debug("INSERTED!");
-                    this.trigger("inserted");
-                }, this);
+                this.__remove_local();
 
-                return Backbone.sync("create", this, {
-                    "url": this.url(),
+                return $.ajax({
                     "method": "POST",
-                    "data": JSON.stringify(_.extend({ "uploadType": "media" }, options["arguments"])),
-                    "traditional": true
+                    "url": "svc/auth/providers/google_apis/drive/v2/files?uploadType=media",
+                    "contentType": "application/json",
+                    "dataType": "json",
+                    "data": JSON.stringify(this.toJSON(), undefined, 2),
+                    "success": function(json) {
+                        this.set(json);
+                    },
+                    "context": this
                 });
             },
 
             "update": function (options) {
                 options = options || {};
                 if (_.isEmpty(this.get("id"))) return null;
+
+                this.__remove_local();
 
                 return $.ajax(_.extend({
                     "url": this.url() + "?uploadType=media",
@@ -376,6 +379,8 @@ define(["jquery", "underscore", "backbone"],
             },
 
             "__simple_post": function (options, verb) {
+                this.__remove_local();
+
                 return $.ajax({
                     "method": "POST",
                     "url": this.url() + "/" + verb,

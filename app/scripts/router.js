@@ -1,6 +1,7 @@
 define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
-        "views/gs/atlas", "models/atlas/map_factory", "backbone_gdrive", "views/workbooks/workdesk", "views/workbooks/workbook"],
-    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, BackboneGDrive, WorkdeskView, WorkbookView) {
+        "views/gs/atlas", "models/atlas/map_factory", "backbone_gdrive",
+        "views/workdesk/workdesk", "views/workdesk/workbook", "views/workdesk/dataset"],
+    function ($, _, Backbone, Bootstrap, TopNavBar, AtlasView, MapFactory, BackboneGDrive, WorkdeskView, WorkbookView, DatasetView) {
 
         return Backbone.Router.extend({
             targetEl: "#main-container",
@@ -11,6 +12,8 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 "wd/:workdesk_id": "workdesk",
                 "wb/new": "new_workbook",
                 "wb/:workbook_id": "workbook",
+                "dataset/new": "new_dataset",
+                "dataset/:dataset_id": "dataset",
                 "cm/:cm_id": "load_collected_map",
                 "v/*uri/:view_name": "viewsByUri",
                 "s/*sessionId": "loadSessionById"
@@ -177,6 +180,64 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
 
                 var model = new BackboneGDrive.FileModel({ "id": workbook_id });
                 var view = new WorkbookView({ "model": model });
+                this.$el.html(view.render().el);
+
+                _.defer(model.payload);
+                model.once("change", function() {
+                    this.$el.fadeIn();
+                }, this);
+                model.fetch();
+
+                WebApp.GDrive.Changes.on("change:items", function () {
+                    _.each(WebApp.GDrive.Changes.get("items"), function(item) {
+                        if (_.isEqual(item["fileId"], model.get("id")))  {
+                            if (_.has(item, "file")) {
+                                model.set(item["file"]);
+                            } else {
+                                _.defer(model.fetch);
+                            }
+                        }
+                    }, this);
+                }, this);
+            },
+
+            "new_dataset": function () {
+                console.debug("router.new_dataset");
+
+                var model = new BackboneGDrive.FileModel({
+                    "title": "Untitled Dataset 3",
+                    "mimeType": "application/vnd.genespot.dataset"
+                });
+
+                var setParent = function() {
+                    var id = WebApp.GDrive.Workdesk.get("id");
+                    if (_.isEmpty(id)) return;
+
+                    model.set({
+                        "parents": [
+                            { "id": WebApp.GDrive.Workdesk.get("id"), "kind": "drive#fileLink" }
+                        ]
+                    });
+                };
+                WebApp.GDrive.Workdesk.on("change:id", setParent);
+                WebApp.GDrive.Workdesk.find();
+
+                var view = new DatasetView({ "model": model });
+                this.$el.html(view.render().el);
+                this.$el.fadeIn();
+
+                model.trigger("load");
+            },
+
+            "dataset": function (dataset_id) {
+                console.debug("router.dataset:" + dataset_id);
+
+                if (_.isEmpty(dataset_id)) {
+                    return _.defer(this.new_dataset);
+                }
+
+                var model = new BackboneGDrive.FileModel({ "id": dataset_id });
+                var view = new DatasetView({ "model": model });
                 this.$el.html(view.render().el);
 
                 _.defer(model.payload);

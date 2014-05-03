@@ -1,0 +1,39 @@
+<div class="workdesk-dataset">
+    <div class="dataset-title"></div>
+
+    <div class="nav nav-pills">
+        <li class="btn-group">
+            <a class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" href="#" onclick="return false;">
+                Workbooks using this Dataset
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu"></ul>
+        </li>
+        <li>
+            <a class="btn btn-mini" href="#" onclick="return false;">Explore this Data</a>
+        </li>
+        <li>
+            <a class="btn btn-mini save-dataset" href="#" onclick="return false;">Update this Data</a>
+        </li>
+        <li>
+            <a href="#" onclick="return false;">Archive Dataset</a>
+        </li>
+        <li>
+            <a class="btn btn-mini" href="#" onclick="return false;">Share</a>
+        </li>
+    </div>
+
+    <div class="dataset-tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#overview-{{id}}" data-toggle="tab">Overview</a></li>
+            <li><a href="#variables-{{id}}" data-toggle="tab">Variables</a></li>
+            <li><a href="#source-files-{{id}}" data-toggle="tab">Source Files</a></li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane dataset-info active" id="overview-{{id}}"></div>
+        <div class="tab-pane" id="variables-{{id}}">Variables</div>
+        <div class="tab-pane" id="source-files-{{id}}">Source Files</div>
+    </div>
+</div>

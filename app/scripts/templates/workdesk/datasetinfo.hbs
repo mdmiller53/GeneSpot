@@ -1,0 +1,33 @@
+<dl class="dl-horizontal">
+  <dt>Title</dt>
+  <dd>&nbsp;{{title}}</dd>
+  <dt>Source</dt>
+  <dd>&nbsp;{{source}}</dd>
+  <dt>Data Type</dt>
+  <dd>&nbsp;{{mimeType}}</dd>
+  <dt>Visibility</dt>
+  <dd>&nbsp;{{#if shared}}Shared{{/if}}{{#unless shared}}Private{{/unless}}</dd>
+  <dt>Uploaded</dt>
+  <dd>&nbsp;{{createdDate}}</dd>
+  <dt>Last Update</dt>
+  <dd>&nbsp;{{modifiedDate}}</dd>
+    {{#if lastModifyingUser}}
+        <dt>Last Modified By</dt>
+        <dd>{{lastModifyingUser.displayName}}
+        {{#if lastModifyingUser.picture}}
+            <li><img src="{{lastModifyingUser.picture.url}}"/></li>
+        {{/if}}
+        </dd>
+    {{/if}}
+    <dt>Actions</dt>
+    <dd>
+        <ul class="nav nav-pills">
+            <li><a href="#" onclick="return false;" class="append-body" data-id="{{id}}">Append Body</a></li>
+        </ul>
+    </dd>
+</dl>
+<hr/>
+<dl>
+    <dt>Description</dt>
+    <dd class="span6">&nbsp;{{description}}</dd>
+</dl>

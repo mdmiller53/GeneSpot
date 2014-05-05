@@ -1,7 +1,35 @@
-<div class="workdesk">
-    <div class="row">
+<div class="workdesk container">
+    <div class="span3">
         <a href="#" onclick="return false;" class="new-workbook btn btn-info btn-mini">Create Workbook</a>
+
+        <h5>Your Saved Workbooks</h5>
         <ul class="workbooks-list nav nav-list">
         </ul>
+
+        <hr/>
+
+        <h5>Workbooks Shared with You</h5>
+        <ul class="workbooks-shared nav nav-list">
+        </ul>
     </div>
+
+    <div class="span9">
+        <h4>EXPLORE</h4>
+        <div class="workdesk-tabs">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#graphs-{{id}}" data-toggle="tab">GRAPHS</a></li>
+                <li><a href="#genes-{{id}}" data-toggle="tab">GENES</a></li>
+                <li><a href="#datasets-{{id}}" data-toggle="tab">DATASETS</a></li>
+                <li><a href="#new-notable-{{id}}" data-toggle="tab">New & Notable</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="graphs-{{id}}"></div>
+            <div class="tab-pane" id="genes-{{id}}">Genes</div>
+            <div class="tab-pane" id="datasets-{{id}}">Datasets</div>
+            <div class="tab-pane" id="new-notable-{{id}}">New & Notable</div>
+        </div>
+    </div>
+
 </div>

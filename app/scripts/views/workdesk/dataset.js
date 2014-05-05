@@ -35,7 +35,7 @@ define(["jquery", "underscore", "backbone",
                         }
 
                         this.model.once("change:id", function() {
-                            WebApp.Router.navigate("#dataset/" + this.model.get("id"), { "trigger": true });
+                            WebApp.Router.navigate("#datasets/" + this.model.get("id"), { "trigger": true });
                         }, this);
                         _.defer(this.model.insert);
                     }

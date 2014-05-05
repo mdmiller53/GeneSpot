@@ -10,10 +10,10 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 "": "atlas",
                 "workdesk": "empty_workdesk",
                 "workdesk/:workdesk_id": "workdesk",
-                "workbook/new": "new_workbook",
-                "workbook/:workbook_id": "workbook",
-                "dataset/new": "new_dataset",
-                "dataset/:dataset_id": "dataset",
+                "workbooks/new": "new_workbook",
+                "workbooks/:workbook_id": "workbooks",
+                "datasets/new": "new_dataset",
+                "datasets/:dataset_id": "datasets",
                 "cm/:cm_id": "load_collected_map",
                 "v/*uri/:view_name": "viewsByUri",
                 "s/*sessionId": "loadSessionById"
@@ -171,8 +171,8 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 model.trigger("load");
             },
 
-            "workbook": function (workbook_id) {
-                console.debug("router.workbook:" + workbook_id);
+            "workbooks": function (workbook_id) {
+                console.debug("router.workbooks:" + workbook_id);
 
                 if (_.isEmpty(workbook_id)) {
                     return _.defer(this.new_workbook);
@@ -229,8 +229,8 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
                 model.trigger("load");
             },
 
-            "dataset": function (dataset_id) {
-                console.debug("router.dataset:" + dataset_id);
+            "datasets": function (dataset_id) {
+                console.debug("router.datasets:" + dataset_id);
 
                 if (_.isEmpty(dataset_id)) {
                     return _.defer(this.new_dataset);

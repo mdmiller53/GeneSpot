@@ -5,17 +5,17 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             "events": {
                 "click a.open-workbook": function (e) {
                     var workbook_id = $(e.target).data("id");
-                    if (workbook_id) WebApp.Router.navigate("#workbook/" + workbook_id, { "trigger": true });
+                    if (workbook_id) WebApp.Router.navigate("#workbooks/" + workbook_id, { "trigger": true });
                 },
                 "click a.new-workbook": function () {
-                    WebApp.Router.navigate("#workbook/new", { "trigger": true });
+                    WebApp.Router.navigate("#workbooks/new", { "trigger": true });
                 },
                 "click a.open-dataset": function (e) {
                     var dataset_id = $(e.target).data("id");
-                    if (dataset_id) WebApp.Router.navigate("#dataset/" + dataset_id, { "trigger": true });
+                    if (dataset_id) WebApp.Router.navigate("#datasets/" + dataset_id, { "trigger": true });
                 },
                 "click a.new-dataset": function () {
-                    WebApp.Router.navigate("#dataset/new", { "trigger": true });
+                    WebApp.Router.navigate("#datasets/new", { "trigger": true });
                 }
             },
 

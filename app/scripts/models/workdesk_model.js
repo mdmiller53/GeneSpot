@@ -31,7 +31,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive"],
 
                 var children = this.childReferences();
                 children.on("change:items", function () {
-                    this.workbooks = this.__register_search_by_section( "application/vnd.genespot.workbook", "Workbooks", "wb");
+                    this.workbooks = this.__register_search_by_section( "application/vnd.genespot.workbook", "Workbooks", "workbooks");
                     this.datasets = this.__register_search_by_section( "application/vnd.genespot.dataset", "Datasets", "datasets");
                 }, this);
                 _.defer(children.list);

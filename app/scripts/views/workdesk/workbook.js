@@ -26,7 +26,7 @@ define(["jquery", "underscore", "backbone",
                         _.defer(this.model.update);
                     } else {
                         this.model.once("change", function() {
-                            WebApp.Router.navigate("#workbook/" + this.model.get("id"), { "trigger": true });
+                            WebApp.Router.navigate("#workbooks/" + this.model.get("id"), { "trigger": true });
                         }, this);
                         _.defer(this.model.insert);
                     }

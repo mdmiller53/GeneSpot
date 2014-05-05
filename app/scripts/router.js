@@ -8,10 +8,10 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
             navigationEl: "#navigation-container",
             routes: {
                 "": "atlas",
-                "wd": "empty_workdesk",
-                "wd/:workdesk_id": "workdesk",
-                "wb/new": "new_workbook",
-                "wb/:workbook_id": "workbook",
+                "workdesk": "empty_workdesk",
+                "workdesk/:workdesk_id": "workdesk",
+                "workbook/new": "new_workbook",
+                "workbook/:workbook_id": "workbook",
                 "dataset/new": "new_dataset",
                 "dataset/:dataset_id": "dataset",
                 "cm/:cm_id": "load_collected_map",
@@ -113,7 +113,7 @@ define(["jquery", "underscore", "backbone", "bootstrap", "views/topbar_view",
             "empty_workdesk": function () {
                 var WGW = WebApp.GDrive.Workdesk;
                 var carryOn = function() {
-                    WebApp.Router.navigate("#wd/" + WGW.get("id"), { "trigger": true });
+                    WebApp.Router.navigate("#workdesk/" + WGW.get("id"), { "trigger": true });
                 };
 
                 if (_.isEmpty(WGW.get("id"))) {

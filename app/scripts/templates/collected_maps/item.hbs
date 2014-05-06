@@ -11,7 +11,7 @@
                 {{#each genes}}{{#if @index}}, {{/if}}{{.}}{{/each}}
             {{/if}}
             {{#if clinical_variables}}
-                <h5>Clinical Variables</h5>
+                <h5>Clinical and Sample Variables</h5>
                 {{#each clinical_variables}}{{#if @index}}, {{/if}}{{label}}{{/each}}
             {{/if}}
         {{/unless}}

@@ -284,7 +284,7 @@ define(["jquery", "underscore", "backbone",
             __render_fLabel_selectors_clinvars: function(axis) {
                 console.debug("fmx-dist.__render_fLabel_selectors_clinvars(" + axis + "):" + this.selected_genes[axis]);
 
-                this.$(".selected-gene-" + axis).html("Clinical Variables");
+                this.$(".selected-gene-" + axis).html("Clinical and Sample Variables");
 
                 var uid = Math.round(Math.random() * 10000);
                 this.$(".feature-selector-" + axis).html(ClinVarFeatureDefsTpl({"axis":axis, "uid": uid}));

@@ -98,3 +98,9 @@
 .capitalized {
     text-transform:capitalize;
 }
+
+.brush .extent {
+    stroke: red;
+    fill: #EEEEEE;
+    opacity: 0.5;
+}

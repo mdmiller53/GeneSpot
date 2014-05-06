@@ -14,11 +14,17 @@ define([
         var PROTEIN_DOMAIN_TRACK_HEIGHT = 40;
         var VIEWPORT_WIDTH = 1000;
 
+        var POSITION_FIELD_NAME = "amino_acid_position";
+        var TYPE_FIELD_NAME = "mutation_type";
+        var AMINO_ACID_MUTATION_FIELD_NAME = "amino_acid_mutation";
+        var AMINO_ACID_WILDTYPE_FIELD_NAME = "amino_acid_wildtype";
+        var DNA_CHANGE_FIELD_NAME = "dna_change";
+
         var GROUP_BY_CATEGORIES = {
-            "Mutation Type": "mutation_type",
-            "DNA Change": "dna_change",
+            "Mutation Type": TYPE_FIELD_NAME,
+            "DNA Change": DNA_CHANGE_FIELD_NAME,
             "Protein Change": function(data_row) {
-                return data_row["amino_acid_mutation"] + "-" + data_row["amino_acid_wildtype"];
+                return data_row[AMINO_ACID_MUTATION_FIELD_NAME] + "-" + data_row[AMINO_ACID_WILDTYPE_FIELD_NAME];
             }
         };
 
@@ -34,13 +40,13 @@ define([
 
         var COLOR_BY_CATEGORIES = {
             "Mutation Type": function(data_point) {
-                return MUTATION_TYPE_COLOR_MAP[data_point["mutation_type"]];
+                return MUTATION_TYPE_COLOR_MAP[data_point[TYPE_FIELD_NAME]];
             },
             "DNA Change": function(data_point) {
-                return LOLLIPOP_COLOR_SCALE(data_point["dna_change"]);
+                return LOLLIPOP_COLOR_SCALE(data_point[DNA_CHANGE_FIELD_NAME]);
             },
             "Protein Change": function(data_point) {
-                var id = data_point["amino_acid_mutation"] + "-" + data_point["amino_acid_wildtype"];
+                var id = data_point[AMINO_ACID_MUTATION_FIELD_NAME] + "-" + data_point[AMINO_ACID_WILDTYPE_FIELD_NAME];
                 return LOLLIPOP_COLOR_SCALE(id);
             }
         };
@@ -79,6 +85,18 @@ define([
                     $(e.target).parent("li").addClass("active");
 
                     this.__render();
+                },
+
+                "click .btn.seqpeek-zoom-enable": function(e) {
+                    this.__enable_seqpeek_zoom();
+                },
+
+                "click .btn.seqpeek-selection-enable": function(e) {
+                    this.__enable_seqpeek_selection();
+                },
+
+                "click .btn.seqpeek-print-ids": function(e) {
+                    this.__print_selected_samples();
                 }
             },
 
@@ -89,6 +107,8 @@ define([
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
+
+                this.selected_patient_ids = [];
             },
 
             render: function() {
@@ -265,8 +285,10 @@ define([
                     variant_layout: {
                         variant_width: 5.0
                     },
-                    variant_data_location_field: "amino_acid_position",
-                    variant_data_type_field: this.selected_group_by
+                    variant_data_location_field: POSITION_FIELD_NAME,
+                    variant_data_type_field: this.selected_group_by,
+                    variant_data_source_field: "patient_id",
+                    selection_handler: _.bind(this.__seqpeek_selection_handler, this)
                 });
 
                 _.each(mutation_data, function(track_obj) {
@@ -380,12 +402,14 @@ define([
                 });
 
                 seqpeek.render();
+
+                this.seqpeek = seqpeek;
             },
 
             __find_maximum_samples_in_location: function(mutation_data) {
                 var track_maximums = [];
                 _.each(mutation_data, function(track_obj) {
-                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, "mutation_type", "amino_acid_position");
+                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, this.selected_group_by, POSITION_FIELD_NAME);
                     SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
 
                     var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
@@ -395,7 +419,7 @@ define([
                     });
 
                     track_maximums.push(max_number_of_samples_in_position);
-                });
+                }, this);
 
                 return d3.max(track_maximums);
             },
@@ -406,19 +430,19 @@ define([
                         guid: track_guid,
                         hovercard_content: {
                             "Location": function (d) {
-                                return d["amino_acid_position"];
+                                return d[POSITION_FIELD_NAME];
                             },
                             "Amino Acid Mutation": function (d) {
-                                return d["amino_acid_mutation"];
+                                return d[AMINO_ACID_MUTATION_FIELD_NAME];
                             },
                             "Amino Acid Wildtype": function (d) {
-                                return d["amino_acid_wildtype"];
+                                return d[AMINO_ACID_WILDTYPE_FIELD_NAME];
                             },
                             "DNA change": function (d) {
-                                return d["dna_change"];
+                                return d[DNA_CHANGE_FIELD_NAME];
                             },
                             "Type": function (d) {
-                                return d["mutation_type"];
+                                return d[TYPE_FIELD_NAME];
                             },
                             "Patient ID": function (d) {
                                 return d["patient_id"];
@@ -452,10 +476,15 @@ define([
 
                 var lowercase_gene = this.selected_gene.toLowerCase();
                 var filtered = {};
+
+                // Filter out rows that do not have the amino acid position field present,
+                // as drawing variants based on chromosome coordinates is not currently supported.
                 _.each(data_by_tumor_type, function(data, tumor_type) {
                     if (_.isArray(data)) {
                         filtered[tumor_type] = _.filter(data, function(item) {
-                            return (_.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene));
+                            return (_.has(item, "gene") &&
+                                _.isEqual(item["gene"].toLowerCase(), lowercase_gene) &&
+                                _.has(item, POSITION_FIELD_NAME));
                         }, this);
                     } else {
                         if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
@@ -526,6 +555,22 @@ define([
                 }, {});
 
                 return gene_to_uniprot_mapping;
+            },
+
+            __enable_seqpeek_zoom: function() {
+                this.seqpeek.toggleZoomMode();
+            },
+
+            __enable_seqpeek_selection: function() {
+                this.seqpeek.toggleSelectionMode();
+            },
+
+            __seqpeek_selection_handler: function(id_list) {
+                this.selected_patient_ids = id_list;
+            },
+
+            __print_selected_samples: function() {
+                console.log(this.selected_patient_ids);
             }
         });
     });

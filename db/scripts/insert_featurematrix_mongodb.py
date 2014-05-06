@@ -118,7 +118,7 @@ def extract_feature_dict(feature_id):
         f_dict["start"] = start
         f_dict["end"] = end
         f_dict["strand"] = feature_parts[6]
-        f_dict["protein"] = feature_parts[7]
+        f_dict["antibody"] = feature_parts[7]
 
     elif source == "SAMP":
         f_dict["label"] = feature_parts[2]

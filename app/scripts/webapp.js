@@ -53,7 +53,7 @@ define(["jquery", "underscore", "backbone", "router",
             });
 
             // 3. Fetch and prep datamodel
-//            WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
+            WebApp.Datamodel.fetch({ "url": "configurations/datamodel.json" });
 
             // 4. Fetch and prep lookups
 //            WebApp.Events.on("webapp:ready:datamodel", function () {

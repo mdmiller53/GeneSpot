@@ -632,6 +632,10 @@ td.vertical_cell {
     height: 140px;
 }
 
+.datasets-list-container {
+    max-height: 500px;
+}
+
 .worktabs {
     /*width: !important;*/
     /*height: 100%;*/

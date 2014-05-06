@@ -1,6 +1,7 @@
 define(["jquery", "underscore", "backbone", "backbone_gdrive",
-        "views/workdesk/plots", "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
-    function ($, _, Backbone, BackboneGDrive, PlotsView, Tpl, LineItemTpl) {
+        "views/workdesk/plots", "views/workdesk/datasets_list",
+        "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
+    function ($, _, Backbone, BackboneGDrive, PlotsView, DatasetsListView, Tpl, LineItemTpl) {
         return Backbone.View.extend({
             "events": {
                 "click a.open-workbook": function (e) {
@@ -29,6 +30,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                 this.folder.on("change:items", this.__render_workbooks, this);
 
                 _.defer(this.__render_plots);
+                _.defer(this.__render_datasets_list);
             },
 
             "render": function () {
@@ -50,11 +52,16 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             },
 
             "__render_plots": function() {
-                this.plots_model = new Backbone.Model({}, { "url": "configurations/plots.json" })
+                this.plots_model = new Backbone.Model({}, { "url": "configurations/plots.json" });
                 this.plots_view = new PlotsView({ "model": this.plots_model });
                 this.plots_model.fetch();
 
                 this.$(".plots-container").html(this.plots_view.render().el);
+            },
+
+            "__render_datasets_list": function() {
+                this.datasets_list_view = new DatasetsListView({});
+                this.$(".datasets-list-container").html(this.datasets_list_view.render().el);
             }
         });
     });

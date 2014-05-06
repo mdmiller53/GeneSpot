@@ -57,6 +57,21 @@ define(["jquery", "underscore", "backbone"],
                 return { "single": _.extend({}, modelspecs) };
             },
 
+            list_modelspecs: function() {
+                var model_specs = _.map(_.values(this.modelspecs_by_datamodel_uri), function(model_spec, key) {
+                    if (_.has(model_spec, "url")) {
+                        return _.extend({ "id": key }, model_spec);
+                    }
+                    if (_.has(model_spec, "catalog")) {
+                        return _.map(model_spec["catalog"], function(catalog_item, key) {
+                            return _.extend({ "id": key }, catalog_item);
+                        }, this);
+                    }
+                    return null;
+                }, this);
+                return _.compact(_.flatten(model_specs));
+            },
+
             pretty_print: function () {
                 console.log("datamodel [Dynamic Data Model Directory]");
                 _.each(this.modelspecs_by_datamodel_uri, function (model_spec, datamodel_uri) {

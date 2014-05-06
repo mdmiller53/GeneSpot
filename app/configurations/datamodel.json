@@ -9,6 +9,10 @@
                     "service": "datastores/20140404/BLCA",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "BLCA dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive molecular characterization of urothelial bladder carcinoma.",
@@ -22,6 +26,10 @@
                     "service": "datastores/20140404/BRCA",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "BRCA dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive molecular portraits of human breast tumours.",
@@ -35,6 +43,10 @@
                     "service": "datastores/20140404/COAD",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "COAD dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive molecular characterization of human colon and rectal cancer.",
@@ -48,6 +60,10 @@
                     "service": "datastores/20140404/GBM",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "GBM dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive genomic characterization defines human glioblastoma genes and core pathways.",
@@ -65,13 +81,21 @@
                     "tumor_type": "HNSC",
                     "service": "datastores/20140404/HNSC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "HNSC dataset for April 2014"
+                    "label": "HNSC dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014"
                 },
                 "KIRC-20140404": {
                     "tumor_type": "KIRC",
                     "service": "datastores/20140404/KIRC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "KIRC dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive molecular characterization of clear cell renal cell carcinoma.",
@@ -84,13 +108,21 @@
                     "tumor_type": "LUAD",
                     "service": "datastores/20140404/LUAD",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
-                    "label": "LUAD dataset for April 2014"
+                    "label": "LUAD dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014"
                 },
                 "LUSC-20140404": {
                     "tumor_type": "LUSC",
                     "service": "datastores/20140404/LUSC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "LUSC dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive genomic characterization of squamous cell lung cancers.",
@@ -104,6 +136,10 @@
                     "service": "datastores/20140404/OV",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "OV dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Integrated genomic analyses of ovarian carcinoma.",
@@ -117,6 +153,10 @@
                     "service": "datastores/20140404/READ",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "READ dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Comprehensive molecular characterization of human colon and rectal cancer.",
@@ -130,6 +170,10 @@
                     "service": "datastores/20140404/UCEC",
                     "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
                     "label": "UCEC dataset for April 2014",
+                    "source": {
+                        "id": "TCGA", "url": "http://cancergenome.nih.gov"
+                    },
+                    "lastUpdated": "04/04/2014",
                     "publications": [
                         {
                             "label": "Integrated genomic characterization of endometrial carcinoma.",

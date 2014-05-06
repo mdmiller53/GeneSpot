@@ -622,6 +622,16 @@ td.vertical_cell {
     z-index: -10;
 }
 
+.plots-container {
+    max-height: 500px;
+}
+
+
+.plot-icon {
+    width: 140px;
+    height: 140px;
+}
+
 .worktabs {
     /*width: !important;*/
     /*height: 100%;*/

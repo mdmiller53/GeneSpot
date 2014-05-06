@@ -1,6 +1,6 @@
 define(["jquery", "underscore", "backbone", "backbone_gdrive",
-        "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
-    function ($, _, Backbone, BackboneGDrive, Tpl, LineItemTpl) {
+        "views/workdesk/plots", "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
+    function ($, _, Backbone, BackboneGDrive, PlotsView, Tpl, LineItemTpl) {
         return Backbone.View.extend({
             "events": {
                 "click a.open-workbook": function (e) {
@@ -20,11 +20,15 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             },
 
             "initialize": function () {
+                _.bindAll(this, "__render_plots");
+
                 this.model = this.options.model;
                 this.folder = this.model.childReferences();
 
                 this.model.on("change", this.folder.list, this.folder);
                 this.folder.on("change:items", this.__render_workbooks, this);
+
+                _.defer(this.__render_plots);
             },
 
             "render": function () {
@@ -43,6 +47,14 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                     }, this);
                     _.defer(model.fetch);
                 }, this);
+            },
+
+            "__render_plots": function() {
+                this.plots_model = new Backbone.Model({}, { "url": "configurations/plots.json" })
+                this.plots_view = new PlotsView({ "model": this.plots_model });
+                this.plots_model.fetch();
+
+                this.$(".plots-container").html(this.plots_view.render().el);
             }
         });
     });

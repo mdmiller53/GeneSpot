@@ -1,6 +1,5 @@
 <ul class="nav nav-list">
     <li><strong>{{title}}</strong></li>
-    <li><a href="#" onclick="return false;" class="open-workbook" data-id="{{id}}">Open Workbook</a></li>
     <li>File size: {{fileSize}}</li>
     <li class="nav-header">Last Modified</li>
     <li>{{modifiedDate}}</li>
@@ -9,6 +8,6 @@
         {{#if lastModifyingUser.picture}}
             <li><img src="{{lastModifyingUser.picture.url}}"/></li>
         {{/if}}
-        <li><a href="#" onclick="return false;" class="append-body" data-id="{{id}}">Append Body</a></li>
+        <li><a href="#" onclick="return false;" class="append-body btn btn-mini" data-id="{{id}}">Append Body (dev)</a></li>
     {{/if}}
 </ul>

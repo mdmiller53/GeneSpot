@@ -4,60 +4,67 @@ require.config({
     paths: {
         "jquery": "../bower_components/jquery/jquery",
         "jQuery-ui": "../bower_components/jquery-ui/ui/jquery-ui",
-        "jquery-event-drag" : "../bower_components/jquery-event-drag/index",
-        "jquery-event-drop" : "../bower_components/jquery-event-drop/index",
+        "jquery-event-drag": "../bower_components/jquery-event-drag/index",
+        "jquery-event-drop": "../bower_components/jquery-event-drop/index",
         "backbone": "../bower_components/backbone/backbone",
         "bootstrap": "../bower_components/bootstrap/js/bootstrap",
         "d3": "../bower_components/d3/d3",
+        "d3.parsets": "../bower_components/d3.parsets/d3.parsets",
         "modernizr": "../bower_components/modernizr",
         "underscore": "../bower_components/underscore/underscore",
         "hbs": "../bower_components/require-handlebars-plugin/hbs",
-        "handlebars" : "../bower_components/require-handlebars-plugin/Handlebars",
-        "json2" : "../bower_components/require-handlebars-plugin/hbs/json2",
-        "i18nprecompile" : "../bower_components/require-handlebars-plugin/hbs/i18nprecompile",
-        "vq" : "../bower_components/visquick/vq",
-        "jsPlumb" : "../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min",
+        "handlebars": "../bower_components/require-handlebars-plugin/Handlebars",
+        "json2": "../bower_components/require-handlebars-plugin/hbs/json2",
+        "i18nprecompile": "../bower_components/require-handlebars-plugin/hbs/i18nprecompile",
+        "vq": "../bower_components/visquick/vq",
+        "jsPlumb": "../bower_components/jsPlumb/dist/js/jquery.jsPlumb-1.5.4-min",
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
-        "stacksvis" : "../bower_components/stacksvis/js/stacksvis",
-        "carve" : "../bower_components/carve/carve",
+        "stacksvis": "../bower_components/stacksvis/js/stacksvis",
+        "carve": "../bower_components/carve/carve",
         "seqpeek": "../bower_components/seqpeek/src",
-        "xml2json" : "../bower_components/x2js/xml2json",
-        "base64" : "../bower_components/base64/jquery.base64.min",
-        "cytoscape" : "../bower_components/cytoscape/dist/cytoscape.min"
+        "xml2json": "../bower_components/x2js/xml2json",
+        "base64": "../bower_components/base64/jquery.base64.min",
+        "cytoscape": "../bower_components/cytoscape/dist/cytoscape.min"
     },
     "shim": {
-        "underscore" : {
-            "exports" : "_"
+        "underscore": {
+            "exports": "_"
         },
-        "jQuery-ui" : {
+        "jQuery-ui": {
             "deps": ["jquery"],
-            "exports" : "$"
+            "exports": "$"
         },
-        "jquery-event-drag" : {
+        "jquery-event-drag": {
             "deps": ["jquery"],
-            "exports" : "$"
+            "exports": "$"
         },
-        "jquery-event-drop" : {
+        "jquery-event-drop": {
             "deps": ["jquery"],
-            "exports" : "$"
+            "exports": "$"
         },
-        "backbone" : {
+        "backbone": {
             "deps": ["underscore", "jquery"],
             exports: "Backbone"
         },
-        bootstrap : {
-            deps : ["jquery","jQuery-ui"],
-            exports : "bootstrap"
+        bootstrap: {
+            deps: ["jquery", "jQuery-ui"],
+            exports: "bootstrap"
+        },
+        "d3.parsets": {
+            "deps": [ "d3.global" ]
         }
     },
-    hbs : {
-        "templateExtension" : "hbs",
-        "disableI18n" : true,
-        "helperPathCallback" :
-            function (name) {
-                return "templates/helpers/" + name;
-            }
+    hbs: {
+        "templateExtension": "hbs",
+        "disableI18n": true,
+        "helperPathCallback": function (name) {
+            return "templates/helpers/" + name;
+        }
     }
+});
+
+define("d3.global", ["d3"], function(globalD3) {
+  d3 = globalD3;
 });
 
 require(["webapp"], function (WebApp) {

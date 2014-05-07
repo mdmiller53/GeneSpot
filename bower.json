@@ -12,6 +12,7 @@
     "jquery": "~2.0.3",
     "underscore": "~1.5.2",
     "d3": "~3.4.1",
+    "d3.parsets": "git://github.com/jasondavies/d3-parsets.git#1.2.3",
     "jquery-ui": "~1.10.3",
     "jquery-ui-bootstrap": "~0.2.5",
     "visquick": "~0.1.2",

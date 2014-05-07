@@ -1,0 +1,409 @@
+{
+    "name": "Features",
+    "isExcluded": true,
+    "children": [
+        {
+            "name": "GBM",
+            "children": [
+                {
+                    "name": "RPPA",
+                    "size": 171
+                },
+                {
+                    "name": "GEXP",
+                    "size": 28731
+                },
+                {
+                    "name": "GNAB",
+                    "size": 12021
+                },
+                {
+                    "name": "METH",
+                    "size": 19705
+                },
+                {
+                    "name": "CNVR",
+                    "size": 4562
+                },
+                {
+                    "name": "CLIN",
+                    "size": 115
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2109
+                }
+            ]
+        },
+        {
+            "name": "LUAD",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28599
+                },
+                {
+                    "name": "RPPA",
+                    "size": 160
+                },
+                {
+                    "name": "METH",
+                    "size": 19773
+                },
+                {
+                    "name": "GNAB",
+                    "size": 22450
+                },
+                {
+                    "name": "CLIN",
+                    "size": 431
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 3767
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2109
+                }
+            ]
+        },
+        {
+            "name": "UCEC",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28623
+                },
+                {
+                    "name": "GNAB",
+                    "size": 36815
+                },
+                {
+                    "name": "METH",
+                    "size": 19738
+                },
+                {
+                    "name": "RPPA",
+                    "size": 166
+                },
+                {
+                    "name": "CLIN",
+                    "size": 464
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 4288
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2061
+                }
+            ]
+        },
+        {
+            "name": "HNSC",
+            "children": [
+                {
+                    "name": "RPPA",
+                    "size": 160
+                },
+                {
+                    "name": "GEXP",
+                    "size": 16307
+                },
+                {
+                    "name": "METH",
+                    "size": 16190
+                },
+                {
+                    "name": "GNAB",
+                    "size": 17951
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 3191
+                },
+                {
+                    "name": "CLIN",
+                    "size": 660
+                },
+                {
+                    "name": "SAMP",
+                    "size": 1941
+                }
+            ]
+        },
+        {
+            "name": "BLCA",
+            "children": [
+                {
+                    "name": "RPPA",
+                    "size": 179
+                },
+                {
+                    "name": "GEXP",
+                    "size": 16707
+                },
+                {
+                    "name": "GNAB",
+                    "size": 14719
+                },
+                {
+                    "name": "METH",
+                    "size": 19556
+                },
+                {
+                    "name": "CLIN",
+                    "size": 371
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 2526
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2039
+                }
+            ]
+        },
+        {
+            "name": "LUSC",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28740
+                },
+                {
+                    "name": "RPPA",
+                    "size": 174
+                },
+                {
+                    "name": "GNAB",
+                    "size": 18160
+                },
+                {
+                    "name": "METH",
+                    "size": 19711
+                },
+                {
+                    "name": "CLIN",
+                    "size": 376
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 4607
+                },
+                {
+                    "name": "SAMP",
+                    "size": 1585
+                }
+            ]
+        },
+        {
+            "name": "OV",
+            "children": [
+                {
+                    "name": "RPPA",
+                    "size": 165
+                },
+                {
+                    "name": "GEXP",
+                    "size": 28744
+                },
+                {
+                    "name": "GNAB",
+                    "size": 12163
+                },
+                {
+                    "name": "METH",
+                    "size": 17584
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 9356
+                },
+                {
+                    "name": "CLIN",
+                    "size": 273
+                },
+                {
+                    "name": "SAMP",
+                    "size": 1409
+                }
+            ]
+        },
+        {
+            "name": "COAD",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28661
+                },
+                {
+                    "name": "RPPA",
+                    "size": 171
+                },
+                {
+                    "name": "GNAB",
+                    "size": 22867
+                },
+                {
+                    "name": "METH",
+                    "size": 19755
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 2703
+                },
+                {
+                    "name": "CLIN",
+                    "size": 446
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2112
+                }
+            ]
+        },
+        {
+            "name": "READ",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28597
+                },
+                {
+                    "name": "RPPA",
+                    "size": 171
+                },
+                {
+                    "name": "GNAB",
+                    "size": 22511
+                },
+                {
+                    "name": "METH",
+                    "size": 19694
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 1384
+                },
+                {
+                    "name": "CLIN",
+                    "size": 299
+                },
+                {
+                    "name": "SAMP",
+                    "size": 1502
+                }
+            ]
+        },
+        {
+            "name": "BRCA",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28755
+                },
+                {
+                    "name": "RPPA",
+                    "size": 142
+                },
+                {
+                    "name": "GNAB",
+                    "size": 16061
+                },
+                {
+                    "name": "METH",
+                    "size": 19735
+                },
+                {
+                    "name": "CLIN",
+                    "size": 996
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 8841
+                },
+                {
+                    "name": "SAMP",
+                    "size": 2589
+                }
+            ]
+        },
+        {
+            "name": "KIRC",
+            "children": [
+                {
+                    "name": "GEXP",
+                    "size": 28577
+                },
+                {
+                    "name": "RPPA",
+                    "size": 166
+                },
+                {
+                    "name": "GNAB",
+                    "size": 12933
+                },
+                {
+                    "name": "METH",
+                    "size": 19838
+                },
+                {
+                    "name": "MIRN",
+                    "size": 1846
+                },
+                {
+                    "name": "CNVR",
+                    "size": 1917
+                },
+                {
+                    "name": "CLIN",
+                    "size": 278
+                },
+                {
+                    "name": "SAMP",
+                    "size": 1799
+                }
+            ]
+        }
+    ]
+}

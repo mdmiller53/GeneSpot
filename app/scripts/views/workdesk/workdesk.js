@@ -66,7 +66,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             },
 
             "__render_dimensions_vis": function() {
-                this.dimensions_model = new Backbone.Model({}, { "url": "svc/data/lookups/dimensions_data.json" });
+                this.dimensions_model = new Backbone.Model({}, { "url": "configurations/dimensions_data.json" });
                 this.dimensions_vis = new DimensionsVis({ "model": this.dimensions_model });
                 this.$(".dimensions-container").html(this.dimensions_vis.render().el);
                 this.dimensions_model.fetch();

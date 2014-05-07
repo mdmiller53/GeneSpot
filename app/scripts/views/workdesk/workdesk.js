@@ -1,7 +1,7 @@
 define(["jquery", "underscore", "backbone", "backbone_gdrive",
-        "views/workdesk/plots", "views/workdesk/datasets_list",
+        "views/workdesk/plots", "views/workdesk/datasets_list", "views/workdesk/dimensions_vis",
         "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
-    function ($, _, Backbone, BackboneGDrive, PlotsView, DatasetsListView, Tpl, LineItemTpl) {
+    function ($, _, Backbone, BackboneGDrive, PlotsView, DatasetsListView, DimensionsVis, Tpl, LineItemTpl) {
         return Backbone.View.extend({
             "events": {
                 "click a.open-workbook": function (e) {
@@ -31,6 +31,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
 
                 _.defer(this.__render_plots);
                 _.defer(this.__render_datasets_list);
+                _.defer(this.__render_dimensions_vis);
             },
 
             "render": function () {
@@ -62,6 +63,13 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             "__render_datasets_list": function() {
                 this.datasets_list_view = new DatasetsListView({});
                 this.$(".datasets-list-container").html(this.datasets_list_view.render().el);
+            },
+
+            "__render_dimensions_vis": function() {
+                this.dimensions_model = new Backbone.Model({}, { "url": "svc/data/lookups/dimensions_data.json" });
+                this.dimensions_vis = new DimensionsVis({ "model": this.dimensions_model });
+                this.$(".dimensions-container").html(this.dimensions_vis.render().el);
+                this.dimensions_model.fetch();
             }
         });
     });

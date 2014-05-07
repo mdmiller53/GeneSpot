@@ -76,21 +76,11 @@ define(["jquery", "underscore", "backbone", "router",
 //
 //            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
 
+            // setup polling for google drive changes, fails to complete if user is unauthenticated
             WebApp.GDrive.Changes.on("complete", function() {
                 _.delay(WebApp.GDrive.Changes.list, 5000);
             }, this);
-            WebApp.GDrive.Changes.on("change:items", function () {
-                _.each(WebApp.GDrive.Changes.get("items"), function (item) {
-                    if (_.isEqual(item["fileId"], WebApp.GDrive.Workdesk.get("id"))) {
-                        if (_.has(item, "file")) {
-                            WebApp.GDrive.Workdesk.set(item["file"]);
-                        } else {
-                            _.defer(WebApp.GDrive.Workdesk.fetch);
-                        }
-                    }
-                }, this);
-            }, this);
-            WebApp.GDrive.Changes.list();
+            _.delay(WebApp.GDrive.Changes.list, 5000);
         };
 
         WebApp.alert = function (alertEl, timeout) {

@@ -3,6 +3,8 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
         "hbs!templates/workdesk/workdesk", "hbs!templates/line_item"],
     function ($, _, Backbone, BackboneGDrive, PlotsView, DatasetsListView, Tpl, LineItemTpl) {
         return Backbone.View.extend({
+            "workbook_models": {},
+
             "events": {
                 "click a.open-workbook": function (e) {
                     var workbook_id = $(e.target).data("id");
@@ -21,7 +23,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
             },
 
             "initialize": function () {
-                _.bindAll(this, "__render_plots");
+                _.bindAll(this, "__render_plots", "__init_check_for_changes");
 
                 this.model = this.options.model;
                 this.folder = this.model.childReferences();
@@ -31,6 +33,7 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
 
                 _.defer(this.__render_plots);
                 _.defer(this.__render_datasets_list);
+                _.defer(this.__init_check_for_changes);
             },
 
             "render": function () {
@@ -42,12 +45,53 @@ define(["jquery", "underscore", "backbone", "backbone_gdrive",
                 var $wblEl = this.$(".workbooks-list").empty();
                 _.each(this.folder.get("items"), function (item) {
                     var model = new BackboneGDrive.FileModel(item);
+                    this.workbook_models[item["id"]] = model;
+
                     model.on("change", function () {
                         var id = model.get("id");
                         var title = model.get("title");
-                        $wblEl.append(LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title }));
+                        var lineitem = LineItemTpl({ "a_class": "open-workbook", "id": id, "label": title, "title": title });
+                        var replacementNotFound = true;
+                        _.each($wblEl.find(".open-workbook"), function(ahref) {
+                            if (_.isEqual(id, $(ahref).data("id"))) {
+                                $(ahref).parent().replaceWith(lineitem);
+                                replacementNotFound = false;
+                            }
+                        }, this);
+                        if (replacementNotFound) $wblEl.append(lineitem);
                     }, this);
                     _.defer(model.fetch);
+                }, this);
+            },
+
+            "__init_check_for_changes": function() {
+                var WGC = WebApp.GDrive.Changes;
+                WGC.on("change:items", function () {
+                    _.each(WGC.get("items"), function (item) {
+                        var checkForChange = function(fileId, file, model) {
+                            if (!model) return false;
+
+                            if (_.isEqual(fileId, model.get("id"))) {
+                                if (file) {
+                                    model.set(file);
+                                } else {
+                                    _.defer(model.fetch);
+                                }
+                                return true;
+                            }
+                            return false;
+                        };
+
+                        var fileId = item["fileId"];
+                        var file = item["file"];
+
+                        // check is workdesk
+                        if (checkForChange(fileId, file, this.model)) return;
+
+                        // check is workbook
+                        checkForChange(fileId, file, this.workbook_models[fileId]);
+
+                    }, this);
                 }, this);
             },
 

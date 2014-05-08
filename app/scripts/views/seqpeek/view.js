@@ -179,7 +179,7 @@ define([
                 this.$(".mutations_map_table").html("");
 
                 var mutations = this.__filter_data(this.__parse_mutations());
-                var mutsig_ranks = this.__filter_data(this.__parse_mutsig());
+                var mutsig_ranks = this.__filter_mutsig_data(this.__parse_mutsig());
 
                 var formatter = function (value) {
                     return parseInt(value) + "%";
@@ -223,8 +223,10 @@ define([
                     }
 
                     var mutsig_rank;
-                    if (_.has(mutsig_ranks, tumor_type)) {
-                        var mutsig_data = mutsig_ranks[tumor_type];
+                    var tumor_type_lower = tumor_type.toLowerCase();
+
+                    if (_.has(mutsig_ranks, tumor_type_lower)) {
+                        var mutsig_data = mutsig_ranks[tumor_type_lower];
                         if (!_.isEmpty(mutsig_data)) {
                             mutsig_rank = _.first(mutsig_data)["rank"];
                         }
@@ -546,6 +548,26 @@ define([
                 return filtered;
             },
 
+            __filter_mutsig_data: function(data_by_tumor_type) {
+                console.debug("seqpeek/view.__filter_mutsig_data:" + this.selected_gene);
+
+                var lowercase_gene = this.selected_gene.toLowerCase();
+                var filtered = {};
+
+                _.each(data_by_tumor_type, function(data, tumor_type) {
+                    if (_.isArray(data)) {
+                        filtered[tumor_type] = _.filter(data, function(item) {
+                            return (_.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene))
+                        }, this);
+                    } else {
+                        if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
+                            filtered[tumor_type] = data;
+                        }
+                    }
+                });
+                return filtered;
+            },
+
             __create_data_for_summary_track: function(mutation_data) {
                 var all_variants = [];
 
@@ -573,7 +595,7 @@ define([
             __parse_mutsig: function () {
                 console.debug("seqpeek/view.__parse_mutsig");
                 return _.reduce(this.model["mutsig"].get("items"), function (memo, feature) {
-                    if (!_.has(memo, feature.cancer)) {
+                    if (!_.has(memo, feature.cancer.toLowerCase())) {
                         memo[feature.cancer] = [];
                     }
                     memo[feature.cancer].push(feature);

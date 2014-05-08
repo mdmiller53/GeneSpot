@@ -222,8 +222,6 @@ define([
                     };
                 }, this);
 
-                this.$(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
-
                 var seqpeek_data = [];
 
                 var uniprot_id = this.gene_to_uniprot_mapping[this.selected_gene];
@@ -237,13 +235,31 @@ define([
 
                     seqpeek_data.push({
                         variants: variants,
-                        tumor_type: tumor_type,
-                        target_element: _.first(this.$("#seqpeek-row-" + tumor_type))
+                        tumor_type: tumor_type
                     });
                 }, this);
 
                 // Aggregate the data and create the element for the summary track
-                seqpeek_data.push(this.__create_data_for_summary_track(seqpeek_data, _.first(this.$("#seqpeek-all-row"))));
+                var summary_track_info = this.__create_data_for_summary_track(seqpeek_data);
+                var total_unique_samples = _.chain(summary_track_info.variants)
+                    .pluck('patient_id')
+                    .unique()
+                    .value()
+                    .length;
+
+                this.$(".mutations_map_table").html(MutationsMapTableTpl({
+                    "items": data_items,
+                    "total": {
+                        samples: total_unique_samples,
+                        percentOf: "NA"
+                    }}));
+
+                _.each(seqpeek_data, function(track_obj) {
+                    track_obj.target_element = _.first(this.$("#seqpeek-row-" + track_obj.tumor_type))
+                }, this);
+
+                summary_track_info.target_element = _.first(this.$("#seqpeek-all-row"));
+                seqpeek_data.push(summary_track_info);
 
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element"));
                 var seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
@@ -516,18 +532,16 @@ define([
                 return filtered;
             },
 
-            __create_data_for_summary_track: function(mutation_data, target_element) {
+            __create_data_for_summary_track: function(mutation_data) {
                 var all_variants = [];
 
                 _.each(mutation_data, function(track_obj) {
-                    console.log(track_obj);
                     Array.prototype.push.apply(all_variants, track_obj.variants);
                 }, this);
 
                 return {
                     variants: all_variants,
                     tumor_type: "ALL",
-                    target_element: target_element,
                     track_type: "bar_plot"
                 };
             },

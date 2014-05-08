@@ -51,6 +51,18 @@ define([
             }
         };
 
+        var COLOR_BY_CATEGORIES_FOR_BAR_PLOT = {
+            "Mutation Type": function(category_name, type_name) {
+                return MUTATION_TYPE_COLOR_MAP[type_name];
+            },
+            "DNA Change": function(category_name, type_name) {
+                return LOLLIPOP_COLOR_SCALE(type_name);
+            },
+            "Protein Change": function(category_name, type_name) {
+                return LOLLIPOP_COLOR_SCALE(type_name);
+            }
+        };
+
         return Backbone.View.extend({
             "genes": [],
             "tumor_types": [],
@@ -68,6 +80,8 @@ define([
                 "click .dropdown-menu.group_by_selector a": function(e) {
                     var group_by = $(e.target).data("id");
                     this.selected_group_by = GROUP_BY_CATEGORIES[group_by];
+                    this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT[group_by];
+
                     console.debug("seqpeek/group-by-selector:" + group_by);
 
                     this.$(".dropdown-menu.group_by_selector").find(".active").removeClass("active");
@@ -79,6 +93,7 @@ define([
                 "click .dropdown-menu.color_by_selector a": function(e) {
                     var color_by = $(e.target).data("id");
                     this.selected_color_by = COLOR_BY_CATEGORIES[color_by];
+
                     console.debug("seqpeek/color-by-selector:" + color_by);
 
                     this.$(".dropdown-menu.color_by_selector").find(".active").removeClass("active");
@@ -115,6 +130,7 @@ define([
 
                 this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
+                this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
                 this.sample_track_type_user_setting = null;
@@ -288,9 +304,7 @@ define([
                         bar_width: 5.0,
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
-                        color_scheme: function(category_name, type_name) {
-                            return MUTATION_TYPE_COLOR_MAP[type_name];
-                        }
+                        color_scheme: this.selected_bar_plot_color_by
                     },
                     sample_plot_tracks: {
                         height: VARIANT_TRACK_MAX_HEIGHT,

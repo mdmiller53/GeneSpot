@@ -51,6 +51,18 @@ define([
             }
         };
 
+        var COLOR_BY_CATEGORIES_FOR_BAR_PLOT = {
+            "Mutation Type": function(category_name, type_name) {
+                return MUTATION_TYPE_COLOR_MAP[type_name];
+            },
+            "DNA Change": function(category_name, type_name) {
+                return LOLLIPOP_COLOR_SCALE(type_name);
+            },
+            "Protein Change": function(category_name, type_name) {
+                return LOLLIPOP_COLOR_SCALE(type_name);
+            }
+        };
+
         return Backbone.View.extend({
             "genes": [],
             "tumor_types": [],
@@ -68,6 +80,8 @@ define([
                 "click .dropdown-menu.group_by_selector a": function(e) {
                     var group_by = $(e.target).data("id");
                     this.selected_group_by = GROUP_BY_CATEGORIES[group_by];
+                    this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT[group_by];
+
                     console.debug("seqpeek/group-by-selector:" + group_by);
 
                     this.$(".dropdown-menu.group_by_selector").find(".active").removeClass("active");
@@ -79,6 +93,7 @@ define([
                 "click .dropdown-menu.color_by_selector a": function(e) {
                     var color_by = $(e.target).data("id");
                     this.selected_color_by = COLOR_BY_CATEGORIES[color_by];
+
                     console.debug("seqpeek/color-by-selector:" + color_by);
 
                     this.$(".dropdown-menu.color_by_selector").find(".active").removeClass("active");
@@ -97,6 +112,16 @@ define([
 
                 "click .btn.seqpeek-print-ids": function(e) {
                     this.__print_selected_samples();
+                },
+
+                "click .btn.seqpeek-toggle-bars": function(e) {
+                    if (this.sample_track_type_user_setting == "bar_plot") {
+                        this.sample_track_type_user_setting = "sample_plot";
+                    }
+                    else {
+                        this.sample_track_type_user_setting = "bar_plot";
+                    }
+                    this.__render();
                 }
             },
 
@@ -105,8 +130,10 @@ define([
 
                 this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
+                this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
+                this.sample_track_type_user_setting = null;
 
                 this.selected_patient_ids = [];
             },
@@ -152,7 +179,7 @@ define([
                 this.$(".mutations_map_table").html("");
 
                 var mutations = this.__filter_data(this.__parse_mutations());
-                var mutsig_ranks = this.__filter_data(this.__parse_mutsig());
+                var mutsig_ranks = this.__filter_mutsig_data(this.__parse_mutsig());
 
                 var formatter = function (value) {
                     return parseInt(value) + "%";
@@ -196,8 +223,10 @@ define([
                     }
 
                     var mutsig_rank;
-                    if (_.has(mutsig_ranks, tumor_type)) {
-                        var mutsig_data = mutsig_ranks[tumor_type];
+                    var tumor_type_lower = tumor_type.toLowerCase();
+
+                    if (_.has(mutsig_ranks, tumor_type_lower)) {
+                        var mutsig_data = mutsig_ranks[tumor_type_lower];
                         if (!_.isEmpty(mutsig_data)) {
                             mutsig_rank = _.first(mutsig_data)["rank"];
                         }
@@ -210,8 +239,6 @@ define([
                         statistics: statistics
                     };
                 }, this);
-
-                this.$(".mutations_map_table").html(MutationsMapTableTpl({ "items": data_items }));
 
                 var seqpeek_data = [];
 
@@ -226,17 +253,42 @@ define([
 
                     seqpeek_data.push({
                         variants: variants,
-                        tumor_type: tumor_type,
-                        target_element: _.first(this.$("#seqpeek-row-" + tumor_type))
+                        tumor_type: tumor_type
                     });
                 }, this);
+
+                // Aggregate the data and create the element for the summary track
+                var summary_track_info = this.__create_data_for_summary_track(seqpeek_data);
+                var total_unique_samples = _.chain(summary_track_info.variants)
+                    .pluck('patient_id')
+                    .unique()
+                    .value()
+                    .length;
+
+                this.$(".mutations_map_table").html(MutationsMapTableTpl({
+                    "items": data_items,
+                    "total": {
+                        samples: total_unique_samples,
+                        percentOf: "NA"
+                    }}));
+
+                _.each(seqpeek_data, function(track_obj) {
+                    track_obj.target_element = _.first(this.$("#seqpeek-row-" + track_obj.tumor_type))
+                }, this);
+
+                summary_track_info.target_element = _.first(this.$("#seqpeek-all-row"));
+                seqpeek_data.push(summary_track_info);
 
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element"));
                 var seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
 
-                var maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
-                if (maximum_samples_in_location >= this.options.bar_plot_threshold) {
+                this.maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
+                if (this.maximum_samples_in_location >= this.options.bar_plot_threshold) {
                     this.sample_track_type = "bar_plot";
+                }
+
+                if (this.sample_track_type_user_setting === null) {
+                    this.sample_track_type_user_setting = this.sample_track_type;
                 }
 
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
@@ -254,9 +306,7 @@ define([
                         bar_width: 5.0,
                         height: VARIANT_TRACK_MAX_HEIGHT,
                         stem_height: 30,
-                        color_scheme: function(category_name, type_name) {
-                            return MUTATION_TYPE_COLOR_MAP[type_name];
-                        }
+                        color_scheme: this.selected_bar_plot_color_by
                     },
                     sample_plot_tracks: {
                         height: VARIANT_TRACK_MAX_HEIGHT,
@@ -425,7 +475,9 @@ define([
             },
 
             __add_data_track: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
-                if (this.sample_track_type == "sample_plot") {
+                var track_type = track_obj.track_type || this.sample_track_type_user_setting;
+
+                if (track_type == "sample_plot") {
                      return seqpeek_builder.addSamplePlotTrackWithArrayData(track_obj.variants, track_target_svg, {
                         guid: track_guid,
                         hovercard_content: {
@@ -466,7 +518,8 @@ define([
                             "Number": function (d) {
                                 return d["statistics"]["total"];
                             }
-                        }
+                        },
+                        max_samples_in_location: this.maximum_samples_in_location
                     });
                 }
             },
@@ -495,6 +548,40 @@ define([
                 return filtered;
             },
 
+            __filter_mutsig_data: function(data_by_tumor_type) {
+                console.debug("seqpeek/view.__filter_mutsig_data:" + this.selected_gene);
+
+                var lowercase_gene = this.selected_gene.toLowerCase();
+                var filtered = {};
+
+                _.each(data_by_tumor_type, function(data, tumor_type) {
+                    if (_.isArray(data)) {
+                        filtered[tumor_type] = _.filter(data, function(item) {
+                            return (_.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene))
+                        }, this);
+                    } else {
+                        if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
+                            filtered[tumor_type] = data;
+                        }
+                    }
+                });
+                return filtered;
+            },
+
+            __create_data_for_summary_track: function(mutation_data) {
+                var all_variants = [];
+
+                _.each(mutation_data, function(track_obj) {
+                    Array.prototype.push.apply(all_variants, track_obj.variants);
+                }, this);
+
+                return {
+                    variants: all_variants,
+                    tumor_type: "ALL",
+                    track_type: "bar_plot"
+                };
+            },
+
             __parse_mutations: function () {
                 console.debug("seqpeek/view.__parse_mutations");
 
@@ -508,7 +595,7 @@ define([
             __parse_mutsig: function () {
                 console.debug("seqpeek/view.__parse_mutsig");
                 return _.reduce(this.model["mutsig"].get("items"), function (memo, feature) {
-                    if (!_.has(memo, feature.cancer)) {
+                    if (!_.has(memo, feature.cancer.toLowerCase())) {
                         memo[feature.cancer] = [];
                     }
                     memo[feature.cancer].push(feature);

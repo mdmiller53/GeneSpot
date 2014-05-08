@@ -97,6 +97,16 @@ define([
 
                 "click .btn.seqpeek-print-ids": function(e) {
                     this.__print_selected_samples();
+                },
+
+                "click .btn.seqpeek-toggle-bars": function(e) {
+                    if (this.sample_track_type_user_setting == "bar_plot") {
+                        this.sample_track_type_user_setting = "sample_plot";
+                    }
+                    else {
+                        this.sample_track_type_user_setting = "bar_plot";
+                    }
+                    this.__render();
                 }
             },
 
@@ -107,6 +117,7 @@ define([
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
+                this.sample_track_type_user_setting = null;
 
                 this.selected_patient_ids = [];
             },
@@ -231,12 +242,19 @@ define([
                     });
                 }, this);
 
+                // Aggregate the data and create the element for the summary track
+                seqpeek_data.push(this.__create_data_for_summary_track(seqpeek_data, _.first(this.$("#seqpeek-all-row"))));
+
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element"));
                 var seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
 
                 var maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
                 if (maximum_samples_in_location >= this.options.bar_plot_threshold) {
                     this.sample_track_type = "bar_plot";
+                }
+
+                if (this.sample_track_type_user_setting === null) {
+                    this.sample_track_type_user_setting = this.sample_track_type;
                 }
 
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
@@ -425,7 +443,9 @@ define([
             },
 
             __add_data_track: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
-                if (this.sample_track_type == "sample_plot") {
+                var track_type = track_obj.track_type || this.sample_track_type_user_setting;
+
+                if (track_type == "sample_plot") {
                      return seqpeek_builder.addSamplePlotTrackWithArrayData(track_obj.variants, track_target_svg, {
                         guid: track_guid,
                         hovercard_content: {
@@ -493,6 +513,22 @@ define([
                     }
                 });
                 return filtered;
+            },
+
+            __create_data_for_summary_track: function(mutation_data, target_element) {
+                var all_variants = [];
+
+                _.each(mutation_data, function(track_obj) {
+                    console.log(track_obj);
+                    Array.prototype.push.apply(all_variants, track_obj.variants);
+                }, this);
+
+                return {
+                    variants: all_variants,
+                    tumor_type: "ALL",
+                    target_element: target_element,
+                    track_type: "bar_plot"
+                };
             },
 
             __parse_mutations: function () {

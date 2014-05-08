@@ -248,8 +248,8 @@ define([
                 var seqpeek_tick_track_element = _.first(this.$("#seqpeek-tick-element"));
                 var seqpeek_domain_track_element = _.first(this.$("#seqpeek-protein-domain-element"));
 
-                var maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
-                if (maximum_samples_in_location >= this.options.bar_plot_threshold) {
+                this.maximum_samples_in_location = this.__find_maximum_samples_in_location(seqpeek_data);
+                if (this.maximum_samples_in_location >= this.options.bar_plot_threshold) {
                     this.sample_track_type = "bar_plot";
                 }
 
@@ -486,7 +486,8 @@ define([
                             "Number": function (d) {
                                 return d["statistics"]["total"];
                             }
-                        }
+                        },
+                        max_samples_in_location: this.maximum_samples_in_location
                     });
                 }
             },

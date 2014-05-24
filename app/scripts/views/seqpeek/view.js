@@ -4,10 +4,11 @@ define([
     "seqpeek/util/data_adapters",
     "seqpeek/builders/builder_for_existing_elements",
     "hbs!templates/seqpeek/mutations_map",
-    "hbs!templates/seqpeek/mutations_map_table"
+    "hbs!templates/seqpeek/mutations_map_table",
+    "hbs!templates/seqpeek/sample_list_dropdown_caption"
 ],
     function ($, _, Backbone, d3, vq,
-              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl) {
+              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl, SampleListCaptionTpl) {
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
@@ -110,10 +111,6 @@ define([
                     this.__enable_seqpeek_selection();
                 },
 
-                "click .btn.seqpeek-print-ids": function(e) {
-                    this.__print_selected_samples();
-                },
-
                 "click .btn.seqpeek-toggle-bars": function(e) {
                     if (this.sample_track_type_user_setting == "bar_plot") {
                         this.sample_track_type_user_setting = "sample_plot";
@@ -169,6 +166,8 @@ define([
                         return { "tumor_type_label": tumor_type };
                     })
                 }));
+
+                this.__update_sample_list_dropdown();
 
                 return this;
             },
@@ -654,10 +653,24 @@ define([
 
             __seqpeek_selection_handler: function(id_list) {
                 this.selected_patient_ids = id_list;
+
+                this.__update_sample_list_dropdown();
             },
 
-            __print_selected_samples: function() {
-                console.log(this.selected_patient_ids);
+            __update_sample_list_dropdown: function() {
+                var num_selected = this.selected_patient_ids.length;
+                var caption;
+
+                if (num_selected == 0 || num_selected > 1) {
+                    caption = num_selected + " Samples Selected";
+                }
+                else {
+                    caption = "1 Sample Selected";
+                }
+
+                this.$el.find(".sample-list-dropdown").html(SampleListCaptionTpl({
+                    caption: caption
+                }));
             }
         });
     });

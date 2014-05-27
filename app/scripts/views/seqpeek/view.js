@@ -119,6 +119,10 @@ define([
                         this.sample_track_type_user_setting = "bar_plot";
                     }
                     this.__render();
+                },
+
+                "click .add-new-list": function() {
+                    this.__store_sample_list();
                 }
             },
 
@@ -168,6 +172,11 @@ define([
                 }));
 
                 this.__update_sample_list_dropdown();
+
+                // Stop the dropdown from being hidden when the text field is clicked
+                this.$(".new-list-name").on("click", function(event) {
+                    event.stopPropagation();
+                });
 
                 return this;
             },
@@ -671,6 +680,28 @@ define([
                 this.$el.find(".sample-list-dropdown").html(SampleListCaptionTpl({
                     caption: caption
                 }));
+            },
+
+            __store_sample_list: function() {
+                var list_label = this.$el.find(".new-list-name").val();
+
+                if (list_label.length == 0 || this.selected_patient_ids.length == 0) {
+                    return;
+                }
+
+                this.$el.find(".new-list-name").val("");
+
+                var sample_list_document = {
+                    "label": list_label,
+                    "samples": this.selected_patient_ids
+                };
+
+                Backbone.sync("create", new Backbone.Model(sample_list_document), {
+                    "url": "svc/collections/samplelists", "success": function() {
+                        console.log("Succesfully created samplelist.");
+                        console.log(arguments);
+                    }
+                });
             }
         });
     });

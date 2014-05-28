@@ -698,8 +698,7 @@ define([
 
                 Backbone.sync("create", new Backbone.Model(sample_list_document), {
                     "url": "svc/collections/samplelists", "success": function() {
-                        console.log("Succesfully created samplelist.");
-                        console.log(arguments);
+                        console.log("Succesfully stored samplelist");
                     }
                 });
             }

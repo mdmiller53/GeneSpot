@@ -21,8 +21,10 @@ from utilities import configure_logging
 # C:CNVR:11q22.2:chr11:102298003:102357340::BLCA-TP_Gistic_ROI_d_amp      1       TMEM123
 # C:CNVR:11q25:chr11:132283490:133403089::BLCA-TP_Gistic_ROI_d_del        3       OPCML-IT1,OPCML-IT2,OPCML
 
-def append_genes(item_s, all_items):
-    if item_s is None or all_items is None: return
+def collect_tags(item_s):
+    if item_s is None: return
+
+    all_items = []
 
     if isinstance(item_s, list):
         for item in item_s:
@@ -31,7 +33,9 @@ def append_genes(item_s, all_items):
     elif isinstance(item_s, basestring):
         all_items.append(item_s)
 
-def extract_rows_by_id(gmf_file):
+    return all_items
+
+def extract_tags_by_id(gmf_file):
     with open(gmf_file, "rb") as csvfile:
         # this file format does not have a header row
         csvreader = csv.reader(csvfile, delimiter="\t")
@@ -40,61 +44,57 @@ def extract_rows_by_id(gmf_file):
         for row in csvreader:
             id = row[0]
             cnt = row[1]
-            gns = []
+            tags = []
             if cnt != "0" or cnt >= 0:
                 if "," in row[2]:
-                    gns = row[2].split(",")
+                    tags = row[2].split(",")
                 else:
-                    gns.append(row[2])
-            r_by_id[row[0]] = gns
+                    tags.append(row[2])
+            r_by_id[row[0]] = tags
         return r_by_id
 
-def find_and_modify(collection, rows_by_id):
+def find_and_modify(collection, tags_by_id):
     count = 0
-    for id in rows_by_id:
-        row = rows_by_id[id]
-        agg_genes = []
-        append_genes(rows_by_id[id], agg_genes)
-        cnt = collection.find({ "id": id }).count()
-        if cnt == 1:
-            collection.find_and_modify({ "id": id }, {"$set":{ "genes": agg_genes }}, upsert=True)
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, agg_genes))
+    for id in tags_by_id:
+        tags = collect_tags(tags_by_id[id])
+
+        if collection.find({ "id": id }).count() == 1:
+            collection.find_and_modify({ "id": id }, {"$set":{ "tags": tags }})
+            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
         count += 1
-        if count % 100 == 0: logging.info("upsert [%s]" % count)
+        if count % 100 == 0: logging.info("update [%s]" % count)
 
     logging.info("total find_and_modify count=%s" % count)
 
 def main():
-    parser = argparse.ArgumentParser(description="Utility to import TCGA mutation summaries to MongoDB")
+    parser = argparse.ArgumentParser(description="Utility to annotate features with genes (tags) in MongoDB")
     parser.add_argument("--host", required=True, help="MongoDB host name")
     parser.add_argument("--port", required=True, type=int, help="MongoDB port")
     parser.add_argument("--db", required=True, help="Database name")
-    parser.add_argument("--gmf", required=True, help="Path to gene map file")
-    parser.add_argument("--src", required=False, help="source (data type) to filter on")
+    parser.add_argument("--f", required=True, help="Path to gene map file")
     parser.add_argument("--loglevel", default="INFO", help="Logging Level")
     args = parser.parse_args()
 
     configure_logging(args.loglevel.upper())
 
-    logging.info("import file: %s" % args.gmf)
+    logging.info("import file: %s" % args.f)
     logging.info("uploading to %s:%s/%s" % (args.host, args.port, args.db))
 
     conn = pymongo.Connection(args.host, args.port)
     db = conn[args.db]
-    collection = db["feature_matrix"]
 
     count = 0
     batch_counter = 0
 
     # Extraction Phase
-    rows_by_id = extract_rows_by_id(args.gmf)
-
-    query = {}
-    if args.src: query = { "source": args.src }
+    tags_by_id = extract_tags_by_id(args.f)
 
     # Database Load Phase
-    find_and_modify(collection, rows_by_id)
+    find_and_modify(db["feature_matrix"], tags_by_id)
+
     conn.close()
+
+    logging.info("annotate_features_with_genes(%s):complete" % args.db)
 
 if __name__ == "__main__":
     main()

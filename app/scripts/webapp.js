@@ -1,8 +1,11 @@
 define(["jquery", "underscore", "backbone",
     "router",
     "models/sessions", "models/datamodel", "models/lookups",
-    "views/items_grid_view", "views/pivot_data_view", "views/search_control"],
-    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView, SearchControl) {
+    "views/items_grid_view", "views/pivot_data_view", "views/search_control",
+    "models/gs/item_set"],
+    function ($, _, Backbone, AppRouter, SessionsCollection, Datamodel, LookupsModel, ItemGridView, PivotDataView, SearchControl,
+        GeneSpotItemSet
+    ) {
         WebApp = {
             Events: _.extend(Backbone.Events),
 
@@ -23,7 +26,8 @@ define(["jquery", "underscore", "backbone",
             },
             LocalSession: new Backbone.Model(), // TODO : Add Sync
             UserPreferences: new Backbone.Model(),
-            Search: new SearchControl()
+            Search: new SearchControl(),
+            ItemSets: new GeneSpotItemSet()
         };
 
         WebApp.initialize = function () {
@@ -70,7 +74,9 @@ define(["jquery", "underscore", "backbone",
                 }
             });
 
-            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" })
+            WebApp.LocalSession.fetch({ "url": "svc/collections/local_session" });
+
+            WebApp.ItemSets.fetch();
         };
 
         WebApp.alert = function(alertEl, timeout) {
@@ -80,7 +86,11 @@ define(["jquery", "underscore", "backbone",
             }, timeout || 2000);
         };
 
-        _.bindAll(WebApp, "initialize");
+        WebApp.getItemSets = function() {
+            return this.ItemSets;
+        };
+
+        _.bindAll(WebApp, "initialize", "getItemSets");
 
         return WebApp;
     });

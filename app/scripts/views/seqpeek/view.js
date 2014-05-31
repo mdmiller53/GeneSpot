@@ -3,12 +3,17 @@ define([
     "models/gs/protein_domain_model",
     "seqpeek/util/data_adapters",
     "seqpeek/builders/builder_for_existing_elements",
+    "views/seqpeek/sample_list_operations_view",
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table",
     "hbs!templates/seqpeek/sample_list_dropdown_caption"
 ],
     function ($, _, Backbone, d3, vq,
-              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl, SampleListCaptionTpl) {
+              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder,
+              SampleListOperationsView,
+              MutationsMapTpl, MutationsMapTableTpl,
+              SampleListCaptionTpl
+        ) {
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
@@ -137,6 +142,17 @@ define([
                 this.sample_track_type_user_setting = null;
 
                 this.selected_patient_ids = [];
+
+                this.samplelists = WebApp.getItemSets();
+
+                this.sample_list_op_view = new SampleListOperationsView({
+                    collection: this.samplelists
+                });
+
+                this.sample_list_op_view.on("list:union", this.__sample_list_union, this);
+
+                this.samplelists.on("add", this.__update_stored_samplelists, this);
+                this.samplelists.on("remove", this.__update_stored_samplelists, this);
             },
 
             render: function() {
@@ -172,6 +188,8 @@ define([
                 }));
 
                 this.__update_sample_list_dropdown();
+
+                this.$el.find(".sample-list-operations").html(this.sample_list_op_view.render().el);
 
                 // Stop the dropdown from being hidden when the text field is clicked
                 this.$(".new-list-name").on("click", function(event) {
@@ -682,6 +700,18 @@ define([
                 }));
             },
 
+            __sample_list_union: function(target_list_model) {
+                if (this.selected_patient_ids.length > 0) {
+                    var sample_id_set = target_list_model.get("samples");
+                    Array.prototype.push.apply(sample_id_set, this.selected_patient_ids);
+                    target_list_model.set({
+                        "samples": sample_id_set
+                    });
+
+                    this.samplelists.updateListModel(target_list_model);
+                }
+            },
+
             __store_sample_list: function() {
                 var list_label = this.$el.find(".new-list-name").val();
 
@@ -696,11 +726,7 @@ define([
                     "samples": this.selected_patient_ids
                 };
 
-                Backbone.sync("create", new Backbone.Model(sample_list_document), {
-                    "url": "svc/collections/samplelists", "success": function() {
-                        console.log("Succesfully stored samplelist");
-                    }
-                });
+                this.samplelists.addList(sample_list_document);
             }
         });
     });

@@ -5,6 +5,7 @@ define([
     "hbs!templates/samplelist/container"
 ],
 function ($, _, Backbone,
+          SampleListContentsView,
           Tpl
 ) {
     return Backbone.View.extend({
@@ -29,9 +30,7 @@ function ($, _, Backbone,
             if (WebApp !== undefined && this.collection === null) {
                 this.collection = WebApp.getItemSets();
 
-                this.collection.on("add", this.__refresh, this);
-                this.collection.on("remove", this.__refresh, this);
-                this.collection.on("change", this.__refresh, this);
+                this.collection.on("add remove change", this.__refresh, this);
             }
         },
 

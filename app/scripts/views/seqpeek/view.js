@@ -705,7 +705,7 @@ define([
                     var sample_id_set = target_list_model.get("samples");
                     Array.prototype.push.apply(sample_id_set, this.selected_patient_ids);
                     target_list_model.set({
-                        "samples": sample_id_set
+                        "samples": _.unique(sample_id_set)
                     });
 
                     this.samplelists.updateListModel(target_list_model);

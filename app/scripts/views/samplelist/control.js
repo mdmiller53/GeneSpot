@@ -5,7 +5,6 @@ define([
     "hbs!templates/samplelist/container"
 ],
 function ($, _, Backbone,
-          SampleListContentsView,
           Tpl
 ) {
     return Backbone.View.extend({

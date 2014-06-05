@@ -48,16 +48,20 @@ def extract_tags_by_id(filename):
 
 def find_and_modify(collection, tags_by_id):
     count = 0
+    skipcount = 0
     for id in tags_by_id:
         tags = collect_tags(tags_by_id[id])
         cnt = collection.find({ "antibody": id }).count()
         if cnt == 1:
-            collection.find_and_modify({ "antibody": id }, { "$set":{ "tags": tags }})
+            collection.find_and_modify({ "antibody": id }, { "$set":{ "refGenes": tags }})
             logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
-        count += 1
+            count += 1
+        else:
+            logging.warning("skipping: find_and_modify [%s] [%s]===%s" % (cnt, id, tags))
+            skipcount += 1
         if count % 100 == 0: logging.info("update [%s]" % count)
 
-    logging.info("total find_and_modify count=%s" % count)
+    logging.info("total find_and_modify count=%s [skip=%s]" % (count, skipcount))
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to annotate features with antibody IDs (i.e. RPPA) to genes based on annotations file")

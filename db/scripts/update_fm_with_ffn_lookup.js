@@ -1,5 +1,5 @@
 /*
-  usage: mongo <host>:<port>/<db> update_fm_with_label_lookup.js --eval "var ftypes = ['RPPA', 'METH]"
+  usage: mongo <host>:<port>/<db> update_fm_with_label_lookup.js --eval "var ftypes = ['RPPA', 'METH']"
 */
 function replaceUnderscore(str) {
   return str.replace(/_/g, ' ');
@@ -279,7 +279,7 @@ var getRPPALabel = function(doc) {
 
 function processFFNForFType(fType, func) {
   var count = 0;
-  db.feature_matrix.find({"source":fType}).forEach(
+  db.feature_matrix.find({"source":fType}, {"values": false}).forEach(
     function(doc) {
       if (0 == (count++ % 4096)) {
         print("processing record " + count + " " + new Date());
@@ -306,13 +306,13 @@ var ftype2func = {
 
 if (typeof ftypes == 'undefined') {
   print('using default array of feature types');
-  var ftypes = default_ftypes;
+  ftypes = default_ftypes;
 }
 db.feature_matrix.ensureIndex( {"id" : 1}, {unique: true});
-for (var ii = 0; ii < ftypes.length; ii++) {
-  print('start ' + ftypes[ii] + ': ' + new Date());
-  processFFNForFType(ftypes[ii], ftype2func[ftypes[ii]]);
-  print('end ' + ftypes[ii] + ': ' + new Date() + '\n');
+for (var ftype in ftypes) {
+  print('start ' + ftypes[ftype] + ': ' + new Date());
+  processFFNForFType(ftypes[ftype], ftype2func[ftypes[ftype]]);
+  print('end ' + ftypes[ftype] + ': ' + new Date() + '\n');
 }
 
 print("'|' clinical/sample counts: " + debugCLINCounts.join(' '));

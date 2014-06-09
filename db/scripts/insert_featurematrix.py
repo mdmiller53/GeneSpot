@@ -49,6 +49,7 @@ def extract_feature_dict(feature_id):
     elif source == "GEXP":
         f_dict["gene"] = feature_parts[2]
         f_dict["platform"] = "mRNAseq"
+        f_dict["code"] = feature_parts[7]
         if feature_parts[7] == "array": f_dict["platform"] = "micro-array"
 
         annotate_chr_location(feature_parts, f_dict)

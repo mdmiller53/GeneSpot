@@ -59,17 +59,24 @@ def extract_tags_by_id(filename):
 def find_and_modify(collection, tags_by_id):
     count = 0
     skipcount = 0
-    for id in tags_by_id:
-        tags = collect_tags(tags_by_id[id])
-        cnt = collection.find({ "probe": id }).count()
-        if cnt == 1:
-            collection.find_and_modify({ "probe": id }, { "$set":{ "refGenes": tags }})
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
-            count += 1
+    for doc in collection.find({ "source": "METH", "probe": { "$exists": True } }, { "probe": True }):
+        if "probe" in doc:
+            probe_id = str(doc["probe"])
+            if probe_id in tags_by_id:
+                tags = tags_by_id[probe_id]
+                if not tags is None:
+                    collection.find_and_modify({ "_id": doc["_id"] }, { "$set":{ "refGenes": tags }})
+                else:
+                    logging.warning("skipping:tags not found:%s" % probe_id)
+                    skipcount += 1
+            else:
+                logging.warning("skipping:probe not found:%s" % probe_id)
+                skipcount += 1
         else:
-            logging.warning("skipping: find_and_modify [%s] [%s]===%s" % (cnt, id, tags))
+            logging.warning("skipping:probe not in doc:%s" % str(doc))
             skipcount += 1
-        if count % 100 == 0: logging.info("update [%s]" % count)
+
+        if count > 0 and count % 1000 == 0: logging.info("update [%s]" % count)
 
     logging.info("total find_and_modify count=%s [skip=%s]" % (count, skipcount))
 

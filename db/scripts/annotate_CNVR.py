@@ -53,16 +53,16 @@ def extract_tags_by_id(gmf_file):
             r_by_id[row[0]] = tags
         return r_by_id
 
-def find_and_modify(collection, tags_by_id):
+def find_and_modify(collection, refGenes_by_id):
     count = 0
-    for id in tags_by_id:
-        tags = collect_tags(tags_by_id[id])
+    for id in refGenes_by_id:
+        refGenes = collect_tags(refGenes_by_id[id])
 
         if collection.find({ "id": id }).count() == 1:
-            collection.find_and_modify({ "id": id }, {"$set":{ "tags": tags }})
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
+            collection.find_and_modify({ "id": id }, {"$set":{ "refGenes": refGenes }})
+            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, refGenes))
         count += 1
-        if count % 100 == 0: logging.info("update [%s]" % count)
+        if count % 1000 == 0: logging.info("update [%s]" % count)
 
     logging.info("total find_and_modify count=%s" % count)
 

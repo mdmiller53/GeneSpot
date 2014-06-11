@@ -1,8 +1,8 @@
 define([
-        "jquery",
-        "underscore",
-        "backbone",
-        "hbs!templates/seqpeek/sample_list_operations"
+    "jquery",
+    "underscore",
+    "backbone",
+    "hbs!templates/seqpeek/sample_list_operations"
 ],
 function ($, _, Backbone,
           Tpl
@@ -19,7 +19,7 @@ function ($, _, Backbone,
         initialize: function() {
             _.bindAll(this, "__refresh");
 
-            this.collection.on("add remove change reset", this.__refresh, this);
+            this.collection.on("add remove change", this.__refresh, this);
         },
 
         render: function() {
@@ -29,15 +29,13 @@ function ($, _, Backbone,
         },
 
         __refresh: function() {
-            var data = this.collection.toJSON();
-
-            var template_data = _.map(data, function(model) {
-                var samples = model["samples"];
+            var template_data = this.collection.map(function(model) {
+                var samples = model.get("samples");
                 var text_content = samples.join("\n");
 
                 return {
                     "id": model["id"],
-                    "label": model["label"],
+                    "label": model.get("label"),
                     "samples": samples,
                     "text": text_content,
                     "number_samples": samples.length

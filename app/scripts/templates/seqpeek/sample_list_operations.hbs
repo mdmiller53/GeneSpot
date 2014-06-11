@@ -1,0 +1,32 @@
+{{#if samplelists.length}}
+    <h4>Sample Lists</h4>
+    <div class="row">
+        <div class="span7">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs sample-lists">
+                    {{#each samplelists}}
+                        <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                                href="#tab-slists-ops-slist-{{id}}" data-toggle="tab">{{label}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                {{#each samplelists}}
+                    <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-slists-ops-slist-{{id}}">
+                        <h5>{{number_samples}} Samples</h5>
+                        <textarea rows="10" class="samplelist-contents">{{text}}</textarea>
+                        <hr/>
+                        <div class="btn-group">
+                            <button class="btn btn-small list-union-op" data-id="{{id}}" type="button"><i class="icon-plus"></i></button>
+                            <button class="btn btn-small list-union-op" data-id="{{id}}" type="button">Add samples to '{{label}}'</button>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+{{else}}
+    <h4>Sample Lists</h4>
+    <h5 style="color: red;">No sample lists stored</h5>
+{{/if}}

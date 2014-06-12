@@ -11,12 +11,28 @@ function ($, _, Backbone,
         events: {
             "click .list-remover": function(e) {
                 var listid = $(e.target).data("id");
-
                 this.collection.remove(listid);
+            },
+
+            "click .list-update": function(e) {
+                var listid = $(e.target).data("id");
+                var text_content = this.$el.find("#samplelist-contents-" + listid).val();
+                var sample_ids = text_content.match(/\S+/g);
+                this.collection.updateSampleList(listid, sample_ids);
             },
 
             "click .list-refresh": function() {
                 _.defer(this.__refresh);
+            },
+
+            "click .add-new-list": function(e) {
+                var list_label = this.$el.find(".new-list-name").val();
+
+                if (list_label.length == 0) {
+                    return;
+                }
+
+                this.collection.addSampleList(list_label, []);
             }
         },
 

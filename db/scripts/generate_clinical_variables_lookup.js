@@ -9,9 +9,8 @@ Usage:
 var lookupsDb = connect(lookupsDbUri);
 
 var appendGlobalCV = function(doc) {
-    // upsert to avoid duplicates!
     lookupsDb.clinical_variables.update({ "id": doc["id"] }, { "id": doc["id"], "label": doc["label"] }, true);
-}
+};
 
 print("initial check=LOOKUPS:" + lookupsDb.clinical_variables.count());
 

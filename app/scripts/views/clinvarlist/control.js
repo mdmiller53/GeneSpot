@@ -53,8 +53,8 @@ define(["jquery", "underscore", "backbone",
 
                 this.clinvarlist_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
-                    Backbone.sync("update", item, {
-                        "url": "svc/collections/clinvarlist/" + item.get("id"), "success": this.render
+                    Backbone.sync("update", new Backbone.Model(_.omit(item.toJSON(), "uri", "id", "_id")), {
+                        "url": "svc/collections/clinvarlist/" + item.get("_id"), "success": this.render
                     });
                 });
             },
@@ -66,7 +66,7 @@ define(["jquery", "underscore", "backbone",
 
             __load: function() {
                 var clinvarlist = _.map(this.clinvarlist_collection["models"], function(gl_model) {
-                    return { "id": gl_model.get("id"), "label": gl_model.get("label") };
+                    return _.extend({ "id": gl_model.get("_id") }, gl_model.toJSON());
                 });
 
                 this.$el.html(Tpl({ "clinvarlist": _.sortBy(clinvarlist, "sort") }));
@@ -74,12 +74,11 @@ define(["jquery", "underscore", "backbone",
             },
 
             __render: function(gl_model) {
-                var $clinSelector = this.$el.find("#tab-clists-" + gl_model.get("id")).find(".clinvar-selector");
-                var itemizer = this.itemizers[gl_model.get("id")] = new Itemizer({"el": $clinSelector, "model": gl_model });
+                var $glList = this.$el.find("#tab-clists-" + gl_model.get("_id"));
+                var itemizer = this.itemizers[gl_model.get("_id")] = new Itemizer({"el": $glList.find(".clinvar-selector"), "model": gl_model });
                 itemizer.render();
 
-                var $clinTypeahead = this.$el.find("#tab-clists-" + gl_model["id"]).find(".clin-typeahead");
-                var typeahead = new TypeAhead({ "el": $clinTypeahead });
+                var typeahead = new TypeAhead({ "el": $glList.find(".clin-typeahead") });
                 typeahead.render();
                 typeahead.on("typed", function(clin) {
                     var cv_from_model = _.map(gl_model.get("clinical_variables"), function(g) {return g;});

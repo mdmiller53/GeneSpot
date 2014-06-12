@@ -702,13 +702,7 @@ define([
 
             __sample_list_union: function(target_list_model) {
                 if (this.selected_patient_ids.length > 0) {
-                    var sample_id_set = target_list_model.get("samples");
-                    Array.prototype.push.apply(sample_id_set, this.selected_patient_ids);
-                    target_list_model.set({
-                        "samples": _.unique(sample_id_set)
-                    });
-
-                    this.samplelists.updateListModel(target_list_model);
+                    this.samplelists.updateSampleListByUnion(target_list_model["id"], this.selected_patient_ids);
                 }
             },
 
@@ -721,12 +715,7 @@ define([
 
                 this.$el.find(".new-list-name").val("");
 
-                var sample_list_document = {
-                    "label": list_label,
-                    "samples": this.selected_patient_ids
-                };
-
-                this.samplelists.addList(sample_list_document);
+                this.samplelists.addSampleList(label, this.selected_patient_ids);
             }
         });
     });

@@ -183,7 +183,14 @@ define(["jquery", "underscore", "backbone",
             __load_fdefs_genes: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_genes(" + tumor_type + ")");
 
-                var items_by_gene = _.groupBy(this.model["gene_features"]["by_tumor_type"][tumor_type].get("items"), "gene");
+                var items_by_gene = {};
+                _.each(this.model["gene_features"]["by_tumor_type"][tumor_type].get("items"), function(item) {
+                    _.each(item["tags"], function(tag_id) {
+                        var item_by_gene = items_by_gene[tag_id];
+                        if (!item_by_gene) item_by_gene = items_by_gene[tag_id] = [];
+                        item_by_gene.push(item);
+                    }, this);
+                }, this);
                 _.each(items_by_gene, function (item_by_gene, gene) {
                     var fd_by_gene = this.feature_definitions[gene];
                     if (_.isUndefined(fd_by_gene)) fd_by_gene = this.feature_definitions[gene] = {};
@@ -371,7 +378,7 @@ define(["jquery", "underscore", "backbone",
                     label: color_by_label,
                     list: color_by_list,
                     colors: color_by_colors
-                }).axisLabel({ x: this.__extract_label(X_feature), y: this.__extract_label(Y_feature) })
+                }).axisLabel({ x: X_feature["label"], y: Y_feature["label"] })
                     .axisKey({ x: "x", y: "y" })
                     .id("sample")
                     .data(data)
@@ -445,13 +452,6 @@ define(["jquery", "underscore", "backbone",
                     }, this);
                 }, this);
                 return _.compact(_.flatten(data));
-            },
-
-            __extract_label: function(feature) {
-                if (_.has(feature, "gene")) {
-                    return feature["gene"] + " : " + feature["source"] + " : " + feature["label"];
-                }
-                return feature["source"] + " : " + feature["label"];
             },
 
             __reset_highlight: function() {

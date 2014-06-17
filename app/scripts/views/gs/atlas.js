@@ -70,7 +70,10 @@ define([
             },
 
             __init_genelist_control: function() {
-                this.genelistControl = new GenelistControl({ "default_genelist": this.model.get("default_genelist") });
+                this.genelistControl = new GenelistControl({
+                    "default_genelist": this.model.get("default_genelist"),
+                    "all_tags_url": this.model.get("all_tags_url")
+                });
                 this.genelistControl.on("ready", this.__init_maps, this);
                 this.genelistControl.on("updated", function (ev) {
                     console.debug("atlas.__init_genelist_control:updated:" + JSON.stringify(ev));
@@ -236,6 +239,8 @@ define([
                             return;
                         }
                         data["id"] = _.pluck(clinvar_list, "id");
+                    } else if (model["query_tags"]) {
+                        data["tags"] = gene_list;
                     } else if (!model["query_all_genes"]) {
                         data["gene"] = gene_list;
                     }

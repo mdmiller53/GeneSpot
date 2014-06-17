@@ -67,7 +67,8 @@
                     "datamodels": {
                         "gene_features": {
                             "uri": "datamodel/tcga_datawarehouse",
-                            "url_suffix": "/feature_matrix"
+                            "url_suffix": "/feature_matrix",
+                            "query_tags": true
                         },
                         "clinical_features": {
                             "uri": "datamodel/tcga_datawarehouse",

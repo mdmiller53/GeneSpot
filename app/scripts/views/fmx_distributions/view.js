@@ -183,7 +183,14 @@ define(["jquery", "underscore", "backbone",
             __load_fdefs_genes: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_genes(" + tumor_type + ")");
 
-                var items_by_gene = _.groupBy(this.model["gene_features"]["by_tumor_type"][tumor_type].get("items"), "gene");
+                var items_by_gene = {};
+                _.each(this.model["gene_features"]["by_tumor_type"][tumor_type].get("items"), function(item) {
+                    _.each(item["tags"], function(tag_id) {
+                        var item_by_gene = items_by_gene[tag_id];
+                        if (!item_by_gene) item_by_gene = items_by_gene[tag_id] = [];
+                        item_by_gene.push(item);
+                    }, this);
+                }, this);
                 _.each(items_by_gene, function (item_by_gene, gene) {
                     var fd_by_gene = this.feature_definitions[gene];
                     if (_.isUndefined(fd_by_gene)) fd_by_gene = this.feature_definitions[gene] = {};

@@ -70,7 +70,10 @@ define([
             },
 
             __init_genelist_control: function() {
-                this.genelistControl = new GenelistControl({ "default_genelist": this.model.get("default_genelist") });
+                this.genelistControl = new GenelistControl({
+                    "default_genelist": this.model.get("default_genelist"),
+                    "all_tags_url": this.model.get("all_tags_url")
+                });
                 this.genelistControl.on("ready", this.__init_maps, this);
                 this.genelistControl.on("updated", function (ev) {
                     console.debug("atlas.__init_genelist_control:updated:" + JSON.stringify(ev));

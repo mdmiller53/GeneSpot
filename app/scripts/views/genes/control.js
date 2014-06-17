@@ -99,7 +99,7 @@ define(["jquery", "underscore", "backbone",
                 var itemizer = this.itemizers[gl_model.get("_id")] = new Itemizer({"el": $glList.find(".gene-selector"), "model": gl_model });
                 itemizer.render();
 
-                var typeahead = new TypeAhead({ "el": $glList.find(".genes-typeahead") });
+                var typeahead = new TypeAhead({ "el": $glList.find(".genes-typeahead"), "url": this.options["all_tags_url"] });
                 typeahead.render();
                 typeahead.on("typed", function(gene) {
                     var genes_from_model = _.map(gl_model.get("genes"), function(g) {return g;});

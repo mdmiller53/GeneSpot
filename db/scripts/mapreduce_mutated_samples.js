@@ -56,7 +56,7 @@ var finalize = function(key, reducedValue) {
 
 var query = {
     "source":"GNAB",
-    "code":"y_n_somatic",
+    "code":"code_potential_somatic",
     "type": "B",
     "gene": { "$exists": true }
 };

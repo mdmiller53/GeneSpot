@@ -9,7 +9,6 @@ define([ "jquery", "underscore", "backbone" ],
                 var all_tags_url = this.options["url"] + "/search/tag";
                 this.$el.typeahead({
                     "source": function(q, p) {
-                        if (!q || q.length < 2) return;
                         $.ajax({
                             "url": all_tags_url,
                             "data": { "term": q },
@@ -18,11 +17,13 @@ define([ "jquery", "underscore", "backbone" ],
                             "success": function (json) {
                                 if (json && json["items"]) {
                                     var matching_tags = _.uniq(_.pluck(json["items"], "tag"));
-                                    if (!_.isEmpty(matching_tags)) p(matching_tags)
+                                    if (!_.isEmpty(matching_tags)) p(matching_tags.sort());
                                 }
                             }
                         });
                     },
+                    "items": 16,
+                    "minLength": 2,
                     "updater": this.__typed
                 });
                 return this;

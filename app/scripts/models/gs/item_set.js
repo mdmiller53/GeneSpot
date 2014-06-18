@@ -34,6 +34,11 @@ function ($, _, Backbone
 
         },
 
+        __createModelForSync: function(model) {
+            var data = _.omit(model.toJSON(), "uri", "id", "_id");
+            return new Backbone.Model(data);
+        },
+
         updateSampleList: function(model_id, sample_list) {
             var model = this.get(model_id);
             var successFn = _.bind(function() {
@@ -44,7 +49,7 @@ function ($, _, Backbone
                 samples: sample_list
             });
 
-            this.sync("update", model, {
+            this.sync("update", this.__createModelForSync(model), {
                 url: URL + "/" + model["id"],
                 success: successFn,
                 context: this

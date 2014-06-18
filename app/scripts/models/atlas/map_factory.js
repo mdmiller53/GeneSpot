@@ -65,7 +65,7 @@ define(["jquery", "underscore", "backbone", "models/atlas/map_template", "models
                 if (_.has(modelspec, "url") && _.has(datamodel, "url_suffix")) {
                     model_options["url"] = modelspec["url"] + datamodel["url_suffix"];
                 }
-                _.each(["base_query", "query_all_genes", "query_clinical_variables"], function (key) {
+                _.each(["base_query", "query_all_genes", "query_clinical_variables", "query_tags"], function (key) {
                     if (_.has(datamodel, key)) model_options[key] = datamodel[key];
                 });
 

@@ -9,14 +9,13 @@ define([ "jquery", "underscore", "backbone" ],
                 var clinical_variables = _.extend({}, WebApp.Lookups.get("clinical_variables").get("items"));
                 if (_.isEmpty(clinical_variables)) return this;
 
-                this.clinical_variables_by_id = _.groupBy(clinical_variables, "id");
+                this.clinical_variables_by_label = _.groupBy(clinical_variables, "label");
 
                 this.$el.typeahead({
                     source: function (q, p) {
                         p(_.compact(_.flatten(_.map(q.toLowerCase().split(" "), function (qi) {
                             return _.map(clinical_variables, function (item) {
-                                if (item.id.toLowerCase().indexOf(qi) >= 0) return item.id;
-                                if (item.label.toLowerCase().indexOf(qi) >= 0) return item.id;
+                                if (item["label"].toLowerCase().indexOf(qi) >= 0) return item["label"];
                                 return null;
                             });
                         }))));
@@ -29,7 +28,7 @@ define([ "jquery", "underscore", "backbone" ],
             },
 
             __typed: function(clin) {
-                this.trigger("typed", _.first(this.clinical_variables_by_id[clin]));
+                this.trigger("typed", _.first(this.clinical_variables_by_label[clin]));
                 return "";
             }
         });

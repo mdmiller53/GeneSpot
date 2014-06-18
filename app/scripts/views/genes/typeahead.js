@@ -6,22 +6,26 @@ define([ "jquery", "underscore", "backbone" ],
             },
 
             render: function() {
-                var genelist = WebApp.Lookups.get("genes").get("keys");
-                if (_.isEmpty(genelist)) return this;
-
+                var all_tags_url = this.options["url"] + "/search/tag";
                 this.$el.typeahead({
-                    source: function (q, p) {
-                        p(_.compact(_.flatten(_.map(q.toLowerCase().split(" "), function (qi) {
-                            return _.map(genelist, function (geneitem) {
-                                if (geneitem.toLowerCase().indexOf(qi) >= 0) return geneitem;
-                                return null;
-                            });
-                        }))));
+                    "source": function(q, p) {
+                        $.ajax({
+                            "url": all_tags_url,
+                            "data": { "term": q },
+                            "traditional": true,
+                            "dataType": "json",
+                            "success": function (json) {
+                                if (json && json["items"]) {
+                                    var matching_tags = _.uniq(_.pluck(json["items"], "tag"));
+                                    if (!_.isEmpty(matching_tags)) p(matching_tags.sort());
+                                }
+                            }
+                        });
                     },
-
-                    updater: this.__typed
+                    "items": 16,
+                    "minLength": 2,
+                    "updater": this.__typed
                 });
-
                 return this;
             },
 

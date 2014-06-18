@@ -1,5 +1,6 @@
 {
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
+    "all_tags_url": "svc/datastores/FFN/LOOKUPS/feature_tags_grouped",
     "maps": [
         {
             "id": "mutations_combo",
@@ -66,7 +67,8 @@
                     "datamodels": {
                         "gene_features": {
                             "uri": "datamodel/tcga_datawarehouse",
-                            "url_suffix": "/feature_matrix"
+                            "url_suffix": "/feature_matrix",
+                            "query_tags": true
                         },
                         "clinical_features": {
                             "uri": "datamodel/tcga_datawarehouse",

@@ -16,10 +16,9 @@ Example of the type of features targeted for aggregation by this script. Must be
     "gene" : "A1BG",
     "end" : 58874214,
     "start" : 58858172,
-    "label" : "A1BG",
     "source" : "GNAB",
     "chr" : "19",
-    "label" : "y_n_somatic",
+    "code" : "y_n_somatic",
     "type" : "B"
 }
  */
@@ -57,7 +56,7 @@ var finalize = function(key, reducedValue) {
 
 var query = {
     "source":"GNAB",
-    "label":"y_n_somatic",
+    "code":"code_potential_somatic",
     "type": "B",
     "gene": { "$exists": true }
 };

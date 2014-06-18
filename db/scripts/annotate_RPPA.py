@@ -8,7 +8,7 @@ import logging
 import itertools
 
 from utilities import configure_logging
-from annotate_features_with_genes import append_genes
+from annotate_features_with_genes import collect_tags
 
 # this script parses antibody annotations files produced by TCGA
 # it uses (column 3) for antibody ID and (column 1) for gene names
@@ -36,7 +36,7 @@ from annotate_features_with_genes import append_genes
 # N:RPPA:EIF4EBP1:chr8:37887859:37917883:+:4E-BP1_pS65
 # N:RPPA:EIF4EBP1:chr8:37887859:37917883:+:4E-BP1_pT37_T46
 
-def extract_rows_by_id(filename):
+def extract_tags_by_id(filename):
     with open(filename, "rb") as csvfile:
         csvreader = csv.reader(csvfile, delimiter="\t")
         csvreader.next()
@@ -46,20 +46,22 @@ def extract_rows_by_id(filename):
             r_by_id[row[2]] = row[0].split(" ")
         return r_by_id
 
-def find_and_modify(collection, rows_by_id):
+def find_and_modify(collection, tags_by_id):
     count = 0
-    for id in rows_by_id:
-        row = rows_by_id[id]
-        agg_genes = []
-        append_genes(rows_by_id[id], agg_genes)
+    skipcount = 0
+    for id in tags_by_id:
+        tags = collect_tags(tags_by_id[id])
         cnt = collection.find({ "antibody": id }).count()
         if cnt == 1:
-            collection.find_and_modify({ "antibody": id }, { "$set":{ "genes": agg_genes }}, upsert=True)
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, agg_genes))
-        count += 1
-        if count % 100 == 0: logging.info("upsert [%s]" % count)
+            collection.find_and_modify({ "antibody": id }, { "$set":{ "refGenes": tags }})
+            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
+            count += 1
+        else:
+            logging.warning("skipping: find_and_modify [%s] [%s]===%s" % (cnt, id, tags))
+            skipcount += 1
+        if count % 100 == 0: logging.info("update [%s]" % count)
 
-    logging.info("total find_and_modify count=%s" % count)
+    logging.info("total find_and_modify count=%s [skip=%s]" % (count, skipcount))
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to annotate features with antibody IDs (i.e. RPPA) to genes based on annotations file")
@@ -79,10 +81,10 @@ def main():
     db = conn[args.db]
 
     # Extraction Phase
-    rows_by_id = extract_rows_by_id(args.f)
+    tags_by_id = extract_tags_by_id(args.f)
 
     # Database Load Phase
-    find_and_modify(db["feature_matrix"], rows_by_id)
+    find_and_modify(db["feature_matrix"], tags_by_id)
     conn.close()
 
 if __name__ == "__main__":

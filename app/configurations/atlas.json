@@ -23,14 +23,6 @@
                             "url_suffix": "/mutation_summary"
                         },
                         "mutsig": "datamodel/mutations/mutsig_rankings",
-                        "features": {
-                            "uri": "datamodel/tcga_datawarehouse",
-                            "url_suffix": "/feature_matrix",
-                            "base_query": {
-                                "source": "GNAB",
-                                "label": "y_n_somatic"
-                            }
-                        },
                         "mutated_samples": {
                             "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/mutated_samples"

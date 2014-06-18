@@ -57,13 +57,13 @@ def main():
     parser.add_argument("--host", required=True, help="MongoDB host name")
     parser.add_argument("--port", required=True, type=int, help="MongoDB port")
     parser.add_argument("--db", required=True, help="Database name")
-    parser.add_argument("--mut", required=True, help="Path to mutation summary file")
+    parser.add_argument("--f", required=True, help="Path to mutation summary file")
     parser.add_argument("--loglevel", default="INFO", help="Logging Level")
     args = parser.parse_args()
 
     configure_logging(args.loglevel.upper())
 
-    logging.info("import file: %s" % args.mut)
+    logging.info("import file: %s" % args.f)
     logging.info("uploading to %s:%s/%s" % (args.host, args.port, args.db))
 
     conn = pymongo.Connection(args.host, args.port)
@@ -74,7 +74,7 @@ def main():
 
     count = 0
     exception_uniprot_fail = open(exception_filename, "w")
-    for mut_row in extract_mutations(args.mut, exception_uniprot_fail):
+    for mut_row in extract_mutations(args.f, exception_uniprot_fail):
         collection.insert(mut_row)
         count += 1
 

@@ -155,6 +155,19 @@ define([
                 this.samplelists.on("remove", this.__update_stored_samplelists, this);
             },
 
+            __update_gene_dropdown_labels: function(gene_to_uniprot_mapping) {
+                _.each(this.genes, function(gene_label) {
+                    var $el = this.$el.find(".seqpeek-gene-selector a[data-id=" + gene_label + "]");
+
+                    if (_.has(gene_to_uniprot_mapping, gene_label)) {
+                        $el.text(gene_label);
+                    }
+                    else {
+                        $el.text(gene_label + " NO DATA");
+                    }
+                }, this);
+            },
+
             render: function() {
                 console.debug("seqpeek/view.render");
 
@@ -268,6 +281,19 @@ define([
 
                 var seqpeek_data = [];
 
+                this.__update_gene_dropdown_labels(this.gene_to_uniprot_mapping);
+
+                if (! _.has(this.gene_to_uniprot_mapping, this.selected_gene)) {
+                    this.$(".mutations_map_table").html(MutationsMapTableTpl({
+                        "items": data_items,
+                        "total": {
+                            samples: "No data",
+                            percentOf: "NA"
+                        }}));
+
+                    return;
+                }
+
                 var uniprot_id = this.gene_to_uniprot_mapping[this.selected_gene];
                 var protein_data = this.found_protein_domains[uniprot_id];
 
@@ -318,6 +344,10 @@ define([
                 }
 
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
+            },
+
+            __render_no_data: function(mutation_data) {
+
             },
 
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {

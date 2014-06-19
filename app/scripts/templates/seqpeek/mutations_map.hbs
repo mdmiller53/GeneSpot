@@ -27,9 +27,23 @@
             {{/each}}
         </ul>
     </li>
+    <li class="dropdown sample-list-dialog">
+        <a href="#" onclick="return false;" class="sample-list-dropdown" data-toggle="dropdown">
+            <!-- sample_list_dropdown_caption.hbs -->
+        </a>
+
+        <div class="dropdown-menu span5">
+            <div class="input-append">
+                <input type="text" class="new-list-name" placeholder="New list name...">
+                <button class="btn add-new-list" type="button" title="Add a list"><i class="icon-plus"></i></button>
+            </div>
+            <div class="sample-list-operations">
+                <!-- sample_list_operations.hbs -->
+            </div>
+        </div>
+   </li>
     <button class="btn btn-default seqpeek-zoom-enable">Zoom</button>
     <button class="btn btn-default seqpeek-selection-enable">Select</button>
-    <button class="btn btn-default seqpeek-print-ids">Print selection</button>
     <button class="btn btn-default seqpeek-toggle-bars">Bars / Lollipops</button>
 </ul>
 <div class="mutations_map_table"></div>

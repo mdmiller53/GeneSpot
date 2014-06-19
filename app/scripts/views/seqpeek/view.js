@@ -3,11 +3,17 @@ define([
     "models/gs/protein_domain_model",
     "seqpeek/util/data_adapters",
     "seqpeek/builders/builder_for_existing_elements",
+    "views/seqpeek/sample_list_operations_view",
     "hbs!templates/seqpeek/mutations_map",
-    "hbs!templates/seqpeek/mutations_map_table"
+    "hbs!templates/seqpeek/mutations_map_table",
+    "hbs!templates/seqpeek/sample_list_dropdown_caption"
 ],
     function ($, _, Backbone, d3, vq,
-              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, MutationsMapTpl, MutationsMapTableTpl) {
+              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder,
+              SampleListOperationsView,
+              MutationsMapTpl, MutationsMapTableTpl,
+              SampleListCaptionTpl
+        ) {
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
@@ -110,10 +116,6 @@ define([
                     this.__enable_seqpeek_selection();
                 },
 
-                "click .btn.seqpeek-print-ids": function(e) {
-                    this.__print_selected_samples();
-                },
-
                 "click .btn.seqpeek-toggle-bars": function(e) {
                     if (this.sample_track_type_user_setting == "bar_plot") {
                         this.sample_track_type_user_setting = "sample_plot";
@@ -122,6 +124,10 @@ define([
                         this.sample_track_type_user_setting = "bar_plot";
                     }
                     this.__render();
+                },
+
+                "click .add-new-list": function() {
+                    this.__store_sample_list();
                 }
             },
 
@@ -136,6 +142,30 @@ define([
                 this.sample_track_type_user_setting = null;
 
                 this.selected_patient_ids = [];
+
+                this.samplelists = WebApp.getItemSets();
+
+                this.sample_list_op_view = new SampleListOperationsView({
+                    collection: this.samplelists
+                });
+
+                this.sample_list_op_view.on("list:union", this.__sample_list_union, this);
+
+                this.samplelists.on("add", this.__update_stored_samplelists, this);
+                this.samplelists.on("remove", this.__update_stored_samplelists, this);
+            },
+
+            __update_gene_dropdown_labels: function(gene_to_uniprot_mapping) {
+                _.each(this.genes, function(gene_label) {
+                    var $el = this.$el.find(".seqpeek-gene-selector a[data-id=" + gene_label + "]");
+
+                    if (_.has(gene_to_uniprot_mapping, gene_label)) {
+                        $el.text(gene_label);
+                    }
+                    else {
+                        $el.text(gene_label + " NO DATA");
+                    }
+                }, this);
             },
 
             render: function() {
@@ -169,6 +199,15 @@ define([
                         return { "tumor_type_label": tumor_type };
                     })
                 }));
+
+                this.__update_sample_list_dropdown();
+
+                this.$el.find(".sample-list-operations").html(this.sample_list_op_view.render().el);
+
+                // Stop the dropdown from being hidden when the text field is clicked
+                this.$(".new-list-name").on("click", function(event) {
+                    event.stopPropagation();
+                });
 
                 return this;
             },
@@ -242,6 +281,19 @@ define([
 
                 var seqpeek_data = [];
 
+                this.__update_gene_dropdown_labels(this.gene_to_uniprot_mapping);
+
+                if (! _.has(this.gene_to_uniprot_mapping, this.selected_gene)) {
+                    this.$(".mutations_map_table").html(MutationsMapTableTpl({
+                        "items": data_items,
+                        "total": {
+                            samples: "No data",
+                            percentOf: "NA"
+                        }}));
+
+                    return;
+                }
+
                 var uniprot_id = this.gene_to_uniprot_mapping[this.selected_gene];
                 var protein_data = this.found_protein_domains[uniprot_id];
 
@@ -292,6 +344,10 @@ define([
                 }
 
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
+            },
+
+            __render_no_data: function(mutation_data) {
+
             },
 
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {
@@ -654,10 +710,42 @@ define([
 
             __seqpeek_selection_handler: function(id_list) {
                 this.selected_patient_ids = id_list;
+
+                this.__update_sample_list_dropdown();
             },
 
-            __print_selected_samples: function() {
-                console.log(this.selected_patient_ids);
+            __update_sample_list_dropdown: function() {
+                var num_selected = this.selected_patient_ids.length;
+                var caption;
+
+                if (num_selected == 0 || num_selected > 1) {
+                    caption = num_selected + " Samples Selected";
+                }
+                else {
+                    caption = "1 Sample Selected";
+                }
+
+                this.$el.find(".sample-list-dropdown").html(SampleListCaptionTpl({
+                    caption: caption
+                }));
+            },
+
+            __sample_list_union: function(target_list_model) {
+                if (this.selected_patient_ids.length > 0) {
+                    this.samplelists.updateSampleListByUnion(target_list_model["id"], this.selected_patient_ids);
+                }
+            },
+
+            __store_sample_list: function() {
+                var list_label = this.$el.find(".new-list-name").val();
+
+                if (list_label.length == 0 || this.selected_patient_ids.length == 0) {
+                    return;
+                }
+
+                this.$el.find(".new-list-name").val("");
+
+                this.samplelists.addSampleList(label, this.selected_patient_ids);
             }
         });
     });

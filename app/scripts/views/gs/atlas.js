@@ -5,14 +5,16 @@ define([
     "views/gs/atlas_map",
     "views/genes/control",
     "views/clinvarlist/control",
+    "views/samplelist/control",
     "views/gs/tumor_types_control",
     "views/datamodel_collector/control",
     "views/collected_maps/control",
     "views/datasheets/control"
+
 ],
     function ($, _, Backbone, AtlasTpl, MapsListContainerTpl, AtlasMapView,
-              GenelistControl, ClinicalListControl, TumorTypesControl, DatamodelCollectorControl, CollectedMapsControl,
-              DatasheetsControl) {
+              GenelistControl, ClinicalListControl, SampleListControl, TumorTypesControl, DatamodelCollectorControl,
+              CollectedMapsControl, DatasheetsControl) {
 
         return Backbone.View.extend({
             "datasheetsControl": new DatasheetsControl({}),
@@ -56,6 +58,7 @@ define([
                 this.model.set("atlas_map_views", []);
                 this.model.on("load", this.__init_genelist_control, this);
                 this.model.on("load", this.__init_clinicallist_control, this);
+                this.model.on("load", this.__init_samplelist_control, this);
                 this.model.on("load", this.__init_tumortypes_control, this);
                 this.model.on("load", this.__init_datamodel_collector, this);
 //                this.model.on("load", this.__init_collected_maps_control, this);
@@ -101,6 +104,21 @@ define([
                 }, this);
 
                 this.$el.find(".clinvarlist-container").html(this.clinicalListControl.render().el);
+            },
+
+            __init_samplelist_control: function() {
+                this.sampleListControl = new SampleListControl({});
+                this.sampleListControl.on("updated", function (ev) {
+                    console.debug("atlas.__init_samplelist_control:updated:" + JSON.stringify(ev));
+                    if (ev["reorder"]) {
+                        console.debug("atlas.__init_samplelist_control:updated:reorder:ignore");
+                        return;
+                    }
+
+                    this.__reload_all_maps();
+                }, this);
+
+                this.$el.find(".samplelist-container").html(this.sampleListControl.render().el);
             },
 
             __init_collected_maps_control: function() {

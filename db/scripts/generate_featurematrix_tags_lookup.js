@@ -6,14 +6,14 @@ Usage:
     mongo --host=$HOST $DB_NAME generate_featurematrix_tags_lookup.js --eval="var lookupsDbUri='hostname:port/LOOKUPS';"
  */
 
-print("script:started");
 var lookupsDb = connect(lookupsDbUri);
 var db_name = db["_name"];
 
-print("initial check=LOOKUPS:" + lookupsDb.all_tags.count());
+print("[" + db_name + "]:script:started");
+print("[" + db_name + "]:initial check=LOOKUPS:" + lookupsDb["all_tags"].count());
 
-print("update:started");
-db.feature_matrix.find(
+print("[" + db_name + "]:update:started");
+db["feature_matrix"].find(
     {
         "$and": [
             { "tags": { "$exists": true } },
@@ -37,8 +37,7 @@ db.feature_matrix.find(
         }
     }
 });
+print("[" + db_name + "]:update:completed");
 
-print("update:completed");
-
-print("final check=LOOKUPS:" + lookupsDb.all_tags.count());
-print("script:completed");
+print("[" + db_name + "]:final check=LOOKUPS:" + lookupsDb["all_tags"].count());
+print("[" + db_name + "]:script:completed");

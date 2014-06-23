@@ -7,16 +7,32 @@ Usage:
  */
 
 var lookupsDb = connect(lookupsDbUri);
+var db_name = db["_name"];
+print("[" + db_name + "]:script:started");
 
-var appendGlobalCV = function(doc) {
-    lookupsDb.clinical_variables.update({ "id": doc["id"] }, { "id": doc["id"], "label": doc["label"] }, true);
+var group_variables_fn = function(doc) {
+    var details = {
+        "id": doc["id"],
+        "label": doc["label"],
+        "tumor_type": db_name,
+        "source": doc["source"]
+    };
+    lookupsDb["all_clinical"].update({
+        "id": doc["id"]
+    }, {
+        "$set": { "label": doc["label"] },
+        "$push": { "features": details }
+    }, true);
 };
 
-print("initial check=LOOKUPS:" + lookupsDb.clinical_variables.count());
+print("[" + db_name + "]:initial check=LOOKUPS:" + lookupsDb["all_clinical"].count());
 
-db.feature_matrix.find({"source":"CLIN"},{"label": true, "id": true}).forEach(appendGlobalCV);
-db.feature_matrix.find({"source":"SAMP"},{"label": true, "id": true}).forEach(appendGlobalCV);
+print("[" + db_name + "]:update:started:CLIN");
+db["feature_matrix"].find({ "source": "CLIN" }).forEach(group_variables_fn);
+print("[" + db_name + "]:update:started:SAMP");
+db["feature_matrix"].find({ "source": "SAMP" }).forEach(group_variables_fn);
+print("[" + db_name + "]:update:completed");
 
-print("final check=LOOKUPS:" + lookupsDb.clinical_variables.count());
-
-print("completed");
+var result = lookupsDb["all_clinical"].aggregate([ { "$unwind": "$features" }, { "$group": { "_id": "$features.tumor_type", "cnt": { "$sum": 1 } } } ]);
+result["result"].forEach(printjson);
+print("[" + db_name + "]:script:completed");

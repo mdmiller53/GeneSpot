@@ -78,7 +78,7 @@ define(["jquery", "underscore", "backbone",
                 var itemizer = this.itemizers[gl_model.get("_id")] = new Itemizer({"el": $glList.find(".clinvar-selector"), "model": gl_model });
                 itemizer.render();
 
-                var typeahead = new TypeAhead({ "el": $glList.find(".clin-typeahead") });
+                var typeahead = new TypeAhead({ "el": $glList.find(".clin-typeahead"), "url": this.options["url"] });
                 typeahead.render();
                 typeahead.on("typed", function(clin) {
                     var cv_from_model = _.map(gl_model.get("clinical_variables"), function(g) {return g;});

@@ -92,7 +92,7 @@ define([
             },
 
             __init_clinicallist_control: function() {
-                this.clinicalListControl = new ClinicalListControl({});
+                this.clinicalListControl = new ClinicalListControl({ "url": this.model.get("all_clinical_url") });
                 this.clinicalListControl.on("updated", function (ev) {
                     console.debug("atlas.__init_clinicallist_control:updated:" + JSON.stringify(ev));
                     if (ev["reorder"]) {

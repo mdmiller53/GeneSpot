@@ -273,9 +273,10 @@ define(["jquery", "underscore", "backbone",
 
                 var features = _.values(this.feature_definitions_by_id);
                 var qualifying_features = _.filter(features, function(feature) {
-                    if (feature["source"] === "GNAB") {
-                        return _.isEqual(feature["code"], "code_potential_somatic");
-                    }
+                    if (!_.has(feature, "source")) return false;
+                    if (feature["source"] === "CLIN") return false;
+                    if (feature["source"] === "SAMP") return false;
+                    if (feature["source"] === "GNAB") return _.isEqual(feature["code"], "code_potential_somatic");
                     return !_.isEqual(feature["type"], "N");
                 });
                 if (_.isEmpty(qualifying_features)) return;

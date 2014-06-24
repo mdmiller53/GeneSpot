@@ -1,6 +1,6 @@
 {
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
-    "all_tags_url": "svc/datastores/FFN/LOOKUPS/feature_tags_grouped",
+    "all_tags_url": "svc/datastores/FFN/LOOKUPS/all_tags",
     "all_clinical_url": "svc/datastores/FFN/LOOKUPS/all_clinical",
     "maps": [
         {

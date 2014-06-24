@@ -68,6 +68,9 @@
                             "url_suffix": "/feature_matrix",
                             "query_clinical_variables": true
                         }
+                    },
+                    "feature_sources_order": {
+                        "GEXP": 1
                     }
                 }
             ]

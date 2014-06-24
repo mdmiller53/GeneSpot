@@ -204,9 +204,20 @@ define([
 
                 this.$el.find(".sample-list-operations").html(this.sample_list_op_view.render().el);
 
-                // Stop the dropdown from being hidden when the text field is clicked
-                this.$(".new-list-name").on("click", function(event) {
-                    event.stopPropagation();
+                var $sample_list_dropdown = $(this.$el.find("a.sample-list-dropdown"));
+
+                // Manually open and close the sample list dialog dropdown. The dropdown
+                // will not close when clicking outside.
+                $sample_list_dropdown.on("click.dropdown.data-api", function(e) {
+                    var parent = $(this.parentNode);
+                    var is_open = parent.hasClass("open");
+
+                    if (is_open == false) {
+                        parent.addClass("open");
+                    }
+                    else {
+                        parent.removeClass("open");
+                    }
                 });
 
                 return this;
@@ -745,7 +756,7 @@ define([
 
                 this.$el.find(".new-list-name").val("");
 
-                this.samplelists.addSampleList(label, this.selected_patient_ids);
+                this.samplelists.addSampleList(list_label, this.selected_patient_ids);
             }
         });
     });

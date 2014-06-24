@@ -76,7 +76,7 @@ define(["jquery", "underscore", "backbone",
                         this.carveVis.highlight(null).render();
                     } else {
                         var selected_item = $(e.target).data("id");
-                        if (selected_item) {
+                        if (!_.isUndefined(selected_item)) {
                             console.debug("fmx-dist.highlight:" + selected_item);
                             this.$(".legend_items").find(".active").removeClass("active");
                             LI.addClass("active");
@@ -209,6 +209,7 @@ define(["jquery", "underscore", "backbone",
                 this.__aggregate(tumor_type, this.model["gene_features"]["by_tumor_type"][tumor_type]);
                 this.__render_fLabel_selectors("x");
                 this.__render_fLabel_selectors("y");
+                this.__colorBy_variables();
             },
 
             __load_fdefs_clinvars: function (tumor_type) {
@@ -265,6 +266,28 @@ define(["jquery", "underscore", "backbone",
                 } else {
                     this.__render_fLabel_selectors_genes(axis);
                 }
+            },
+
+            __colorBy_variables: function() {
+                this.$(".color_by_selector").find(".other-variables").remove();
+
+                var features = _.values(this.feature_definitions_by_id);
+                var qualifying_features = _.filter(features, function(feature) {
+                    if (feature["source"] === "GNAB") {
+                        return _.isEqual(feature["code"], "code_potential_somatic");
+                    }
+                    return !_.isEqual(feature["type"], "N");
+                });
+                if (_.isEmpty(qualifying_features)) return;
+
+                this.$(".color_by_selector").append("<li class=\"nav-header other-variables\">Others</li>");
+                _.each(_.sortBy(qualifying_features, "label"), function(feature) {
+                    this.$(".color_by_selector").append(LineItemTpl({
+                        "id": feature["unid"] || feature["id"],
+                        "label": feature["label"],
+                        "li_class": "other-variables"
+                    }));
+                }, this);
             },
 
             __render_fLabel_selectors_genes: function(axis) {
@@ -418,11 +441,13 @@ define(["jquery", "underscore", "backbone",
                 if (_.isArray(color_by_list) && _.isArray(color_by_colors)) {
                     if (_.isEqual(color_by_list.length, color_by_colors.length)) {
                         _.each(color_by_list, function (color_by, idx) {
-                            this.$(".legend_items").append(LegendTpl({
-                                "id": color_by,
-                                "label": color_by,
-                                "color": color_by_colors[idx]
-                            }));
+                            if (color_by) {
+                                this.$(".legend_items").append(LegendTpl({
+                                    "id": color_by,
+                                    "label": color_by,
+                                    "color": color_by_colors[idx]
+                                }));
+                            }
                         }, this);
                     }
                 }

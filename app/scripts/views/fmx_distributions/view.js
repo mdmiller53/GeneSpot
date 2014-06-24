@@ -266,8 +266,13 @@ define(["jquery", "underscore", "backbone",
                 var feature_sources = _.map(_.keys(fd_by_gene || {}), function (source) {
                     var s_uid = uid++ + "-" + axis;
                     fdefs_uid_by_source[source] = s_uid;
-                    return { "uid": s_uid, "label": source.toUpperCase(), "item_class": "feature_defs" };
-                });
+
+                    var order_dict = this.options["feature_sources_order"] || {};
+                    var order = order_dict[source.toUpperCase()] || 100;
+                    return { "uid": s_uid, "label": source.toUpperCase(), "item_class": "feature_defs", "order": order };
+                }, this);
+
+                feature_sources = _.sortBy(feature_sources, "order");
                 $feature_selector.append(FeatureDefsTpl({"axis": axis, "feature_sources": feature_sources}));
 
                 _.each(fd_by_gene, function (features, source) {

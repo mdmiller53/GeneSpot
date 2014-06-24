@@ -214,7 +214,7 @@ define(["jquery", "underscore", "backbone",
             __load_fdefs_clinvars: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_clinvars(" + tumor_type + ")");
                 _.each(this.options["clinical_variables"], function(item) {
-                    this.feature_definitions_by_id[item.id] = _.extend({}, item);
+                    this.feature_definitions_by_id[item["unid"] || item["id"]] = _.extend({}, item);
                 }, this);
                 this.__aggregate(tumor_type, this.model["clinical_features"]["by_tumor_type"][tumor_type]);
             },
@@ -222,10 +222,23 @@ define(["jquery", "underscore", "backbone",
             __aggregate: function(tumor_type, model) {
                 console.debug("fmx-dist.__aggregate(" + tumor_type + ")");
                 _.each(model.get("items"), function(item) {
-                    var a_f_by_id = this.aggregate_features_by_id[item.id];
-                    if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[item.id] = {};
-                    a_f_by_id[tumor_type] = item;
-                    this.feature_definitions_by_id[item.id] = _.omit(item, "values");
+                    var a_f_by_id = this.aggregate_features_by_id[item["unid"] || item["id"]];
+                    if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[item["unid"] || item["id"]] = {};
+
+                    if (_.has(a_f_by_id, tumor_type)) {
+                        var existing = a_f_by_id[tumor_type];
+                        var overlap_values = _.extend({}, existing["values"], item["values"]);
+                        _.each(_.keys(overlap_values), function(key) {
+                            var value = overlap_values[key];
+                            if (_.isEqual(value, "NA")) value = item["values"][key];
+                            if (_.isEqual(value, "NA")) value = existing["values"][key];
+                            overlap_values[key] = value;
+                        });
+                        a_f_by_id[tumor_type] = _.extend({}, existing, item, { "values": overlap_values });
+                    } else {
+                        a_f_by_id[tumor_type] = item;
+                    }
+                    this.feature_definitions_by_id[item["unid"] || item["id"]] = _.omit(item, "values");
                 }, this);
             },
 
@@ -277,8 +290,12 @@ define(["jquery", "underscore", "backbone",
 
                 _.each(fd_by_gene, function (features, source) {
                     var collapserUL = $feature_selector.find("#tab-pane-" + fdefs_uid_by_source[source]);
-                    _.each(_.sortBy(features, "label"), function (feature) {
-                        collapserUL.append(LineItemTpl({ "label": feature["label"], "id": feature["id"], "a_class": "feature-selector-" + axis }));
+                    var grouped_by_unid = _.groupBy(features, "unid");
+                    if (_.isEmpty(grouped_by_unid)) grouped_by_unid = _.groupBy(features, "id");
+                    _.each(grouped_by_unid, function(grouped_features) {
+                        var feature = _.first(grouped_features);
+                        if (!feature) return;
+                        collapserUL.append(LineItemTpl({ "label": feature["label"], "id": feature["unid"] || feature["id"], "a_class": "feature-selector-" + axis }));
                     });
                 });
 
@@ -336,9 +353,9 @@ define(["jquery", "underscore", "backbone",
 
                 var data = null;
                 if (this.selected_tumor_type) {
-                    data = this.__visdata([this.selected_tumor_type], X_feature.id, Y_feature.id);
+                    data = this.__visdata([this.selected_tumor_type], X_feature, Y_feature);
                 } else {
-                    data = this.__visdata(this.options["tumor_types"], X_feature.id, Y_feature.id);
+                    data = this.__visdata(this.options["tumor_types"], X_feature, Y_feature);
                 }
                 if (_.isEmpty(data)) {
                     this.latest_data = [];
@@ -411,7 +428,9 @@ define(["jquery", "underscore", "backbone",
                 }
             },
 
-            __visdata: function (tumor_types, X_feature_id, Y_feature_id) {
+            __visdata: function (tumor_types, X_f, Y_f) {
+                var X_feature_id = X_f["unid"] || X_f["id"];
+                var Y_feature_id = Y_f["unid"] || Y_f["id"];
                 var data = _.map(tumor_types, function (tumor_type) {
                     var stl = this.sample_types_lookup[tumor_type] || {};
 

@@ -25,7 +25,7 @@ var update_tags = function(d) {
     // METH
     if ("probe" in d) tags.push(d["probe"]);
 
-    if (tags.length <= 0) return;
+    if (tags.length <= 0) tags.push("NO_MATCH");
 
     db.feature_matrix.update({ "_id": d["_id"] }, { "$set": { "tags": tags } } );
 };

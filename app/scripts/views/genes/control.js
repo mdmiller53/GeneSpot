@@ -57,8 +57,8 @@ define(["jquery", "underscore", "backbone",
                 this.genelists_collection.fetch({ "success": this.__ready });
                 this.genelists_collection.on("change", function(item) {
                     if (_.isEmpty(item)) return;
-                    Backbone.sync("update", item, {
-                        "url": "svc/collections/genelists/" + item.get("id"), "success": this.__refresh
+                    Backbone.sync("update", new Backbone.Model(_.omit(item.toJSON(), "uri", "id", "_id")), {
+                        "url": "svc/collections/genelists/" + item.get("_id"), "success": this.__refresh
                     });
                 });
 
@@ -76,11 +76,12 @@ define(["jquery", "underscore", "backbone",
 
             __load: function() {
                 var genelists = _.map(this.genelists_collection["models"], function(gl_model) {
-                    return { "id": gl_model.get("id"), "label": gl_model.get("label") };
+                    return _.extend({ "id": gl_model.get("_id") }, gl_model.toJSON());
                 });
 
                 var default_gl = {
                     "id": "default-list",
+                    "_id": "default-list",
                     "label": "Default List",
                     "genes": this.options["default_genelist"],
                     "sort": 1,
@@ -94,12 +95,11 @@ define(["jquery", "underscore", "backbone",
             },
 
             __render: function(gl_model) {
-                var $geneSelector = this.$el.find("#tab-glists-glist-" + gl_model.get("id")).find(".gene-selector");
-                var itemizer = this.itemizers[gl_model.get("id")] = new Itemizer({"el": $geneSelector, "model": gl_model });
+                var $glList = this.$el.find("#tab-glists-glist-" + gl_model.get("_id"));
+                var itemizer = this.itemizers[gl_model.get("_id")] = new Itemizer({"el": $glList.find(".gene-selector"), "model": gl_model });
                 itemizer.render();
 
-                var $geneTypeahead = this.$el.find("#tab-glists-glist-" + gl_model["id"]).find(".genes-typeahead");
-                var typeahead = new TypeAhead({ "el": $geneTypeahead });
+                var typeahead = new TypeAhead({ "el": $glList.find(".genes-typeahead"), "url": this.options["all_tags_url"] });
                 typeahead.render();
                 typeahead.on("typed", function(gene) {
                     var genes_from_model = _.map(gl_model.get("genes"), function(g) {return g;});

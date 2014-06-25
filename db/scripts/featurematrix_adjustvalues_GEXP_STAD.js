@@ -22,14 +22,19 @@ db["feature_matrix"].find(adjust_query).forEach(function(rec) {
     var dict_values = {};
     for (var sample_id in dict_raw_values) {
         var raw_value = dict_raw_values[sample_id];
-        if (raw_value && raw_value != "" && raw_value.toUpperCase() != "NA") {
+        if (!raw_value || raw_value == "") {
+            throw sample_id + " didn't have a valid value!!!";
+        }
+        if (raw_value.toUpperCase() != "NA") {
             var float_value = parseFloat(raw_value);
             if (!isNaN(float_value)) {
-                // TODO : Add or multiply first?
-                float_value += CONSTANT_ADDITION;
-                float_value = float_value * CONSTANT_MULTIPLY;
+                float_value = (float_value * CONSTANT_MULTIPLY) + CONSTANT_ADDITION;
                 dict_values[sample_id] = float_value;
+            } else {
+                dict_values[sample_id] = "NA";
             }
+        } else {
+            dict_values[sample_id] = "NA";
         }
     }
     db["feature_matrix"].update({ "_id": rec["_id"] }, { "$set": { "values": dict_values }});

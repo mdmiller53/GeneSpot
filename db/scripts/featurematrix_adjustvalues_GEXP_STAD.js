@@ -22,10 +22,10 @@ db["feature_matrix"].find(adjust_query).forEach(function(rec) {
     var dict_values = {};
     for (var sample_id in dict_raw_values) {
         var raw_value = dict_raw_values[sample_id];
-        if (!raw_value || raw_value == "") {
-            throw sample_id + " didn't have a valid value!!!";
+        if (0 != raw_value && (!raw_value || raw_value == "")) {
+            throw sample_id + "(" + raw_value + ") didn't have a valid value for " + rec["id"];
         }
-        if (raw_value.toUpperCase() != "NA") {
+        if (String(raw_value).toUpperCase() != "NA") {
             var float_value = parseFloat(raw_value);
             if (!isNaN(float_value)) {
                 float_value = (float_value * CONSTANT_MULTIPLY) + CONSTANT_ADDITION;

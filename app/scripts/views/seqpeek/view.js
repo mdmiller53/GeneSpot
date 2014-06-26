@@ -357,10 +357,6 @@ define([
                 this.__render_tracks(seqpeek_data, region_data, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element);
             },
 
-            __render_no_data: function(mutation_data) {
-
-            },
-
             __render_tracks: function(mutation_data, region_array, protein_data, seqpeek_tick_track_element, seqpeek_domain_track_element) {
                 console.debug("seqpeek/view.__render_tracks");
 
@@ -644,7 +640,7 @@ define([
 
                 return {
                     variants: all_variants,
-                    tumor_type: "ALL",
+                    tumor_type: "COMBINED",
                     track_type: "bar_plot"
                 };
             },
@@ -702,7 +698,7 @@ define([
 
                 var gene_to_uniprot_mapping = _.reduce(items, function(memo, item) {
                     var gene_label = item["gene"];
-                    if (!_.has(memo, gene_label)) {
+                    if (!_.has(memo, gene_label) && _.has(item, "uniprot_id")) {
                         memo[gene_label] = item["uniprot_id"];
                     }
                     return memo;

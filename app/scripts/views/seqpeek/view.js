@@ -13,12 +13,17 @@ define([
               SampleListOperationsView,
               MutationsMapTpl, MutationsMapTableTpl,
               SampleListCaptionTpl
-        ) {
+    ) {
+
+        var Y_AXIS_SCALE_WIDTH = 50;
+
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
         var PROTEIN_DOMAIN_TRACK_HEIGHT = 40;
         var VIEWPORT_WIDTH = 1000;
+        var SAMPLE_PLOT_TRACK_STEM_HEIGHT = 30;
+        var TRACK_SVG_WIDTH = VIEWPORT_WIDTH + Y_AXIS_SCALE_WIDTH;
 
         var POSITION_FIELD_NAME = "amino_acid_position";
         var TYPE_FIELD_NAME = "mutation_type";
@@ -368,7 +373,7 @@ define([
                     bar_plot_tracks: {
                         bar_width: 5.0,
                         height: VARIANT_TRACK_MAX_HEIGHT,
-                        stem_height: 30,
+                        stem_height: SAMPLE_PLOT_TRACK_STEM_HEIGHT,
                         color_scheme: this.selected_bar_plot_color_by
                     },
                     sample_plot_tracks: {
@@ -408,21 +413,26 @@ define([
                     var track_guid = "C" + vq.utils.VisUtils.guid();
                     var track_elements_svg = d3.select(track_obj.target_element)
                         .append("svg")
-                        .attr("width", VIEWPORT_WIDTH)
+                        .attr("width", TRACK_SVG_WIDTH)
                         .attr("height", VARIANT_TRACK_MAX_HEIGHT + REGION_TRACK_HEIGHT)
                         .attr("id", track_guid)
                         .style("pointer-events", "none");
 
                     var sample_plot_track_g = track_elements_svg
                         .append("g")
-                        .style("pointer-events", "none");
+                        .style("pointer-events", "none")
+                        .call(this.__set_track_g_position);
 
                     var region_track_g = track_elements_svg
+                        .append("g")
+                            .style("pointer-events", "none")
+                            .call(this.__set_track_g_position)
                         .append("g")
                         .style("pointer-events", "none");
 
                     track_obj.track_info = this.__add_data_track(track_obj, seqpeek, track_guid, sample_plot_track_g);
                     track_obj.variant_track_svg = track_elements_svg;
+                    track_obj.sample_plot_track_g = sample_plot_track_g;
 
                     seqpeek.addRegionScaleTrackToElement(region_track_g, {
                         guid: track_guid,
@@ -449,23 +459,27 @@ define([
                     track_obj.region_track_svg = region_track_g;
                 }, this);
 
-                var tick_track_svg = d3.select(seqpeek_tick_track_element)
+                var tick_track_g = d3.select(seqpeek_tick_track_element)
                     .append("svg")
-                    .attr("width", VIEWPORT_WIDTH)
-                    .attr("height", TICK_TRACK_HEIGHT)
-                    .style("pointer-events", "none");
+                        .attr("width", TRACK_SVG_WIDTH)
+                        .attr("height", TICK_TRACK_HEIGHT)
+                        .style("pointer-events", "none")
+                    .append("svg:g")
+                        .call(this.__set_track_g_position);
 
-                seqpeek.addTickTrackToElement(tick_track_svg);
+                seqpeek.addTickTrackToElement(tick_track_g);
 
                 var protein_domain_track_guid = "C" + vq.utils.VisUtils.guid();
-                var protein_domain_track_svg = d3.select(seqpeek_domain_track_element)
+                var protein_domain_track_g = d3.select(seqpeek_domain_track_element)
                     .append("svg")
-                    .attr("width", VIEWPORT_WIDTH)
-                    .attr("height", PROTEIN_DOMAIN_TRACK_HEIGHT)
-                    .attr("id", protein_domain_track_guid)
-                    .style("pointer-events", "none");
+                        .attr("width", TRACK_SVG_WIDTH)
+                        .attr("height", PROTEIN_DOMAIN_TRACK_HEIGHT)
+                        .attr("id", protein_domain_track_guid)
+                        .style("pointer-events", "none")
+                    .append("svg:g")
+                        .call(this.__set_track_g_position);
 
-                seqpeek.addProteinDomainTrackToElement(protein_data["matches"], protein_domain_track_svg, {
+                seqpeek.addProteinDomainTrackToElement(protein_data["matches"], protein_domain_track_g, {
                     guid: protein_domain_track_guid,
                     hovercard_content: {
                         "DB": function(d) {
@@ -511,12 +525,85 @@ define([
 
                     track_obj.variant_track_svg.attr("height", total_track_height);
                     track_obj.region_track_svg
-                        .attr("transform", "translate(0," + (variant_track_height) + ")")
-                });
+                        .attr("transform", "translate(0," + (variant_track_height) + ")");
+
+                    this.__render_scales(track_obj.variant_track_svg, total_track_height, track_instance.statistics);
+                }, this);
 
                 seqpeek.render();
 
                 this.seqpeek = seqpeek;
+            },
+
+            __set_track_g_position: function(track_selector) {
+                track_selector
+                    .attr("transform", "translate(" + Y_AXIS_SCALE_WIDTH + ",0)");
+            },
+
+            __render_scales: function(track_selector, total_track_height, track_statistics) {
+                var right = Y_AXIS_SCALE_WIDTH - 10;
+
+                var axis = track_selector
+                    .append("svg:g")
+                    .attr("class", "y-axis")
+                    .attr("transform", "translate(0," + total_track_height + ")");
+
+                axis
+                    .append("svg:line")
+                    .attr("y1", 0)
+                    .attr("x1", right)
+                    .attr("y2", -total_track_height)
+                    .attr("x2", right)
+                    .style("stroke", "black");
+
+                var domain = [
+                    track_statistics.min_samples_in_location,
+                    track_statistics.max_samples_in_location
+                ];
+
+                var scale_start = -(REGION_TRACK_HEIGHT + SAMPLE_PLOT_TRACK_STEM_HEIGHT);
+
+                var scale = d3.scale.linear().domain(domain).range([scale_start, -total_track_height]);
+                var ticks = [
+                    {
+                        text: domain[0],
+                        y: scale(domain[0]),
+                        text_y: -5
+                    },
+                    {
+                        text: domain[1],
+                        y: scale(domain[1]),
+                        text_y: +13
+                    },
+                ];
+
+                var tick_g = axis
+                    .selectAll(".tick")
+                    .data(ticks)
+                    .enter()
+                    .append("svg:g")
+                        .attr("class", "y-axis-tick")
+                        .attr("transform", function(d) {
+                            return "translate(0," + d.y + ")";
+                        });
+
+                tick_g
+                    .append("svg:line")
+                        .attr("y1", 0.0)
+                        .attr("y2", 0.0)
+                        .attr("x1", right - 10)
+                        .attr("x2", right)
+                        .style("stroke", "black");
+                tick_g
+                    .append("svg:text")
+                    .attr("x", right - 15)
+                    .attr("y", function(d) {
+                        return d.text_y;
+                    })
+                    .text(function(d) {
+                        return d.text;
+                    })
+                    .style("text-anchor", "end");
             },
 
             __find_maximum_samples_in_location: function(mutation_data) {

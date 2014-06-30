@@ -13,19 +13,21 @@ define([
               SampleListOperationsView,
               MutationsMapTpl, MutationsMapTableTpl,
               SampleListCaptionTpl
-        ) {
+    ) {
+
         var VARIANT_TRACK_MAX_HEIGHT = 150;
         var TICK_TRACK_HEIGHT = 25;
         var REGION_TRACK_HEIGHT = 10;
         var PROTEIN_DOMAIN_TRACK_HEIGHT = 40;
         var VIEWPORT_WIDTH = 1000;
 
-        //var POSITION_FIELD_NAME = "amino_acid_position";
-        var POSITION_FIELD_NAME = "chromosome_position";
+        var AMINO_ACID_POSITION_FIELD_NAME = "amino_acid_position";
+        var COORDINATE_FIELD_NAME = "chromosome_position";
         var TYPE_FIELD_NAME = "mutation_type";
         var AMINO_ACID_MUTATION_FIELD_NAME = "amino_acid_mutation";
         var AMINO_ACID_WILDTYPE_FIELD_NAME = "amino_acid_wildtype";
         var DNA_CHANGE_FIELD_NAME = "dna_change";
+        var UNIPROT_FIELD_NAME = "uniprot_id";
 
         var GROUP_BY_CATEGORIES = {
             "Mutation Type": TYPE_FIELD_NAME,
@@ -34,6 +36,8 @@ define([
                 return data_row[AMINO_ACID_MUTATION_FIELD_NAME] + "-" + data_row[AMINO_ACID_WILDTYPE_FIELD_NAME];
             }
         };
+
+        var VISUALIZATION_MODE = "ALL";
 
         var MUTATION_TYPE_COLOR_MAP = {
             Nonsense_Mutation: "red",
@@ -176,7 +180,8 @@ define([
                 this.genes = this.options["genes"] || [];
                 if (!_.isEmpty(this.genes)) this.selected_gene = _.first(this.genes);
 
-                var renderFn = _.after(1 + (2 * this.tumor_types.length), this.__load_protein_domains);
+                //var renderFn = _.after(1 + (2 * this.tumor_types.length), this.__load_protein_domains);
+                var renderFn = _.after(1 + (2 * this.tumor_types.length), this.__preprocess_data);
 
                 this.model["mutsig"].on("load", renderFn, this);
 
@@ -408,7 +413,7 @@ define([
                     variant_layout: {
                         variant_width: 5.0
                     },
-                    variant_data_location_field: POSITION_FIELD_NAME,
+                    variant_data_location_field: COORDINATE_FIELD_NAME,
                     variant_data_type_field: this.selected_group_by,
                     variant_data_source_field: "patient_id",
                     selection_handler: _.bind(this.__seqpeek_selection_handler, this)
@@ -438,7 +443,12 @@ define([
                         guid: track_guid,
                         hovercard_content: {
                             "Protein location": function(d) {
-                                return d["start_aa"] + " - " + d["end_aa"];
+                                if (d["type"] == "exon") {
+                                    return d["start_aa"] + " - " + d["end_aa"];
+                                }
+                                else {
+                                    return d["start"] + " - " + d["end"];
+                                }
                             },
                             "Protein length": function () {
                                 return protein_data["length"];
@@ -535,7 +545,7 @@ define([
             __find_maximum_samples_in_location: function(mutation_data) {
                 var track_maximums = [];
                 _.each(mutation_data, function(track_obj) {
-                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, this.selected_group_by, POSITION_FIELD_NAME);
+                    var grouped_data = SeqPeekDataAdapters.group_by_location(track_obj.variants, this.selected_group_by, COORDINATE_FIELD_NAME);
                     SeqPeekDataAdapters.apply_statistics(grouped_data, function() {return 'all';});
 
                     var max_number_of_samples_in_position = d3.max(grouped_data, function(data_by_location) {
@@ -553,12 +563,17 @@ define([
             __add_data_track: function(track_obj, seqpeek_builder, track_guid, track_target_svg) {
                 var track_type = track_obj.track_type || this.sample_track_type_user_setting;
 
+                var variants = track_obj.variants;
+                variants.sort(function(x, y) {
+                    return (parseInt(x["chromosome_position"]) - parseInt(y["chromosome_position"]));
+                });
+
                 if (track_type == "sample_plot") {
-                     return seqpeek_builder.addSamplePlotTrackWithArrayData(track_obj.variants, track_target_svg, {
+                     return seqpeek_builder.addSamplePlotTrackWithArrayData(variants, track_target_svg, {
                         guid: track_guid,
                         hovercard_content: {
                             "Location": function (d) {
-                                return d[POSITION_FIELD_NAME];
+                                return d[COORDINATE_FIELD_NAME];
                             },
                             "Amino Acid Mutation": function (d) {
                                 return d[AMINO_ACID_MUTATION_FIELD_NAME];
@@ -601,20 +616,25 @@ define([
             },
 
             __build_regions: function(data, protein_start, protein_end) {
+                var itercount = 0;
+                console.log("__br");
                 data.sort(function(x, y) {
                     return (parseInt(x["chromosome_position"]) - parseInt(y["chromosome_position"]));
                 });
 
                 var split = _.reduce(data, function(memo, data_point, index, input_array) {
+                    itercount += 1;
                     var has_uniprot = _.has(data_point, "uniprot_id");
 
                     if (memo.last_has_uniprot === null) {
+                        //console.log(itercount, "-");
                         memo.current_array.push(data_point);
                         memo.last_has_uniprot = has_uniprot;
                         return memo;
                     }
 
                     if (has_uniprot != memo.last_has_uniprot) {
+                        //console.log(itercount, "|");
                         memo.split_array.push({
                             coding: memo.last_has_uniprot,
                             data: _.clone(memo.current_array)
@@ -623,6 +643,7 @@ define([
                         memo.current_array = [data_point];
                     }
                     else {
+                        //console.log(itercount, "*");
                         memo.current_array.push(data_point);
                     }
 
@@ -673,6 +694,20 @@ define([
                 return region_info.data;
             },
 
+            __preprocess_data: function() {
+                _.each(this.model["mutations"]["by_tumor_type"], function(data, tumor_type) {
+                    if (_.isArray(data)) {
+                        _.each(data, function(d) {
+                            d[COORDINATE_FIELD_NAME] = parseInt(d[COORDINATE_FIELD_NAME]);
+
+                            if (_.has(d, UNIPROT_FIELD_NAME)) {
+                                d[AMINO_ACID_POSITION_FIELD_NAME] = parseInt(d[AMINO_ACID_POSITION_FIELD_NAME]);
+                            }
+                        });
+                    }
+                }, this);
+            },
+
             __filter_data: function(data_by_tumor_type) {
                 console.debug("seqpeek/view.__filter_data:" + this.selected_gene);
 
@@ -686,7 +721,7 @@ define([
                         filtered[tumor_type] = _.filter(data, function(item) {
                             return (_.has(item, "gene") &&
                                 _.isEqual(item["gene"].toLowerCase(), lowercase_gene) &&
-                                _.has(item, POSITION_FIELD_NAME));
+                                _.has(item, UNIPROT_FIELD_NAME));
                         }, this);
                     } else {
                         if (_.has(data, "gene") && _.isEqual(data["gene"], lowercase_gene)) {
@@ -726,7 +761,7 @@ define([
 
                 return {
                     variants: all_variants,
-                    tumor_type: "ALL",
+                    tumor_type: "COMBINED",
                     track_type: "bar_plot"
                 };
             },
@@ -784,8 +819,8 @@ define([
 
                 var gene_to_uniprot_mapping = _.reduce(items, function(memo, item) {
                     var gene_label = item["gene"];
-                    if (!_.has(memo, gene_label)) {
-                        memo[gene_label] = item["uniprot_id"];
+                    if (!_.has(memo, gene_label) && _.has(item, UNIPROT_FIELD_NAME)) {
+                        memo[gene_label] = item[UNIPROT_FIELD_NAME];
                     }
                     return memo;
                 }, {});

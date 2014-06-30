@@ -572,7 +572,7 @@ define([
                     },
                     {
                         text: domain[1],
-                        y: scale(domain[1]),
+                        y: scale(domain[1]) + 1,
                         text_y: +13
                     },
                 ];

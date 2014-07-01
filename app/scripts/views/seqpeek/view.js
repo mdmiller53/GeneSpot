@@ -15,6 +15,8 @@ define([
               MutationsMapTpl, MutationsMapTableTpl,
               SampleListCaptionTpl
     ) {
+        var MINI_LOCATOR_WIDTH = 400;
+        var MINI_LOCATOR_HEIGHT = 24;
 
         var Y_AXIS_SCALE_WIDTH = 50;
 
@@ -532,7 +534,7 @@ define([
                 }, this);
 
 
-                var mini_locator_scale = 200 / seqpeek.getRegionMetadata().total_width;
+                var mini_locator_scale = MINI_LOCATOR_WIDTH / seqpeek.getRegionMetadata().total_width;
                 this.__create_mini_locator(seqpeek.getProcessedRegionData(), mini_locator_scale);
 
                 seqpeek.scrollEventCallback(_.bind(function(d) {
@@ -544,9 +546,11 @@ define([
             },
 
             __create_mini_locator: function(region_data, scale) {
-                var mini_locator_canvas = this.$el.find(".seqpeek-mini-locator")[0];
+                var $mini_locator = this.$el.find(".seqpeek-mini-locator")
+                    .attr("width", MINI_LOCATOR_WIDTH)
+                    .attr("height", MINI_LOCATOR_HEIGHT);
 
-                this.mini_locator = SeqPeekMiniLocatorFactory.create(mini_locator_canvas)
+                this.mini_locator = SeqPeekMiniLocatorFactory.create($mini_locator[0])
                     .data(region_data)
                     .scale(scale);
 

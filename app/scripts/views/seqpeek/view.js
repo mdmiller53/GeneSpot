@@ -3,13 +3,14 @@ define([
     "models/gs/protein_domain_model",
     "seqpeek/util/data_adapters",
     "seqpeek/builders/builder_for_existing_elements",
+    "seqpeek/util/mini_locator",
     "views/seqpeek/sample_list_operations_view",
     "hbs!templates/seqpeek/mutations_map",
     "hbs!templates/seqpeek/mutations_map_table",
     "hbs!templates/seqpeek/sample_list_dropdown_caption"
 ],
     function ($, _, Backbone, d3, vq,
-              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder,
+              ProteinDomainModel, SeqPeekDataAdapters, SeqPeekBuilder, SeqPeekMiniLocatorFactory,
               SampleListOperationsView,
               MutationsMapTpl, MutationsMapTableTpl,
               SampleListCaptionTpl
@@ -530,9 +531,26 @@ define([
                     this.__render_scales(track_obj.variant_track_svg, total_track_height, track_instance.statistics);
                 }, this);
 
+
+                var mini_locator_scale = 200 / seqpeek.getRegionMetadata().total_width;
+                this.__create_mini_locator(seqpeek.getProcessedRegionData(), mini_locator_scale);
+
+                seqpeek.scrollEventCallback(_.bind(function(d) {
+                    this.mini_locator.render(d.visible_min_x, d.visible_max_x)
+                }, this));
                 seqpeek.render();
 
                 this.seqpeek = seqpeek;
+            },
+
+            __create_mini_locator: function(region_data, scale) {
+                var mini_locator_canvas = this.$el.find(".seqpeek-mini-locator")[0];
+
+                this.mini_locator = SeqPeekMiniLocatorFactory.create(mini_locator_canvas)
+                    .data(region_data)
+                    .scale(scale);
+
+                this.mini_locator.render(0, 1000);
             },
 
             __set_track_g_position: function(track_selector) {
@@ -542,6 +560,7 @@ define([
 
             __render_scales: function(track_selector, total_track_height, track_statistics) {
                 var right = Y_AXIS_SCALE_WIDTH - 10;
+                var scale_start = -(REGION_TRACK_HEIGHT + SAMPLE_PLOT_TRACK_STEM_HEIGHT);
 
                 var axis = track_selector
                     .append("svg:g")
@@ -550,7 +569,7 @@ define([
 
                 axis
                     .append("svg:line")
-                    .attr("y1", 0)
+                    .attr("y1", scale_start)
                     .attr("x1", right)
                     .attr("y2", -total_track_height)
                     .attr("x2", right)
@@ -560,8 +579,6 @@ define([
                     track_statistics.min_samples_in_location,
                     track_statistics.max_samples_in_location
                 ];
-
-                var scale_start = -(REGION_TRACK_HEIGHT + SAMPLE_PLOT_TRACK_STEM_HEIGHT);
 
                 var scale = d3.scale.linear().domain(domain).range([scale_start, -total_track_height]);
                 var ticks = [

@@ -533,28 +533,32 @@ define([
                     this.__render_scales(track_obj.variant_track_svg, total_track_height, track_instance.statistics);
                 }, this);
 
+                var regions_start_coordinate = seqpeek.getRegionMetadata().start_coordinate;
+                var regions_end_coordinate = seqpeek.getRegionMetadata().end_coordinate;
 
                 var mini_locator_scale = MINI_LOCATOR_WIDTH / seqpeek.getRegionMetadata().total_width;
-                this.__create_mini_locator(seqpeek.getProcessedRegionData(), mini_locator_scale);
+                this.__create_mini_locator(seqpeek.getProcessedRegionData(), seqpeek.region_layout, mini_locator_scale, regions_start_coordinate, regions_end_coordinate);
 
                 seqpeek.scrollEventCallback(_.bind(function(d) {
-                    this.mini_locator.render(d.visible_min_x, d.visible_max_x)
+                    var visible_coordinates = d.visible_coordinates;
+                    this.mini_locator.render(visible_coordinates[0], visible_coordinates[1]);
                 }, this));
                 seqpeek.render();
 
                 this.seqpeek = seqpeek;
             },
 
-            __create_mini_locator: function(region_data, scale) {
+            __create_mini_locator: function(region_data, region_layout, scale, start_coordinate, end_coordinate) {
                 var $mini_locator = this.$el.find(".seqpeek-mini-locator")
                     .attr("width", MINI_LOCATOR_WIDTH)
                     .attr("height", MINI_LOCATOR_HEIGHT);
 
                 this.mini_locator = SeqPeekMiniLocatorFactory.create($mini_locator[0])
                     .data(region_data)
+                    .region_layout(region_layout)
                     .scale(scale);
 
-                this.mini_locator.render(0, 1000);
+                this.mini_locator.render(start_coordinate, end_coordinate);
             },
 
             __set_track_g_position: function(track_selector) {
@@ -595,7 +599,7 @@ define([
                         text: domain[1],
                         y: scale(domain[1]) + 1,
                         text_y: +13
-                    },
+                    }
                 ];
 
                 var tick_g = axis

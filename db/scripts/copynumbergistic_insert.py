@@ -8,7 +8,7 @@ import logging
 from utilities import configure_logging
 
 def extract_records(file_path):
-    logging.info("extract_records(%s)" % file_path)
+    logging.info(file_path)
 
     with open(file_path, "rb") as csvfile:
         csvreader = csv.reader(csvfile, delimiter="\t")
@@ -30,7 +30,7 @@ def extract_records(file_path):
 
             yield record
 
-        logging.info("extract_records(%s):samples=%s" % (file_path, str(len(ids))))
+        logging.info("samples=%s" % str(len(ids)))
 
 def values_dict(ids, values):
     result = {}

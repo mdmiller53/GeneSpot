@@ -1,21 +1,6 @@
 /*
   usage: mongo <host>:<port>/<db> generate_stats_var_lookup.js 
 */
-function getCounts(values) {
-  var retVal = {};
-  retVal["total"] = 0;
-  retVal["valid"] = 0;
-  
-  for (var key in values) {
-    retVal["total"] += 1;
-    if (values[key] != 'NA') {
-      retVal["valid"]++;
-    }
-  }
-
-  return retVal;
-}
-
 function median(values) {
     values.sort(function(a, b){return a-b});
     var half = Math.floor(values.length/2);
@@ -45,13 +30,13 @@ function getStats(type, values) {
     retVal["counts"]["total"]++;
     if (values[key] != 'NA') {
       retVal["counts"]["valid"]++;
-    }
 
-    if (values[key] in retVal["categories"]) {
-      retVal["categories"][values[key]]++;
-    } else {
-      count++;
-      retVal["categories"][values[key]] = 1;
+      if (values[key] in retVal["categories"]) {
+        retVal["categories"][values[key]]++;
+      } else {
+        count++;
+        retVal["categories"][values[key]] = 1;
+      }
     }
     
     if ("N" == type && "NA" != values[key]) {
@@ -100,6 +85,17 @@ db.feature_matrix.find().forEach(
   function(doc) {
     if (0 == (count++ % 4096)) {
       print("processing record " + count + " " + new Date());
+    }
+    
+    if (doc["raw_values"]) {
+      var stats = getStats(doc["type"], doc["raw_values"]);
+      db.feature_matrix.update({"id":doc["id"]}, {$set: {"raw_statistics.counts": stats["counts"]}});
+      if (stats["categories"]) {
+        db.feature_matrix.update({"id":doc["id"]}, {$set: {"raw_statistics.categories":stats["categories"]}})
+      }
+      if (stats["numeric"]) {
+        db.feature_matrix.update({"id":doc["id"]}, {$set: {"raw_statistics.numeric":stats["numeric"]}})
+      }
     }
     
     var stats = getStats(doc["type"], doc["values"]);

@@ -146,7 +146,7 @@ def process_import(config_json):
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to import data into the Cancer Regulome Data Warehouse")
-    parser.add_argument("--config_file", required=False, default="datawarehouse_import.json", help="Configuration File")
+    parser.add_argument("--config_file", required=True, help="Configuration File")
     parser.add_argument("--loglevel", default="INFO", help="Logging Level")
     args = parser.parse_args()
 

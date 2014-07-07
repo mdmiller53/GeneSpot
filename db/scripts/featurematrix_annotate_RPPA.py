@@ -54,14 +54,14 @@ def find_and_modify(collection, tags_by_id):
         cnt = collection.find({ "antibody": id }).count()
         if cnt == 1:
             collection.find_and_modify({ "antibody": id }, { "$set":{ "refGenes": tags }})
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, tags))
+            logging.debug("[%s] [%s]===%s" % (count, id, tags))
             count += 1
         else:
-            logging.warning("skipping: find_and_modify [%s] [%s]===%s" % (cnt, id, tags))
+            logging.warning("skipping: [%s] [%s]===%s" % (cnt, id, tags))
             skipcount += 1
         if count % 100 == 0: logging.info("update [%s]" % count)
 
-    logging.info("total find_and_modify count=%s [skip=%s]" % (count, skipcount))
+    logging.info("total count=%s [skip=%s]" % (count, skipcount))
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to annotate features with antibody IDs (i.e. RPPA) to genes based on annotations file")

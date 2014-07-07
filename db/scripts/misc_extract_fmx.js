@@ -47,7 +47,7 @@ var outputFn = function (selected_samples) {
 var query = { "source": feature_source };
 
 // collects a limited set of samples
-db.feature_matrix.find(query).limit(record_count).forEach(collectFn(sample_count, selected_samples));
+db["feature_matrix"].find(query).limit(record_count).forEach(collectFn(sample_count, selected_samples));
 
 // outputs data for the selected samples
-db.feature_matrix.find(query).limit(record_count).forEach(outputFn(selected_samples));
+db["feature_matrix"].find(query).limit(record_count).forEach(outputFn(selected_samples));

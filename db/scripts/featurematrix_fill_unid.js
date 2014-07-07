@@ -4,7 +4,7 @@
 
 Usage:
 
-    mongo --host=$HOST $DB_NAME featurematrix_featureunique_id.js
+    mongo --host=$HOST $DB_NAME featurematrix_fill_unid.js
 
 Example of the type of features targeted for aggregation by this script. Must be run on each tumor_type feature matrix independently.
 {
@@ -65,7 +65,8 @@ var UNID_generators = {
 };
 
 for (var src in UNID_generators) {
-    print("[" + db_name + "]:updating:" + src + ":" + db["feature_matrix"].find({ "source": src }).count());
+    var dtFmt = (new Date()).toLocaleFormat("%Y-%m-%d %H:%M:%S,000");
+    print("[INFO] " + dtFmt  + " - featurematrix_fill_unid(" + db_name + "):" + src + ":" + db["feature_matrix"].find({ "source": src }).count());
 
     var unid_generator = UNID_generators[src];
     db["feature_matrix"].find({ "source": src }).forEach(function(doc) {

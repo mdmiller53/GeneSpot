@@ -121,7 +121,9 @@ define(["jquery", "underscore", "backbone",
                 this.$el.html(Tpl({
                     "id": this.id,
                     "genes": this.options["genes"],
-                    "clinical_variables": this.options["clinical_variables"],
+                    "clinical_variables": _.filter(this.options["clinical_variables"], function(cv) {
+                        return (_.has(cv, "id") && !_.isEqual(cv["id"].substring(0,2), "N:"));
+                    }),
                     "tumor_types": this.options["tumor_types"],
                     "sample_types": this.sample_types,
                     "selected_genes": this.selected_genes

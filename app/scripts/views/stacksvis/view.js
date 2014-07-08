@@ -32,9 +32,7 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
                 this.$el.html(Tpl({
                     "id": Math.floor(Math.random() * 1000),
                     "tumor_types": WebApp.UserPreferences.get("selected_tumor_types"),
-                    "genes": _.map(this.options["genes"], function (g) {
-                        return g.toUpperCase();
-                    })
+                    "genes": this.options["genes"]
                 }));
 
                 this.$el.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "right" });
@@ -53,14 +51,14 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
                 _.each(WebApp.UserPreferences.get("selected_tumor_types"), function (tumor_type_obj) {
                     var items_per_gene = _.groupBy(items_per_tumor_type[tumor_type_obj.id], "gene");
                     _.each(this.options["genes"], function (gene) {
-                        var gene_items = items_per_gene[gene] || items_per_gene[gene.toLowerCase()];
+                        var gene_items = items_per_gene[gene];
                         if (!gene_items || !_.isArray(gene_items)) return;
 
                         _.each(gene_items, function (gene_item) {
                             gene_item[gene_item["type"]] = true; // binarize for template use
                         });
 
-                        var $qvalues = this.$el.find(".stats-" + tumor_type_obj.id.toUpperCase() + "-" + gene.toUpperCase()).show();
+                        var $qvalues = this.$el.find(".stats-" + tumor_type_obj["id"] + "-" + gene).show();
                         $qvalues.find(".q-values").html(QValueTpl({"items": _.sortBy(gene_items, "type")}));
                         $qvalues.find(".tooltips").tooltip({ "animation": false, "trigger": "click hover focus", "placement": "top" });
                     }, this);
@@ -86,7 +84,7 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
 
                 var gene_row_items = {};
                 _.each(this.rowLabels, function (rowLabel) {
-                    var $statsEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + rowLabel.toUpperCase()).show();
+                    var $statsEl = this.$el.find(".stats-" + tumor_type + "-" + rowLabel).show();
 
                     gene_row_items[rowLabel] = $statsEl.find(".stats-hm").selector;
 
@@ -98,9 +96,9 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
                         var columnLabel = COLUMNS[cellIdx].trim();
                         if (!data[columnLabel]) data[columnLabel] = {};
                         data[columnLabel][rowLabel] = {
-                            "value": cell.value,
+                            "value": cell["value"],
                             "row": rowLabel,
-                            "colorscale": cbscale[cell.value],
+                            "colorscale": cbscale[cell["value"]],
                             "label": columnLabel + "\n" + rowLabel + "\n" + cell.orig
                         };
                     }, this);
@@ -134,7 +132,7 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
             __render_mutated_samples: function(tumor_type, model) {
                 _.each(model.get("items"), function(item) {
                     var gene = item["gene"];
-                    var $mutEl = this.$el.find(".stats-" + tumor_type.toUpperCase() + "-" + gene.toUpperCase()).show();
+                    var $mutEl = this.$el.find(".stats-" + tumor_type + "-" + gene).show();
                     $mutEl.find(".stats-mutations").html(item["numberOf"]);
                 }, this);
             },
@@ -169,10 +167,8 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
                         if (row_idx < 0) return;
 
                         var cell = DATA[row_idx][col_idx];
-                        if (_.isString(cell.orig)) {
-                            cell.orig = cell.orig.trim().toLowerCase();
-                        }
-                        column.values.push(cell.value);
+                        if (_.isString(cell["orig"])) cell["orig"] = cell["orig"].trim();
+                        column["values"].push(cell["value"]);
                     }, this);
                     unsorted_columns.push(column);
                 }, this);

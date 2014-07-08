@@ -138,26 +138,15 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
             },
 
             __column_model: function (model) {
-                var discretizeFn = function (val) {
-                    if (_.isNumber(val)) {
-                        if (val < -1.5) return 4; // homozygous loss (less than -1.5)
-                        if (val < -0.5) return 3; // heterozygous loss (between -0.5 and -1.4999)
-                        if (val < 0.5) return 2; // diploid (between 0.5 and -0.4999)
-                        if (val < 1.5) return 1; // gain (between 1.5 and 0.49999)
-                        return 0; // amplification // greater than 1.5
-                    }
-                    return val;
-                };
-
                 var ROWS = model.get("ROWS") || [];
                 var COLUMNS = model.get("COLUMNS") || [];
                 var DATA = model.get("DATA") || [];
 
                 _.each(DATA, function (outer_array, idx) {
                     DATA[idx] = _.map(outer_array, function (x) {
-                        return { "value": discretizeFn(x), "orig": x };
-                    });
-                });
+                        return { "value": this.__discretize(x), "orig": x };
+                    }, this);
+                }, this);
 
                 var unsorted_columns = [];
                 _.each(COLUMNS, function (column_name, col_idx) {
@@ -185,6 +174,17 @@ define(["jquery", "underscore", "backbone", "stacksvis", "models/gs/by_tumor_typ
                 });
 
                 return columns_by_cluster;
+            },
+
+            __discretize: function (val) {
+                if (_.isNumber(val)) {
+                    if (val < -1.5) return 4; // homozygous loss (less than -1.5)
+                    if (val < -0.5) return 3; // heterozygous loss (between -0.5 and -1.4999)
+                    if (val < 0.5) return 2; // diploid (between 0.5 and -0.4999)
+                    if (val < 1.5) return 1; // gain (between 1.5 and 0.49999)
+                    return 0; // amplification // greater than 1.5
+                }
+                return val;
             }
         });
     });

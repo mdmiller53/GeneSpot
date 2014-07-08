@@ -222,28 +222,32 @@ define(["jquery", "underscore", "backbone",
             __aggregate: function(tumor_type, model) {
                 console.debug("fmx-dist.__aggregate(" + tumor_type + ")");
                 _.each(model.get("items"), function(item) {
-                    var unid_or_id = item["unid"] || item["id"];
-                    var a_f_by_id = this.aggregate_features_by_id[unid_or_id];
-                    if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[unid_or_id] = {};
-
-                    if (_.has(a_f_by_id, tumor_type)) {
-                        var existing = a_f_by_id[tumor_type];
-                        var overlap_values = _.extend({}, existing["values"], item["values"]);
-                        _.each(_.keys(overlap_values), function(key) {
-                            var value = overlap_values[key];
-                            if (_.isEqual(value, "NA")) value = item["values"][key];
-                            if (_.isEqual(value, "NA")) value = existing["values"][key];
-                            overlap_values[key] = value;
-                        });
-                        a_f_by_id[tumor_type] = _.extend({}, existing, item, { "values": overlap_values });
-                    } else {
-                        a_f_by_id[tumor_type] = item;
-                    }
+                    this.__aggregate_features(item["unid"], tumor_type, item);
+                    this.__aggregate_features(item["id"], tumor_type, item);
 
                     var omit_values = _.omit(_.extend({}, item), "values");
                     this.feature_definitions_by_id[item["unid"]] = omit_values;
                     this.feature_definitions_by_id[item["id"]] = omit_values;
                 }, this);
+            },
+
+            __aggregate_features: function(unid_or_id, tumor_type, item) {
+                var a_f_by_id = this.aggregate_features_by_id[unid_or_id];
+                if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[unid_or_id] = {};
+
+                if (_.has(a_f_by_id, tumor_type)) {
+                    var existing = a_f_by_id[tumor_type];
+                    var overlap_values = _.extend({}, existing["values"], item["values"]);
+                    _.each(_.keys(overlap_values), function(key) {
+                        var value = overlap_values[key];
+                        if (_.isEqual(value, "NA")) value = item["values"][key];
+                        if (_.isEqual(value, "NA")) value = existing["values"][key];
+                        overlap_values[key] = value;
+                    });
+                    a_f_by_id[tumor_type] = _.extend({}, existing, item, { "values": overlap_values });
+                } else {
+                    a_f_by_id[tumor_type] = item;
+                }
             },
 
             __aggregate_sample_types: function(tumor_type) {

@@ -52,14 +52,14 @@ def main():
 
     conn = pymongo.Connection(args.host, args.port)
     collection = conn[args.db]["mutsig_rankings"]
+
+    logging.info("dropping collection")
     collection.drop()
 
-    count = 0
     for row in extract_rows(args.f):
         collection.insert(row)
-        count += 1
 
-    logging.info("inserted count=%s" % count)
+    logging.info("inserted count=%s" % collection.count())
     conn.close()
 
 if __name__ == "__main__":

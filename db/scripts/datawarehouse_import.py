@@ -40,7 +40,8 @@ Requires config_file to be passed a file containing a JSON structure similar to 
                 "collections": {
                     "feature_matrix": "/path/to/local/fmx/file",
                     "mutation_summary": "/path/to/local/mut_sum/file",
-                    "copy_number_gistic": "/path/to/local/cn_gistic/file"
+                    "copy_number_gistic": "/path/to/local/cn_gistic/file",
+                    "mutsig_rankings": "/path/to/local/mutsig_rankings/sig_genes.txt"
                 },
                 "annotations": {
                     "CNVR": "/path/to/local/fmx/annotations/cnvr_file",
@@ -124,6 +125,11 @@ def process_import(config_json):
         if "copy_number_gistic" in im_collections:
             im["file"] = im_collections["copy_number_gistic"]
             execute_python("copynumbergistic_insert.py", im)
+
+        if "mutsig_rankings" in im_collections:
+            im["file"] = im_collections["mutsig_rankings"]
+            execute_python("mutsigrankings_insert.py", im)
+            execute_javascript("mutsigrankings_top20.js", im)
 
         if "annotations" in im:
             im_clone = copy(im)

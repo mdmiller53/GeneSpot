@@ -65,7 +65,10 @@
                 var increment = function () {
                     progress += 10;
                     try {
-                        document.getElementById("progressbar").style.width = progress + "%";
+                        var progressbarEl = document.getElementById("progressbar");
+                        if (!progressbarEl) return;
+
+                        progressbarEl.style.width = progress + "%";
                         if (progress < 100) setTimeout(increment, 300);
                     } catch (e) {
                         console.error(e);

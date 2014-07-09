@@ -216,33 +216,38 @@ define(["jquery", "underscore", "backbone",
 
             __load_fdefs_clinvars: function (tumor_type) {
                 console.debug("fmx-dist.__load_fdefs_clinvars(" + tumor_type + ")");
-                _.each(this.options["clinical_variables"], function(item) {
-                    this.feature_definitions_by_id[item["unid"] || item["id"]] = _.extend({}, item);
-                }, this);
                 this.__aggregate(tumor_type, this.model["clinical_features"]["by_tumor_type"][tumor_type]);
             },
 
             __aggregate: function(tumor_type, model) {
                 console.debug("fmx-dist.__aggregate(" + tumor_type + ")");
                 _.each(model.get("items"), function(item) {
-                    var a_f_by_id = this.aggregate_features_by_id[item["unid"] || item["id"]];
-                    if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[item["unid"] || item["id"]] = {};
+                    this.__aggregate_features(item["unid"], tumor_type, item);
+                    this.__aggregate_features(item["id"], tumor_type, item);
 
-                    if (_.has(a_f_by_id, tumor_type)) {
-                        var existing = a_f_by_id[tumor_type];
-                        var overlap_values = _.extend({}, existing["values"], item["values"]);
-                        _.each(_.keys(overlap_values), function(key) {
-                            var value = overlap_values[key];
-                            if (_.isEqual(value, "NA")) value = item["values"][key];
-                            if (_.isEqual(value, "NA")) value = existing["values"][key];
-                            overlap_values[key] = value;
-                        });
-                        a_f_by_id[tumor_type] = _.extend({}, existing, item, { "values": overlap_values });
-                    } else {
-                        a_f_by_id[tumor_type] = item;
-                    }
-                    this.feature_definitions_by_id[item["unid"] || item["id"]] = _.omit(item, "values");
+                    var omit_values = _.omit(_.extend({}, item), "values");
+                    this.feature_definitions_by_id[item["unid"]] = omit_values;
+                    this.feature_definitions_by_id[item["id"]] = omit_values;
                 }, this);
+            },
+
+            __aggregate_features: function(unid_or_id, tumor_type, item) {
+                var a_f_by_id = this.aggregate_features_by_id[unid_or_id];
+                if (!a_f_by_id) a_f_by_id = this.aggregate_features_by_id[unid_or_id] = {};
+
+                if (_.has(a_f_by_id, tumor_type)) {
+                    var existing = a_f_by_id[tumor_type];
+                    var overlap_values = _.extend({}, existing["values"], item["values"]);
+                    _.each(_.keys(overlap_values), function(key) {
+                        var value = overlap_values[key];
+                        if (_.isEqual(value, "NA")) value = item["values"][key];
+                        if (_.isEqual(value, "NA")) value = existing["values"][key];
+                        overlap_values[key] = value;
+                    });
+                    a_f_by_id[tumor_type] = _.extend({}, existing, item, { "values": overlap_values });
+                } else {
+                    a_f_by_id[tumor_type] = item;
+                }
             },
 
             __aggregate_sample_types: function(tumor_type) {
@@ -378,10 +383,12 @@ define(["jquery", "underscore", "backbone",
                 var Y_feature = this.feature_definitions_by_id[this.selected_features["y"]];
 
                 var data = null;
-                if (this.selected_tumor_type) {
-                    data = this.__visdata([this.selected_tumor_type], X_feature, Y_feature);
-                } else {
-                    data = this.__visdata(this.options["tumor_types"], X_feature, Y_feature);
+                if (X_feature && Y_feature) {
+                    if (this.selected_tumor_type) {
+                        data = this.__visdata([this.selected_tumor_type], X_feature, Y_feature);
+                    } else {
+                        data = this.__visdata(this.options["tumor_types"], X_feature, Y_feature);
+                    }
                 }
                 if (_.isEmpty(data)) {
                     this.latest_data = [];
@@ -463,10 +470,12 @@ define(["jquery", "underscore", "backbone",
                     var stl = this.sample_types_lookup[tumor_type] || {};
 
                     var X_feature_by_tumor_type = this.aggregate_features_by_id[X_feature_id] || {};
-                    var X_feature = X_feature_by_tumor_type[tumor_type] || {};
+                    var X_feature = X_feature_by_tumor_type[tumor_type];
+                    if (!X_feature) return null;
 
                     var Y_feature_by_tumor_type = this.aggregate_features_by_id[Y_feature_id] || {};
-                    var Y_feature = Y_feature_by_tumor_type[tumor_type] || {};
+                    var Y_feature = Y_feature_by_tumor_type[tumor_type];
+                    if (!Y_feature) return null;
 
                     var Cby_feature_by_tumor_type = this.aggregate_features_by_id[this.selected_color_by] || {};
                     var Cby_feature = Cby_feature_by_tumor_type[tumor_type] || {};

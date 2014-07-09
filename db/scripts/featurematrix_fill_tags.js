@@ -27,7 +27,7 @@ var update_tags = function(d) {
 
     if (tags.length <= 0) tags.push("NO_MATCH");
 
-    db.feature_matrix.update({ "_id": d["_id"] }, { "$set": { "tags": tags } } );
+    db["feature_matrix"].update({ "_id": d["_id"] }, { "$set": { "tags": tags } } );
 };
 
-db.feature_matrix.find(query).forEach(update_tags);
+db["feature_matrix"].find(query).forEach(update_tags);

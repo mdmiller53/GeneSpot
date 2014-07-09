@@ -149,11 +149,6 @@
         "copy_number": {
             "label": "Copy Number Datasets",
             "catalog": {
-                "copy_number_gistic2": {
-                    "label": "Copy Number Gistic (13sep)",
-                    "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
-                    "model": "models/gs/by_tumor_type"
-                },
                 "copy_number_qvalue": {
                     "label": "Copy Number Q-Values",
                     "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"

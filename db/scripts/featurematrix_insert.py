@@ -8,7 +8,7 @@ import logging
 from utilities import configure_logging
 
 def extract_features(file_path):
-    logging.info("extract_features(%s)" % file_path)
+    logging.info(file_path)
 
     with open(file_path, "rb") as csvfile:
         csvreader = csv.reader(csvfile, delimiter="\t")
@@ -28,7 +28,7 @@ def extract_features(file_path):
 
             yield feature_object
 
-        logging.info("extract_features(%s):samples=%s" % (file_path, str(len(ids))))
+        logging.info("samples=%s" % str(len(ids)))
 
 def extract_feature_dict(feature_id):
     feature_parts = feature_id.split(":")

@@ -87,7 +87,10 @@
                     "view": "views/stacksvis/view",
                     "label": "Distributions",
                     "datamodels": {
-                        "copy_number": "datamodel/copy_number/copy_number_gistic2",
+                        "copy_number": {
+                            "uri": "datamodel/tcga_datawarehouse",
+                            "url_suffix": "/copy_number_gistic"
+                        },
                         "q_value": "datamodel/copy_number/copy_number_qvalue",
                         "mutated_samples": {
                             "uri": "datamodel/tcga_datawarehouse",

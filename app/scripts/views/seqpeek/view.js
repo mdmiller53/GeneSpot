@@ -41,7 +41,7 @@ define([
         var DNA_CHANGE_FIELD_NAME = "dna_change";
         var UNIPROT_FIELD_NAME = "uniprot_id";
 
-        var GROUP_BY_CATEGORIES = {
+        var GROUP_BY_CATEGORIES_FOR_PROTEIN_VIEW = {
             "Mutation Type": TYPE_FIELD_NAME,
             "DNA Change": DNA_CHANGE_FIELD_NAME,
             "Protein Change": function(data_row) {
@@ -49,7 +49,13 @@ define([
             }
         };
 
-        var CURRENT_MODE = DISPLAY_MODES.ALL;
+        var GROUP_BY_CATEGORIES_FOR_GENOMIC_VIEW = {
+            "Mutation Type": TYPE_FIELD_NAME,
+            "DNA Change": DNA_CHANGE_FIELD_NAME,
+            "Protein Change": function(data_row) {
+                return data_row[AMINO_ACID_MUTATION_FIELD_NAME] + "-" + data_row[AMINO_ACID_WILDTYPE_FIELD_NAME];
+            }
+        };
 
         var MUTATION_TYPE_COLOR_MAP = {
             Nonsense_Mutation: "red",
@@ -102,7 +108,8 @@ define([
 
                 "click .dropdown-menu.group_by_selector a": function(e) {
                     var group_by = $(e.target).data("id");
-                    this.selected_group_by = GROUP_BY_CATEGORIES[group_by];
+
+                    this.selected_group_by = this.__get_current_group_by(group_by);
                     this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT[group_by];
 
                     console.debug("seqpeek/group-by-selector:" + group_by);
@@ -143,6 +150,17 @@ define([
                     this.__render();
                 },
 
+                "click .btn.seqpeek-toggle-genomic": function(e) {
+                    if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
+                        this.current_view_mode = DISPLAY_MODES.ALL;
+                    }
+                    else {
+                        this.current_view_mode = DISPLAY_MODES.PROTEIN;
+                    }
+
+                    this.__preprocess_data_and_render();
+                },
+
                 "click .add-new-list": function() {
                     this.__store_sample_list();
                 }
@@ -151,12 +169,14 @@ define([
             initialize: function () {
                 this.model = this.options["models"];
 
-                this.selected_group_by = GROUP_BY_CATEGORIES["Mutation Type"];
+                this.selected_group_by = this.__get_current_group_by("Mutation Type");
                 this.selected_color_by = COLOR_BY_CATEGORIES["Mutation Type"];
                 this.selected_bar_plot_color_by = COLOR_BY_CATEGORIES_FOR_BAR_PLOT["Mutation Type"];
 
                 this.sample_track_type = "sample_plot";
                 this.sample_track_type_user_setting = null;
+
+                this.current_view_mode = DISPLAY_MODES.PROTEIN;
 
                 this.selected_patient_ids = [];
 
@@ -170,6 +190,15 @@ define([
 
                 this.samplelists.on("add", this.__update_stored_samplelists, this);
                 this.samplelists.on("remove", this.__update_stored_samplelists, this);
+            },
+
+            __get_current_group_by: function(group_by_key) {
+                if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
+                    return GROUP_BY_CATEGORIES_FOR_PROTEIN_VIEW[group_by_key];
+                }
+                else {
+                    return GROUP_BY_CATEGORIES_FOR_GENOMIC_VIEW[group_by_key];
+                }
             },
 
             __update_gene_dropdown_labels: function(gene_to_uniprot_mapping) {
@@ -207,7 +236,7 @@ define([
                     "selected_gene": this.selected_gene,
                     "genes": this.genes,
                     "selected_group_by": "Mutation Type",
-                    "group_by_categories": _.keys(GROUP_BY_CATEGORIES),
+                    "group_by_categories": _.keys(GROUP_BY_CATEGORIES_FOR_PROTEIN_VIEW),
                     "color_by_categories": _.keys(COLOR_BY_CATEGORIES)
                 }));
 
@@ -245,7 +274,7 @@ define([
 
                 this.$(".mutations_map_table").html("");
 
-                var mutations = this.__parse_mutations();
+                var mutations = this.__filter_data();
 
                 var mutsig_ranks = this.__filter_mutsig_data(this.__parse_mutsig());
 
@@ -323,7 +352,7 @@ define([
                 var protein_data = this.found_protein_domains[uniprot_id];
 
                 var all_mutations = [];
-                _.each(this.__parse_mutations(), function(mutation_array, tumor_type) {
+                _.each(this.__filter_data(), function(mutation_array, tumor_type) {
                     Array.prototype.push.apply(all_mutations, mutation_array);
                 });
 
@@ -335,7 +364,8 @@ define([
 
                     seqpeek_data.push({
                         variants: variants,
-                        tumor_type: tumor_type
+                        tumor_type: tumor_type,
+                        is_summary_track: false
                     });
                 }, this);
 
@@ -353,6 +383,7 @@ define([
                         samples: total_unique_samples,
                         percentOf: "NA"
                     }}));
+
 
                 _.each(seqpeek_data, function(track_obj) {
                     track_obj.target_element = _.first(this.$("#seqpeek-row-" + track_obj.tumor_type))
@@ -377,7 +408,7 @@ define([
             },
 
             __build_seqpeek_config: function(region_array) {
-                if (CURRENT_MODE == DISPLAY_MODES.PROTEIN) {
+                if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
                     return this.__build_seqpeek_config_for_protein_view(region_array);
                 }
                 else {
@@ -465,9 +496,7 @@ define([
                         height: TICK_TRACK_HEIGHT
                     },
                     region_layout: {
-                        intron_left_padding: 5,
-                        intron_right_padding: 5,
-                        intron_width: 1.0,
+                        intron_width: 50.0,
                         exon_width: function(region) {
                             return _.max([10, region.end_aa - region.start_aa]);
                         }
@@ -517,12 +546,10 @@ define([
                         guid: track_guid,
                         hovercard_content: {
                             "Protein location": function(d) {
-                                if (d["type"] == "exon") {
-                                    return d["start_aa"] + " - " + d["end_aa"];
-                                }
-                                else {
-                                    return d["start"] + " - " + d["end"];
-                                }
+                                return d["start_aa"] + " - " + d["end_aa"];
+                            },
+                            "Genomic coordinates": function(d) {
+                                return d["start"] + " - " + d["end"];
                             },
                             "Protein length": function () {
                                 return protein_data["length"];
@@ -556,49 +583,51 @@ define([
 
                 seqpeek.addTickTrackToElement(tick_track_g);
 
-                var protein_domain_track_guid = "C" + vq.utils.VisUtils.guid();
-                var protein_domain_track_g = d3.select(seqpeek_domain_track_element)
-                    .append("svg")
+                if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
+                    var protein_domain_track_guid = "C" + vq.utils.VisUtils.guid();
+                    var protein_domain_track_g = d3.select(seqpeek_domain_track_element)
+                        .append("svg")
                         .attr("width", TRACK_SVG_WIDTH)
                         .attr("height", PROTEIN_DOMAIN_TRACK_HEIGHT)
                         .attr("id", protein_domain_track_guid)
                         .style("pointer-events", "none")
-                    .append("svg:g")
+                        .append("svg:g")
                         .call(this.__set_track_g_position);
 
-                seqpeek.addProteinDomainTrackToElement(protein_data["matches"], protein_domain_track_g, {
-                    guid: protein_domain_track_guid,
-                    hovercard_content: {
-                        "DB": function(d) {
-                            return d.dbname;
+                    seqpeek.addProteinDomainTrackToElement(protein_data["matches"], protein_domain_track_g, {
+                        guid: protein_domain_track_guid,
+                        hovercard_content: {
+                            "DB": function (d) {
+                                return d.dbname;
+                            },
+                            "EVD": function (d) {
+                                return d.evd;
+                            },
+                            "ID": function (d) {
+                                return d.id;
+                            },
+                            "Name": function (d) {
+                                return d.name;
+                            },
+                            "Status": function (d) {
+                                return d.status;
+                            },
+                            "LOC": function (d) {
+                                return d.start + " - " + d.end;
+                            }
                         },
-                        "EVD": function(d) {
-                            return d.evd;
-                        },
-                        "ID": function(d) {
-                            return d.id;
-                        },
-                        "Name": function(d) {
-                            return d.name;
-                        },
-                        "Status": function(d) {
-                            return d.status;
-                        },
-                        "LOC": function(d) {
-                            return d.start + " - " + d.end;
-                        }
-                    },
-                    hovercard_links: {
-                        "InterPro Domain Entry": {
-                            label: 'InterPro',
-                            url: '/',
-                            href: function(param) {
-                                var ipr_id = param["ipr"]["id"];
-                                return "http://www.ebi.ac.uk/interpro/entry/" + ipr_id;
+                        hovercard_links: {
+                            "InterPro Domain Entry": {
+                                label: 'InterPro',
+                                url: '/',
+                                href: function (param) {
+                                    var ipr_id = param["ipr"]["id"];
+                                    return "http://www.ebi.ac.uk/interpro/entry/" + ipr_id;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
 
                 seqpeek.createInstances();
 
@@ -767,7 +796,7 @@ define([
                                 return d["uniprot_id"];
                             }
                         }
-                    });
+                    }, track_obj.is_summary_track);
                 }
                 else {
                     return seqpeek_builder.addBarPlotTrackWithArrayData(track_obj.variants, track_target_svg, {
@@ -784,12 +813,12 @@ define([
                             }
                         },
                         max_samples_in_location: this.maximum_samples_in_location
-                    });
+                    }, track_obj.is_summary_track);
                 }
             },
 
             __build_regions: function(data, protein_start, protein_end) {
-                if (CURRENT_MODE == DISPLAY_MODES.PROTEIN) {
+                if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
                     return this.__build_regions_protein(data, protein_start, protein_end);
                 }
                 else {
@@ -840,36 +869,46 @@ define([
                     last_has_uniprot: null
                 });
 
-                var region_info = _.reduce(split.split_array, function(memo, split_item) {
+                var get_first_start_coord = function(item) {
+                    return parseInt(_.first(item["data"])["chromosome_position"]);
+                };
+
+                var region_info = _.reduce(split.split_array, function(memo, split_item, index, data_array) {
                     var data = split_item.data;
                     var first = _.first(data);
                     var last = _.last(data);
 
-                    var start_aa;
-                    var end_aa;
+                    var region;
 
-                    var start_coord = parseInt(first["chromosome_position"]);
+                    var start_coord = get_first_start_coord(split_item);
+
                     var end_coord = parseInt(last["chromosome_position"]);
 
-                    var region = {
-                        type: split_item.coding ? "exon": "noncoding",
-                        start: start_coord,
-                        end: end_coord,
-                        start_aa: start_aa,
-                        end_aa: end_aa
-                    };
-
                     if (split_item.coding) {
-                        region.start_aa = parseInt(first["amino_acid_position"]);
-                        region.end_aa = parseInt(last["amino_acid_position"]);
-
+                        region = {
+                            type: "exon",
+                            start: start_coord,
+                            end: end_coord,
+                            start_aa: parseInt(first["amino_acid_position"]),
+                            end_aa: parseInt(last["amino_acid_position"])
+                        };
                     }
+                    else {
+                        region = {
+                            type: "noncoding",
+                            start: index == 0 ? start_coord : memo.previous_end_coord + 1,
+                            end: index == (data_array.length - 1) ? end_coord : (get_first_start_coord(data_array[index+1]) - 0)
+                        };
+                    }
+
+                    memo.previous_end_coord = end_coord;
 
                     memo.data.push(region);
 
                     return memo;
 
                 }, {
+                    previous_end_coord: null,
                     data: [],
                     x_position: 0
                 });
@@ -891,7 +930,12 @@ define([
                     }
                 }, this);
 
-                this.__load_protein_domains();
+                if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
+                    this.__load_protein_domains();
+                }
+                else {
+                    this.__render();
+                }
             },
 
             __filter_data: function(data_by_tumor_type) {
@@ -901,14 +945,15 @@ define([
 
                 // Filter out rows that do not have the amino acid position field present,
                 // as drawing variants based on chromosome coordinates is not currently supported.
-                _.each(data_by_tumor_type, function(data, tumor_type) {
-                    if (CURRENT_MODE == DISPLAY_MODES.PROTEIN) {
+                _.each(this.model["mutations"]["by_tumor_type"], function(model, tumor_type) {
+                    var data = model.get("items");
+                    if (this.current_view_mode == DISPLAY_MODES.PROTEIN) {
                         filtered[tumor_type] = this.__filter_mutation_data_for_protein_view(data);
                     }
                     else {
                         filtered[tumor_type] = this.__filter_mutation_data_for_genomic_view(data)
                     }
-                });
+                }, this);
                 return filtered;
             },
 
@@ -916,7 +961,7 @@ define([
                 var lowercase_gene = this.selected_gene.toLowerCase();
 
                 return _.filter(data, function(item) {
-                    return (_.has(item, UNIPROT_FIELD_NAME && _.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene)));
+                    return (_.has(item, UNIPROT_FIELD_NAME) && _.has(item, "gene") && _.isEqual(item["gene"].toLowerCase(), lowercase_gene));
                 }, this);
             },
 
@@ -954,18 +999,9 @@ define([
                 return {
                     variants: all_variants,
                     tumor_type: "COMBINED",
-                    track_type: "bar_plot"
+                    track_type: "bar_plot",
+                    is_summary_track: true
                 };
-            },
-
-            __parse_mutations: function () {
-                console.debug("seqpeek/view.__parse_mutations");
-
-                var data = {};
-                _.each(this.model["mutations"]["by_tumor_type"], function(model, tumor_type) {
-                    data[tumor_type] = model.get("items");
-                }, this);
-                return data;
             },
 
             __parse_mutsig: function () {

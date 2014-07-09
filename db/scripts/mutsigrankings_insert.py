@@ -32,7 +32,7 @@ def extract_rows(file_path):
             for idx in range(0, len(headers)):
                 header = headers[idx]
                 value = line[idx]
-                if rank % 100 == 0: logging.info("line[%s]:%s:%s:%s" % (rank, idx, header, value))
+                if rank % 100 == 0: logging.debug("line[%s]:%s:%s:%s" % (rank, idx, header, value))
                 row_obj[header] = value
             yield row_obj
 
@@ -52,6 +52,7 @@ def main():
 
     conn = pymongo.Connection(args.host, args.port)
     collection = conn[args.db]["mutsig_rankings"]
+    collection.drop()
 
     count = 0
     for row in extract_rows(args.f):

@@ -141,7 +141,7 @@
                 "STAD-20140123": {
                     "tumor_type": "STAD",
                     "service": "datastores/dev_ffn_20140520/STAD",
-                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB",
+                    "description": "This dataset was prepared from TCGA feature matrices aggregated at ISB.<br/><br/>STAD gene expression levels were available from RNAseq data as RPKM only, whereas levels for other tumor types were available in terms of RSEM (June 2014).  To approximate RSEM values, STAD values were linearly transformed using the equation 4.550681+ STAD *1.271340. The coefficient were obtained from regressing median gene expression levels for COAD against those for STAD. COAD was selected over other tumor types due to anatomical proximity and the relative concordance of the distributions of the COAD and STAD medians.",
                     "label": "STAD dataset for January 2014"
                 }
             }
@@ -149,11 +149,6 @@
         "copy_number": {
             "label": "Copy Number Datasets",
             "catalog": {
-                "copy_number_gistic2": {
-                    "label": "Copy Number Gistic (13sep)",
-                    "service": "datastores/copy_number/qed_lookups/copyNumber_Gistic2_13sep",
-                    "model": "models/gs/by_tumor_type"
-                },
                 "copy_number_qvalue": {
                     "label": "Copy Number Q-Values",
                     "service": "datastores/copy_number/qed_lookups/copy_number_qvalue"

@@ -56,18 +56,24 @@ var finalize = function(key, reducedValue) {
 
 var query = {
     "source":"GNAB",
-    "code":"y_n_somatic",
+    "code":"code_potential_somatic",
     "type": "B",
     "gene": { "$exists": true }
 };
 
-print("matching features from feature_matrix:" + db.feature_matrix.find(query).count());
-db.feature_matrix.mapReduce(map, reduce, { "query": query, "out": "mutated_samples_mrtemp", "finalize": finalize });
+var db_name = db["_name"];
+var pretty_print = function(msg) {
+    var dtFmt = (new Date()).toLocaleFormat("%Y-%m-%d %H:%M:%S,000");
+    print("[INFO] " + dtFmt  + " - featurematrix_mutated_samples(" + db_name + ") - " + msg);
+};
 
-db.mutated_samples.drop();
-db.mutated_samples_mrtemp.find().forEach(function(d) {
-    db.mutated_samples.insert(d.value);
+pretty_print("matching features from feature_matrix:" + db["feature_matrix"].find(query).count());
+db["feature_matrix"].mapReduce(map, reduce, { "query": query, "out": "mutated_samples_mrtemp", "finalize": finalize });
+
+db["mutated_samples"].drop();
+db["mutated_samples_mrtemp"].find().forEach(function(d) {
+    db["mutated_samples"].insert(d.value);
 });
-db.mutated_samples_mrtemp.drop();
+db["mutated_samples_mrtemp"].drop();
 
-print("final result in mutated_samples:" + db.mutated_samples.find().count());
+pretty_print("final result in mutated_samples:" + db["mutated_samples"].find().count());

@@ -45,40 +45,44 @@ def extract_tags_by_id(filename):
         r_by_id = {}
         for row in csvreader:
             if len(row) >= 3:
-                probe_id = row[0]
-                refGenes = row[3].split(";")
-                uniqGenes = filter(None, list(set(refGenes)))
-                logging.debug("extract_tags_by_id=%s:%s:%s" % (probe_id, refGenes, uniqGenes))
-                if len(uniqGenes) > 0: r_by_id[probe_id] = uniqGenes
+                feature_id = row[0]
+                count = row[1]
+                uniqGenes = []
+                if count > 0:
+                    refGenes = row[2].split(";")
+                    uniqGenes = filter(None, list(set(refGenes)))
+
+                logging.debug("%s:%s:%s" % (feature_id, refGenes, uniqGenes))
+                if len(uniqGenes) > 0: r_by_id[feature_id] = uniqGenes
             else:
                 skipcount += 1
 
-        logging.warning("extract_tags_by_id=skipping:%s" % skipcount)
+        logging.warning("skipping:%s" % skipcount)
         return r_by_id
 
 def find_and_modify(collection, tags_by_id):
     count = 0
     skipcount = 0
-    for doc in collection.find({ "source": "METH", "probe": { "$exists": True } }, { "probe": True }):
-        if "probe" in doc:
-            probe_id = str(doc["probe"])
-            if probe_id in tags_by_id:
-                tags = tags_by_id[probe_id]
+    for doc in collection.find({ "source": "METH", "probe": { "$exists": True } }, { "values": False }):
+        if "id" in doc:
+            feature_id = str(doc["id"])
+            if feature_id in tags_by_id:
+                tags = tags_by_id[feature_id]
                 if not tags is None:
                     collection.find_and_modify({ "_id": doc["_id"] }, { "$set":{ "refGenes": tags }})
                 else:
-                    logging.warning("skipping:tags not found:%s" % probe_id)
+                    logging.warning("skipping:tags not found:%s" % feature_id)
                     skipcount += 1
             else:
-                logging.warning("skipping:probe not found:%s" % probe_id)
+                logging.debug("skipping:feature_id not found:%s" % feature_id)
                 skipcount += 1
         else:
-            logging.warning("skipping:probe not in doc:%s" % str(doc))
+            logging.warning("skipping:feature_id not in doc:%s" % str(doc))
             skipcount += 1
 
         if count > 0 and count % 1000 == 0: logging.info("update [%s]" % count)
 
-    logging.info("total find_and_modify count=%s [skip=%s]" % (count, skipcount))
+    logging.info("total count=%s [skip=%s]" % (count, skipcount))
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to annotate features with probe IDs (i.e. METH) to genes based on annotations file")

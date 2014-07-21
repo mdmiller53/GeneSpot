@@ -1,6 +1,7 @@
 {
     "default_genelist": ["BRCA1", "RAD51", "TP53", "KRAS", "CC2D1A"],
     "all_tags_url": "svc/datastores/FFN/LOOKUPS/all_tags",
+    "all_clinical_url": "svc/datastores/FFN/LOOKUPS/all_clinical",
     "maps": [
         {
             "id": "mutations_combo",
@@ -23,14 +24,6 @@
                             "url_suffix": "/mutation_summary"
                         },
                         "mutsig": "datamodel/mutations/mutsig_rankings",
-                        "features": {
-                            "uri": "datamodel/tcga_datawarehouse",
-                            "url_suffix": "/feature_matrix",
-                            "base_query": {
-                                "source": "GNAB",
-                                "label": "y_n_somatic"
-                            }
-                        },
                         "mutated_samples": {
                             "uri": "datamodel/tcga_datawarehouse",
                             "url_suffix": "/mutated_samples"
@@ -75,6 +68,9 @@
                             "url_suffix": "/feature_matrix",
                             "query_clinical_variables": true
                         }
+                    },
+                    "feature_sources_order": {
+                        "GEXP": 1
                     }
                 }
             ]
@@ -91,7 +87,10 @@
                     "view": "views/stacksvis/view",
                     "label": "Distributions",
                     "datamodels": {
-                        "copy_number": "datamodel/copy_number/copy_number_gistic2",
+                        "copy_number": {
+                            "uri": "datamodel/tcga_datawarehouse",
+                            "url_suffix": "/copy_number_gistic"
+                        },
                         "q_value": "datamodel/copy_number/copy_number_qvalue",
                         "mutated_samples": {
                             "uri": "datamodel/tcga_datawarehouse",

@@ -60,11 +60,11 @@ def find_and_modify(collection, refGenes_by_id):
 
         if collection.find({ "id": id }).count() == 1:
             collection.find_and_modify({ "id": id }, {"$set":{ "refGenes": refGenes }})
-            logging.debug("find_and_modify [%s] [%s]===%s" % (count, id, refGenes))
+            logging.debug("[%s] [%s]===%s" % (count, id, refGenes))
         count += 1
         if count % 1000 == 0: logging.info("update [%s]" % count)
 
-    logging.info("total find_and_modify count=%s" % count)
+    logging.info("total count=%s" % count)
 
 def main():
     parser = argparse.ArgumentParser(description="Utility to annotate features with genes (tags) in MongoDB")
@@ -94,7 +94,7 @@ def main():
 
     conn.close()
 
-    logging.info("annotate_features_with_genes(%s):complete" % args.db)
+    logging.info("COMPLETE")
 
 if __name__ == "__main__":
     main()

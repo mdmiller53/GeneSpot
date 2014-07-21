@@ -1,0 +1,38 @@
+<h4>Sample Lists</h4>
+<div class="input-append">
+    <input type="text" class="new-list-name" placeholder="New list name...">
+    <button class="btn add-new-list" type="button" title="Add a list"><i class="icon-plus"></i></button>
+</div>
+{{#if samplelists.length}}
+    <div class="row">
+        <div class="span7">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs sample-lists">
+                    {{#each samplelists}}
+                        <li{{#unless @index}} class="active"{{/unless}} data-id="{{id}}"><a
+                                href="#tab-slists-slist-{{id}}" data-toggle="tab">{{label}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                {{#each samplelists}}
+                    <div class="tab-pane{{#unless @index}} active{{/unless}}" id="tab-slists-slist-{{id}}">
+                        <h5>{{number_samples}} Samples</h5>
+                        <textarea rows="10" id="samplelist-contents-{{id}}">{{text}}</textarea>
+                        <div>
+                            <button class="btn btn-small list-update" data-id="{{id}}" type="button">Update list contents</button>
+                        </div>
+                        <hr/>
+                        <div class="btn-group">
+                            <button class="btn btn-small list-remover" data-id="{{id}}" type="button"><i class="icon-trash"></i></button>
+                            <button class="btn btn-small list-remover" data-id="{{id}}" type="button">Delete list '{{label}}'</button>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+{{else}}
+    <h5 style="color: red;">No sample lists stored</h5>
+{{/if}}

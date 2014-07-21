@@ -1,5 +1,6 @@
 /*
   usage: mongo <host>:<port>/<db> update_fm_with_label_lookup.js --eval "var ftypes = ['RPPA', 'METH']"
+  if eval clause not included, will run against all feature types
 */
 function replaceUnderscore(str) {
   return str.replace(/_/g, ' ');

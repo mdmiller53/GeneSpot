@@ -1,6 +1,10 @@
 '''
 Created on Jun 10, 2014
 
+for the list of tumor types, go through the features and for the given
+platform, collect the medians for all the features and output them
+tab-delimited to the given file
+
 @author: michael
 '''
 import argparse

@@ -1,5 +1,6 @@
 /*
  - Reads all collections in the database, and extract all fields, preparing a lookup collection
+   that can be used to present to the user what fields they can include/exclude in the web UI
  - Writes to "collection_fields" collection
 
  - Documents in collection will look like this:
@@ -7,7 +8,7 @@
 
  Usage:
 
- mongo --host=$HOST $DB_NAME mapreduce_collection_fields.js
+ mongo --host=$HOST $DB_NAME misc_aggregate_collection_fields.js
 
  // TODO : Organize output better
  */
